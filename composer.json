@@ -1,0 +1,16 @@
+{
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/Al4r1c/AlaroxClassLoader"
+		}
+	],
+	"require": {
+		"alarox/AlaroxClassLoader": "dev-master",
+		"pimple/pimple": "v1.0.2",
+		"lespoilus/spyc": "dev-master"
+	},
+	"config": {
+		"vendor-dir": "libraries"
+	}
+}
