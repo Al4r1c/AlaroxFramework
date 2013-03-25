@@ -1,7 +1,7 @@
 <?php
 namespace Framework;
 
-class Framework
+class AlaroxFramework
 {
 
 }
