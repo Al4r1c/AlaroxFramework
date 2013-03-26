@@ -104,7 +104,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->_config->setRouteMap($routeMap);
 
-        $this->assertEquals($routeMap, $this->_config->getRouteMap());
+        $this->assertEquals($routeMap, $this->_config->getConfigValeur('ControllerConfig.RouteMapFile'));
     }
 
     /**

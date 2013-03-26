@@ -8,12 +8,7 @@ class Config
     /**
      * @var array
      */
-    private $_tabConfiguration;
-
-    /**
-     * @var RouteMap
-     */
-    private $_routeMap = null;
+    private $_tabConfiguration = array();
 
     /**
      * @var array
@@ -31,24 +26,16 @@ class Config
         'InternationalizationConfig.Available');
 
     /**
-     * @return RouteMap|null
-     */
-    public function getRouteMap()
-    {
-        return $this->_routeMap;
-    }
-
-    /**
      * @param RouteMap $routeMap
      * @throws \InvalidArgumentException
      */
     public function setRouteMap($routeMap)
     {
         if (!$routeMap instanceof RouteMap) {
-            throw new \InvalidArgumentException('Expected Config.');
+            throw new \InvalidArgumentException('Expected RouteMap.');
         }
 
-        $this->_routeMap = $routeMap;
+        $this->_tabConfiguration['ControllerConfig']['RouteMapFile'] = $routeMap;
     }
 
     /**
@@ -69,7 +56,7 @@ class Config
             }
         }
 
-        $this->_tabConfiguration = $tabCfg;
+        $this->_tabConfiguration = array_merge($this->_tabConfiguration, $tabCfg);
     }
 
     /**
