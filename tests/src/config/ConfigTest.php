@@ -11,7 +11,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     static $cfgTest = array(
         'ControllerConfig' => array(
             'Default_controller' => 'ctrldef',
-            'RestServer_url' => 'http://addr.com'
+            'RestServer_url' => 'http://addr.com',
+            'RouteMap' => true
         ),
         'TemplateConfig' => array(
             'Name' => 'WebName',
@@ -28,7 +29,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->_config = new Config();
     }
 
-    public function setFakeCfg()
+    public function setFakeCfg($tabRenvoyee)
     {
         $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
         $fichier->expects($this->once())
@@ -37,7 +38,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $fichier->expects($this->once())
             ->method('loadFile')
-            ->will($this->returnValue(self::$cfgTest));
+            ->will($this->returnValue($tabRenvoyee));
 
         $this->_config->recupererConfigDepuisFichier($fichier);
     }
@@ -49,7 +50,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetCfg()
     {
-        $this->setFakeCfg();
+        $this->setFakeCfg(self::$cfgTest);
 
         $this->assertAttributeEquals(self::$cfgTest, '_tabConfiguration', $this->_config);
     }
@@ -72,21 +73,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testValeursMinimales()
     {
-        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
-        $fichier->expects($this->once())
-            ->method('fileExist')
-            ->will($this->returnValue(true));
-
-        $fichier->expects($this->once())
-            ->method('loadFile')
-            ->will($this->returnValue(array('Missing')));
-
-        $this->_config->recupererConfigDepuisFichier($fichier);
+        $tableauConfigTest = self::$cfgTest;
+        unset($tableauConfigTest['ControllerConfig']);
+        $this->setFakeCfg($tableauConfigTest);
     }
 
     public function testGetValeurConfig()
     {
-        $this->setFakeCfg();
+        $this->setFakeCfg(self::$cfgTest);
 
         $this->assertEquals('ctrldef', $this->_config->getConfigValeur('controllerconfig.default_controller'));
         $this->assertEquals(
@@ -99,7 +93,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testValeurNonTrouveeNull()
     {
-        $this->setFakeCfg();
+        $this->setFakeCfg(self::$cfgTest);
 
         $this->assertNull($this->_config->getConfigValeur('nope'));
     }

@@ -18,6 +18,7 @@ class Config
         'InternationalizationConfig',
         'ControllerConfig.Default_controller',
         'ControllerConfig.RestServer_url',
+        'ControllerConfig.RouteMap',
         'TemplateConfig.Name',
         'TemplateConfig.Media_url',
         'InternationalizationConfig.Enabled',
@@ -38,7 +39,7 @@ class Config
 
         foreach (self::$valeursMinimales as $uneValeurMinimale) {
             if (is_null($this->rechercheValeurTableauMultidim($uneValeurMinimale, $tabCfg))) {
-                throw new \Exception(sprintf('Missing config key "%s".', $tabCfg));
+                throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
             }
         }
 
