@@ -11,6 +11,11 @@ class Config
     private $_tabConfiguration;
 
     /**
+     * @var RouteMap
+     */
+    private $_routeMap = null;
+
+    /**
      * @var array
      */
     private static $valeursMinimales = array('ControllerConfig',
@@ -24,6 +29,27 @@ class Config
         'InternationalizationConfig.Enabled',
         'InternationalizationConfig.Default_language',
         'InternationalizationConfig.Available');
+
+    /**
+     * @return RouteMap|null
+     */
+    public function getRouteMap()
+    {
+        return $this->_routeMap;
+    }
+
+    /**
+     * @param RouteMap $routeMap
+     * @throws \InvalidArgumentException
+     */
+    public function setRouteMap($routeMap)
+    {
+        if (!$routeMap instanceof RouteMap) {
+            throw new \InvalidArgumentException('Expected Config.');
+        }
+
+        $this->_routeMap = $routeMap;
+    }
 
     /**
      * @param File $fichier

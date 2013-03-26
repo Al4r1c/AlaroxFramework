@@ -30,11 +30,14 @@ class AlaroxFramework
 
     /**
      * @param string $cheminVersFichierConfig
+     * @param string $cheminVersFichierRouteMap
      * @throws \InvalidArgumentException
      */
-    public function genererConfigDepuisFichier($cheminVersFichierConfig)
+    public function genererConfigDepuisFichier($cheminVersFichierConfig, $cheminVersFichierRouteMap)
     {
-        if (!($config = $this->_conteneur->getConfig($cheminVersFichierConfig)) instanceof Config) {
+        if (!($config = $this->_conteneur->getConfig($cheminVersFichierConfig, $cheminVersFichierRouteMap)) instanceof
+            Config
+        ) {
             throw new \InvalidArgumentException('Expected Config.');
         }
 

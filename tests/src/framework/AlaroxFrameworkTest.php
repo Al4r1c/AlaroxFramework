@@ -40,12 +40,12 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $conteneur = $this->getMock('\AlaroxFramework\Conteneur', array('getConfig'));
         $conteneur->expects($this->once())
             ->method('getConfig')
-            ->with('/path/to/fichier')
+            ->with('/path/to/fichier', '/path/to/routemap')
             ->will($this->returnValue($this->getMock('\AlaroxFramework\cfg\Config')));
 
         $this->_framework->setConteneur($conteneur);
 
-        $this->_framework->genererConfigDepuisFichier('/path/to/fichier');
+        $this->_framework->genererConfigDepuisFichier('/path/to/fichier', '/path/to/routemap');
     }
 
     /**
@@ -60,7 +60,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $this->_framework->setConteneur($conteneur);
 
-        $this->_framework->genererConfigDepuisFichier('/path/to/fichier');
+        $this->_framework->genererConfigDepuisFichier('/path/to/fichier', '/path/to/routemap');
     }
 
     public function testProcess()

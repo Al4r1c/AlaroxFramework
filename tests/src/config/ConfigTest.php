@@ -97,4 +97,21 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($this->_config->getConfigValeur('nope'));
     }
+
+    public function testSetRouteMap()
+    {
+        $routeMap = $this->getMock('AlaroxFramework\cfg\RouteMap');
+
+        $this->_config->setRouteMap($routeMap);
+
+        $this->assertEquals($routeMap, $this->_config->getRouteMap());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetRouteMapTypeErrone()
+    {
+        $this->_config->setRouteMap(5);
+    }
 }

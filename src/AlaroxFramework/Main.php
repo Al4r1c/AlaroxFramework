@@ -10,12 +10,13 @@ class Main
 
     /**
      * @param string $cheminVersFichierConfig
+     * @param string $cheminVersFichierRouteMap
      */
-    public function __construct($cheminVersFichierConfig)
+    public function __construct($cheminVersFichierConfig, $cheminVersFichierRouteMap = '')
     {
         $this->_alaroxFramework = new AlaroxFramework();
         $this->_alaroxFramework->setConteneur(new Conteneur());
-        $this->_alaroxFramework->genererConfigDepuisFichier($cheminVersFichierConfig);
+        $this->_alaroxFramework->genererConfigDepuisFichier($cheminVersFichierConfig, $cheminVersFichierRouteMap);
     }
 
     /**
