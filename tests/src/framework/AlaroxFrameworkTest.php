@@ -27,6 +27,14 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($conteneur, '_conteneur', $this->_framework);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetConteneurTypeErrone()
+    {
+        $this->_framework->setConteneur('conteneur');
+    }
+
     public function testSetConfigDepuisChemin()
     {
         $conteneur = $this->getMock('\AlaroxFramework\Conteneur', array('getConfig'));
@@ -34,6 +42,21 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
             ->method('getConfig')
             ->with('/path/to/fichier')
             ->will($this->returnValue($this->getMock('\AlaroxFramework\cfg\Config')));
+
+        $this->_framework->setConteneur($conteneur);
+
+        $this->_framework->genererConfigDepuisFichier('/path/to/fichier');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetConfigDepuisCheminTypeErrone()
+    {
+        $conteneur = $this->getMock('\AlaroxFramework\Conteneur', array('getConfig'));
+        $conteneur->expects($this->once())
+            ->method('getConfig')
+            ->will($this->returnValue('Problem'));
 
         $this->_framework->setConteneur($conteneur);
 
