@@ -26,4 +26,22 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $this->assertAttributeEquals($conteneur, '_conteneur', $this->_framework);
     }
+
+    public function testSetConfigDepuisChemin()
+    {
+        $conteneur = $this->getMock('\AlaroxFramework\Conteneur', array('getConfig'));
+        $conteneur->expects($this->once())
+            ->method('getConfig')
+            ->with('/path/to/fichier')
+            ->will($this->returnValue($this->getMock('\AlaroxFramework\cfg\Config')));
+
+        $this->_framework->setConteneur($conteneur);
+
+        $this->_framework->genererConfigDepuisFichier('/path/to/fichier');
+    }
+
+    public function testProcess()
+    {
+        $this->assertNull($this->_framework->process());
+    }
 }

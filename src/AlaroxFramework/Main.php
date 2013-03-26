@@ -8,10 +8,11 @@ class Main
      */
     private $_alaroxFramework;
 
-    public function __construct()
+    public function __construct($cheminVersFichierConfig)
     {
         $this->_alaroxFramework = new AlaroxFramework();
         $this->_alaroxFramework->setConteneur(new Conteneur());
+        $this->_alaroxFramework->genererConfigDepuisFichier($cheminVersFichierConfig);
     }
 
     public function run()
