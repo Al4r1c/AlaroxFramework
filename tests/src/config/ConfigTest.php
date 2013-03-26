@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Framework\Config;
+namespace Tests\Config;
 
 use AlaroxFramework\cfg\Config;
 
