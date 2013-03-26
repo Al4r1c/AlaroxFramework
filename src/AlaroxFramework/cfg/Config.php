@@ -30,11 +30,15 @@ class Config
      */
     public function recupererConfigDepuisFichier($fichier)
     {
-        $tabCfg = $fichier->loadFile();
+        if ($fichier->fileExist() === true) {
+            $tabCfg = $fichier->loadFile();
+        } else {
+            throw new \Exception(sprintf('Config file %s does not exist.', $fichier->getPathToFile()));
+        }
 
         foreach (self::$valeursMinimales as $uneValeurMinimale) {
             if (is_null($this->rechercheValeurTableauMultidim($uneValeurMinimale, $tabCfg))) {
-                throw new \Exception();
+                throw new \Exception(sprintf('Missing config key "%s".', $tabCfg));
             }
         }
 

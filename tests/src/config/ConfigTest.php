@@ -30,7 +30,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function setFakeCfg()
     {
-        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('loadFile'));
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier->expects($this->once())
+            ->method('fileExist')
+            ->will($this->returnValue(true));
+
         $fichier->expects($this->once())
             ->method('loadFile')
             ->will($this->returnValue(self::$cfgTest));
@@ -53,9 +57,26 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
+    public function testFichierConfigNexistePas()
+    {
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier->expects($this->once())
+            ->method('fileExist')
+            ->will($this->returnValue(false));
+
+        $this->_config->recupererConfigDepuisFichier($fichier);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
     public function testValeursMinimales()
     {
-        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('loadFile'));
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier->expects($this->once())
+            ->method('fileExist')
+            ->will($this->returnValue(true));
+
         $fichier->expects($this->once())
             ->method('loadFile')
             ->will($this->returnValue(array('Missing')));
@@ -76,7 +97,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testValeurNonTrouveeNull() {
+    public function testValeurNonTrouveeNull()
+    {
         $this->setFakeCfg();
 
         $this->assertNull($this->_config->getConfigValeur('nope'));
