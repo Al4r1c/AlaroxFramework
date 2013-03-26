@@ -3,20 +3,19 @@ namespace AlaroxFramework;
 
 class Main
 {
-    private $_config;
+    /**
+     * @var AlaroxFramework
+     */
+    private $_alaroxFramework;
 
-    public function getConfig()
+    public function __construct()
     {
-        return $this->_config;
+        $this->_alaroxFramework = new AlaroxFramework();
+        $this->_alaroxFramework->setConteneur(new Conteneur());
     }
 
-    public function setCheminFichierConfig($cheminVersFichierConfig)
+    public function run()
     {
-        /*$this->_config = new Config();
-        $this->_config->chargerConfigDepuisFichier($cheminVersFichierConfig);*/
-    }
-
-    public function run() {
-        return null;
+        return $this->_alaroxFramework->process();
     }
 }
