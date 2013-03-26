@@ -5,8 +5,14 @@ use AlaroxFileManager\FileManager\File;
 
 class Config
 {
+    /**
+     * @var array
+     */
     private $_tabConfiguration;
 
+    /**
+     * @var array
+     */
     private static $valeursMinimales = array('ControllerConfig',
         'TemplateConfig',
         'InternationalizationConfig',

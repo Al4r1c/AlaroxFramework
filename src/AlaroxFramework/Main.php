@@ -8,6 +8,9 @@ class Main
      */
     private $_alaroxFramework;
 
+    /**
+     * @param string $cheminVersFichierConfig
+     */
     public function __construct($cheminVersFichierConfig)
     {
         $this->_alaroxFramework = new AlaroxFramework();
@@ -15,6 +18,9 @@ class Main
         $this->_alaroxFramework->genererConfigDepuisFichier($cheminVersFichierConfig);
     }
 
+    /**
+     * @return string
+     */
     public function run()
     {
         return $this->_alaroxFramework->process();
