@@ -15,6 +15,7 @@ class AllTests
         $suite = new \PHPUnit_Framework_TestSuite('AlaroxFramework Tests');
 
         $suite->addTestSuite('Tests\Framework\AlaroxFrameworkTest');
+        $suite->addTestSuite('Tests\Config\ConfigTest');
 
         return $suite;
     }
