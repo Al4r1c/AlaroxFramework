@@ -1,4 +1,7 @@
 {
+	"config": {
+		"vendor-dir": "libraries"
+	},
 	"repositories": [
 		{
 			"type": "vcs",
@@ -16,10 +19,11 @@
 	"require": {
 		"alarox/AlaroxClassLoader": "dev-master",
 		"alarox/AlaroxFileManager": "dev-master",
-		"alarox/AlaroxXMLParser": "dev-master",
-		"pimple/pimple": "v1.0.2"
+		"alarox/AlaroxXMLParser": "dev-master"
 	},
-	"config": {
-		"vendor-dir": "libraries"
+	"autoload": {
+		"psr-0": {
+			"AlaroxFramework": "src/"
+		}
 	}
 }
