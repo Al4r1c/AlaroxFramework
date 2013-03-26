@@ -16,6 +16,7 @@ class AllTests
 
         $suite->addTestSuite('\Tests\Framework\AlaroxFrameworkTest');
         $suite->addTestSuite('\Tests\Config\ConfigTest');
+        $suite->addTestSuite('\Tests\Config\RouteMapTest');
 
         return $suite;
     }
