@@ -114,4 +114,25 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->_config->setRouteMap(5);
     }
+
+    public function testSetServer()
+    {
+        $server = $this->getMock('AlaroxFramework\cfg\Server', array('getUneVariableServeur'));
+        $server->expects($this->once())
+            ->method('getUneVariableServeur')
+            ->with('REQUEST_URI')
+            ->will($this->returnValue('/ctrl/uri'));
+
+        $this->_config->parseServer($server);
+
+        $this->assertEquals('/ctrl/uri', $this->_config->getConfigValeur('ControllerConfig.Uri'));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetServerTypeErrone()
+    {
+        $this->_config->parseServer(5);
+    }
 }

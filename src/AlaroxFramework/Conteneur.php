@@ -4,6 +4,7 @@ namespace AlaroxFramework;
 use AlaroxFileManager\AlaroxFile;
 use AlaroxFramework\cfg\Config;
 use AlaroxFramework\cfg\RouteMap;
+use AlaroxFramework\cfg\Server;
 
 class Conteneur
 {
@@ -18,6 +19,7 @@ class Conteneur
 
         $config = new Config();
         $config->recupererConfigDepuisFichier($alaroxFile->getFile($cheminVersFichier));
+        $config->parseServer($this->getServer());
 
         if (!empty($cheminVersRouteMap)) {
             $routeMap = new RouteMap();
@@ -26,5 +28,13 @@ class Conteneur
         }
 
         return $config;
+    }
+
+    public function getServer()
+    {
+        $server = new Server();
+        $server->setServeurVariables($_SERVER);
+
+        return $server;
     }
 }

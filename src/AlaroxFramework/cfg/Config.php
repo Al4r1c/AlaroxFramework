@@ -39,6 +39,19 @@ class Config
     }
 
     /**
+     * @param Server $server
+     * @throws \InvalidArgumentException
+     */
+    public function parseServer($server)
+    {
+        if (!$server instanceof Server) {
+            throw new \InvalidArgumentException('Expected Server.');
+        }
+
+        $this->_tabConfiguration['ControllerConfig']['Uri'] = $server->getUneVariableServeur('REQUEST_URI');
+    }
+
+    /**
      * @param File $fichier
      * @throws \Exception
      */
