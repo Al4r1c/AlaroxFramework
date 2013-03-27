@@ -11,7 +11,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     static $cfgTest = array(
         'ControllerConfig' => array(
             'Default_controller' => 'ctrldef',
-            'RestServer_url' => 'http://addr.com',
+            'RestServer' => array(
+                'Url' => 'http://addr.com',
+                'Username' => 'Username',
+                'Key' => 'MaClef'
+            ),
             'RouteMap' => true
         ),
         'TemplateConfig' => array(
