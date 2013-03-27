@@ -20,6 +20,7 @@ class Config
         'ControllerConfig.RestServer.Url',
         'ControllerConfig.RestServer.Username',
         'ControllerConfig.RestServer.Key',
+        'ControllerConfig.RestServer.Format',
         'ControllerConfig.RouteMap',
         'TemplateConfig.Name',
         'TemplateConfig.Media_url',

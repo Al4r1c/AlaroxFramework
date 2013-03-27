@@ -14,7 +14,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'RestServer' => array(
                 'Url' => 'http://addr.com',
                 'Username' => 'Username',
-                'Key' => 'MaClef'
+                'Key' => 'MaClef',
+                'Format' => 'json'
             ),
             'RouteMap' => true
         ),
