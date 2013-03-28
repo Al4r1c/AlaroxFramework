@@ -1,6 +1,8 @@
 <?php
 namespace AlaroxFramework;
 
+include_once(__DIR__ . '../../functions/functions.php');
+
 class Main
 {
     /**
