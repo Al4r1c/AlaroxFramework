@@ -24,7 +24,7 @@ class Curl
     }
 
     /**
-     * @param RestClient $restClient
+     * @param RestInfos $restClient
      * @return mixed
      */
     private function curlExec($restClient)
@@ -61,7 +61,7 @@ class Curl
     }
 
     /**
-     * @param RestClient $restClient
+     * @param RestInfos $restClient
      * @return ObjetReponse
      * @throws \InvalidArgumentException
      */
@@ -113,7 +113,7 @@ class Curl
     }
 
     /**
-     * @param RestClient $restClient
+     * @param RestInfos $restClient
      * @throws \Exception
      */
     private function verifierValide($restClient)
