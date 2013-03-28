@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Controller;
+namespace Tests\lib;
 
 use AlaroxFramework\Utils\ObjetReponse;
 

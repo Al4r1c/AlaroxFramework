@@ -17,6 +17,7 @@ class ConfigTests
         $suite = new \PHPUnit_Framework_TestSuite('TestSuite');
 
         $suite->addTestSuite('\Tests\Config\ConfigTest');
+        $suite->addTestSuite('\Tests\Config\RestInfosTest');
         $suite->addTestSuite('\Tests\Config\RouteMapTest');
         $suite->addTestSuite('\Tests\Config\ServerTest');
 

@@ -1,6 +1,7 @@
 <?php
-namespace AlaroxFramework\Controller;
+namespace AlaroxFramework\cfg;
 
+use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\Utils\Tools;
 
 class RestInfos
@@ -9,16 +10,6 @@ class RestInfos
      * @var string
      */
     private $_url;
-
-    /**
-     * @var string
-     */
-    private $_methodeHttp;
-
-    /**
-     * @var array
-     */
-    private $_body;
 
     /**
      * @var string
@@ -35,15 +26,12 @@ class RestInfos
      */
     private $_formatEnvoi;
 
-    private static $_methodesHttpAutorisees = array('GET', 'POST', 'PUT', 'DELETE');
+
 
     /**
-     * @return array
+     * @var array
      */
-    public function getBody()
-    {
-        return $this->_body;
-    }
+    private static $valeursMinimales = array('Url', 'Format', 'Username', 'PassKey');
 
     /**
      * @return string
@@ -51,14 +39,6 @@ class RestInfos
     public function getFormatEnvoi()
     {
         return $this->_formatEnvoi;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMethodeHttp()
-    {
-        return $this->_methodeHttp;
     }
 
     /**
@@ -86,19 +66,6 @@ class RestInfos
     }
 
     /**
-     * @param array $body
-     * @throws \InvalidArgumentException
-     */
-    public function setBody($body)
-    {
-        if (!is_array($body)) {
-            throw new \InvalidArgumentException('Expected array for body data.');
-        }
-
-        $this->_body = $body;
-    }
-
-    /**
      * @param string $formatEnvoi
      * @throws \InvalidArgumentException
      */
@@ -109,19 +76,6 @@ class RestInfos
         }
 
         $this->_formatEnvoi = $formatEnvoi;
-    }
-
-    /**
-     * @param string $methodeHttp
-     * @throws \InvalidArgumentException
-     */
-    public function setMethodeHttp($methodeHttp)
-    {
-        if (!in_array($methodeHttp, self::$_methodesHttpAutorisees)) {
-            throw new \InvalidArgumentException(sprintf('Invalid HTTP method %s', $methodeHttp));
-        }
-
-        $this->_methodeHttp = $methodeHttp;
     }
 
     /**
@@ -161,5 +115,34 @@ class RestInfos
         }
 
         $this->_username = $username;
+    }
+
+    /**
+     * @param File $fichierRestInfos
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public function setRestInfosDepuisFichier($fichierRestInfos)
+    {
+        if (!$fichierRestInfos instanceof File) {
+            throw new \InvalidArgumentException('Expected File.');
+        }
+
+        if ($fichierRestInfos->fileExist() === true) {
+            $file = $fichierRestInfos->loadFile();
+
+            foreach (self::$valeursMinimales as $uneValeurMinimale) {
+                if (!array_key_exists($uneValeurMinimale, $file)) {
+                    throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
+                }
+            }
+
+            $this->setUrl($file['Url']);
+            $this->setFormatEnvoi($file['Format']);
+            $this->setUsername($file['Username']);
+            $this->setPassword($file['PassKey']);
+        } else {
+            throw new \Exception(sprintf('RestInfos file "%s" does not exist.', $fichierRestInfos->getPathToFile()));
+        }
     }
 }
