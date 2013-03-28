@@ -2,7 +2,9 @@
 namespace AlaroxFramework\Controller;
 
 use AlaroxFramework\Utils\ObjetReponse;
+use AlaroxFramework\Utils\ObjetRequete;
 use AlaroxFramework\Utils\Tools;
+use AlaroxFramework\cfg\RestInfos;
 
 class Curl
 {
@@ -24,23 +26,25 @@ class Curl
     }
 
     /**
-     * @param RestInfos $restClient
+     * @param RestInfos $restInfos
      * @return mixed
      */
-    private function curlExec($restClient)
+    private function curlExec($restInfos)
     {
-        if (!is_null($restClient->getUsername()) && !is_null($restClient->getPassword())) {
+        if (!is_null($restInfos->getUsername()) && !is_null($restInfos->getPassword())) {
             curl_setopt($this->_curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-            curl_setopt($this->_curl, CURLOPT_USERPWD, $restClient->getUsername() . ':' . $restClient->getPassword());
+            curl_setopt(
+                $this->_curl, CURLOPT_USERPWD, $restInfos->getUsername() . ':' . $restInfos->getPassword()
+            );
         }
 
-        if (!is_null($restClient->getFormatEnvoi())) {
-            $formatMime = Tools::getMimePourFormat($restClient->getFormatEnvoi());
+        if (!is_null($restInfos->getFormatEnvoi())) {
+            $formatMime = Tools::getMimePourFormat($restInfos->getFormatEnvoi());
         } else {
             $formatMime = 'text/plain';
         }
 
-        curl_setopt($this->_curl, CURLOPT_URL, $restClient->getUrl());
+        curl_setopt($this->_curl, CURLOPT_URL, $restInfos->getUrl());
         curl_setopt(
             $this->_curl, CURLOPT_HTTPHEADER, array(
                 'Accept: ' . $formatMime,
@@ -61,24 +65,23 @@ class Curl
     }
 
     /**
-     * @param RestInfos $restClient
-     * @return ObjetReponse
+     * @param RestInfos $restInfos
+     * @param ObjetRequete $objetRequete
      * @throws \InvalidArgumentException
+     * @return ObjetReponse
      */
-    public function executer($restClient)
+    public function executer($restInfos, $objetRequete)
     {
-        $this->verifierValide($restClient);
-
-        switch ($methodeHttp = strtoupper($restClient->getMethodeHttp())) {
+        switch ($methodeHttp = strtoupper($objetRequete->getMethodeHttp())) {
             case 'GET':
-                if (count($restClient->getBody()) > 0) {
-                    $donnees = $this->buildPostBody($restClient->getBody());
+                if (count($objetRequete->getBody()) > 0) {
+                    $donnees = $this->buildPostBody($objetRequete->getBody());
 
-                    $restClient->setUrl($restClient->getUrl() . '?' . $donnees);
+                    $restInfos->setUrl($restInfos->getUrl() . '?' . $donnees);
                 }
                 break;
             case 'POST':
-                $donnees = $this->buildPostBody($restClient->getBody(), $restClient->getFormatEnvoi());
+                $donnees = $this->buildPostBody($objetRequete->getBody(), $restInfos->getFormatEnvoi());
 
                 curl_setopt($this->_curl, CURLOPT_POSTFIELDS, $donnees);
                 curl_setopt($this->_curl, CURLOPT_POST, true);
@@ -86,7 +89,8 @@ class Curl
             case 'PUT':
                 $this->_file = tmpFile();
                 fwrite(
-                    $this->_file, $donnees = $this->buildPostBody($restClient->getBody(), $restClient->getFormatEnvoi())
+                    $this->_file,
+                    $donnees = $this->buildPostBody($objetRequete->getBody(), $restInfos->getFormatEnvoi())
                 );
                 rewind($this->_file);
 
@@ -101,7 +105,7 @@ class Curl
                 throw new \InvalidArgumentException('Unsupported HTTP method "' . $methodeHttp . '".');
         }
 
-        $responseCurl = $this->curlExec($restClient);
+        $responseCurl = $this->curlExec($restInfos);
         $reponseInfo = curl_getinfo($this->_curl);
 
         if (($pos = strpos($contentType = $reponseInfo['content_type'], ';')) !== false) {
@@ -110,21 +114,6 @@ class Curl
 
         return
             new ObjetReponse($reponseInfo['http_code'], $responseCurl, $contentType);
-    }
-
-    /**
-     * @param RestInfos $restClient
-     * @throws \Exception
-     */
-    private function verifierValide($restClient)
-    {
-        if (is_null($restClient->getUrl())) {
-            throw new \Exception('Can\'t execute curl: missing server url.');
-        }
-
-        if (is_null($restClient->getMethodeHttp())) {
-            throw new \Exception('Can\'t execute curl: missing HTTP verb..');
-        }
     }
 
     /**
