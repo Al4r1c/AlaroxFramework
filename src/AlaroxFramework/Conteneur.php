@@ -4,6 +4,7 @@ namespace AlaroxFramework;
 use AlaroxFileManager\AlaroxFile;
 use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\cfg\Config;
+use AlaroxFramework\cfg\RestInfos;
 use AlaroxFramework\cfg\RouteMap;
 use AlaroxFramework\cfg\Server;
 
@@ -22,13 +23,15 @@ class Conteneur
 
     /**
      * @param string $cheminVersFichierConfig
+     * @param string $cheminVersRestInfos
      * @param string $cheminVersRouteMap
      * @return Config
      */
-    public function getConfig($cheminVersFichierConfig, $cheminVersRouteMap)
+    public function getConfig($cheminVersFichierConfig, $cheminVersRestInfos, $cheminVersRouteMap)
     {
         $config = new Config();
         $config->recupererConfigDepuisFichier($this->getFile($cheminVersFichierConfig));
+        $config->setRestInfos($this->getRestInfos($cheminVersRestInfos));
         $config->parseServer($this->getServer());
 
         if (!empty($cheminVersRouteMap)) {
@@ -59,5 +62,13 @@ class Conteneur
         $server->setServeurVariables($_SERVER);
 
         return $server;
+    }
+
+    private function getRestInfos($cheminVersRestInfos)
+    {
+        $routeMap = new RestInfos();
+        $routeMap->setRestInfosDepuisFichier($this->getFile($cheminVersRestInfos));
+
+        return $routeMap;
     }
 }

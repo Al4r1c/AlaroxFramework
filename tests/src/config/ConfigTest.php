@@ -8,7 +8,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     /** @var Config */
     private $_config;
 
-    static $cfgTest = array(
+    protected static $cfgTest = array(
         'ControllerConfig' => array(
             'Default_controller' => 'ctrldef',
             'RestServer' => array(
@@ -139,5 +139,22 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testSetServerTypeErrone()
     {
         $this->_config->parseServer(5);
+    }
+
+    public function testSetRestInfos()
+    {
+        $routeMap = $this->getMock('AlaroxFramework\cfg\RestInfos');
+
+        $this->_config->setRestInfos($routeMap);
+
+        $this->assertEquals($routeMap, $this->_config->getConfigValeur('ControllerConfig.RestServer'));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetRestInfosTypeErrone()
+    {
+        $this->_config->setRestInfos(5);
     }
 }

@@ -17,10 +17,6 @@ class Config
         'TemplateConfig',
         'InternationalizationConfig',
         'ControllerConfig.Default_controller',
-        'ControllerConfig.RestServer.Url',
-        'ControllerConfig.RestServer.Username',
-        'ControllerConfig.RestServer.Key',
-        'ControllerConfig.RestServer.Format',
         'ControllerConfig.RouteMap',
         'TemplateConfig.Name',
         'TemplateConfig.Media_url',
@@ -39,6 +35,19 @@ class Config
         }
 
         $this->_tabConfiguration['ControllerConfig']['RouteMapFile'] = $routeMap;
+    }
+
+    /**
+     * @param RestInfos $restInfos
+     * @throws \InvalidArgumentException
+     */
+    public function setRestInfos($restInfos)
+    {
+        if (!$restInfos instanceof RestInfos) {
+            throw new \InvalidArgumentException('Expected RestInfos.');
+        }
+
+        $this->_tabConfiguration['ControllerConfig']['RestServer'] = $restInfos;
     }
 
     /**
