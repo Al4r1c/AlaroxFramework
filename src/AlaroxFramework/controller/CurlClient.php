@@ -6,7 +6,7 @@ use AlaroxFramework\Utils\ObjetRequete;
 use AlaroxFramework\Utils\Tools;
 use AlaroxFramework\cfg\RestInfos;
 
-class Curl
+class CurlClient
 {
     /**
      * @var resource
