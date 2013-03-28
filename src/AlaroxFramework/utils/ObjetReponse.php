@@ -11,19 +11,20 @@ class ObjetReponse
     private $_statusHttp;
 
     /**
-     * @var array
+     * @var string
      */
     private $_donneesReponse;
 
     /**
      * @var string
      */
-    private $_format;
+    private $_formatMime;
 
-    public function __construct($statusHttp = 200, $donneesReponse = array())
+    public function __construct($statusHttp = 200, $donneesReponse = '', $format = 'text/plain')
     {
         $this->setStatusHttp($statusHttp);
         $this->setDonneesReponse($donneesReponse);
+        $this->setFormatMime($format);
     }
 
     /**
@@ -35,7 +36,7 @@ class ObjetReponse
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getDonneesReponse()
     {
@@ -45,9 +46,9 @@ class ObjetReponse
     /**
      * @return string
      */
-    public function getFormat()
+    public function getFormatMime()
     {
-        return $this->_format;
+        return $this->_formatMime;
     }
 
     /**
@@ -69,13 +70,13 @@ class ObjetReponse
     }
 
     /**
-     * @param array $donneesReponse
+     * @param string $donneesReponse
      * @throws \InvalidArgumentException
      */
     public function setDonneesReponse($donneesReponse)
     {
-        if (!is_array($donneesReponse)) {
-            throw new \InvalidArgumentException('Expected array as data.');
+        if (!is_string($donneesReponse)) {
+            throw new \InvalidArgumentException('Expected string as data.');
         }
 
         $this->_donneesReponse = $donneesReponse;
@@ -85,12 +86,12 @@ class ObjetReponse
      * @param string $format
      * @throws \Exception
      */
-    public function setFormat($format)
+    public function setFormatMime($format)
     {
-        if (!Tools::isValideFormat($format)) {
+        if (!Tools::isValidMime($format)) {
             throw new \Exception(sprintf('Invalid format "%s".', $format));
         }
 
-        $this->_format = $format;
+        $this->_formatMime = $format;
     }
 }

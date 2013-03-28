@@ -38,8 +38,8 @@ class ObjetReponseTest extends \PHPUnit_Framework_TestCase
 
     public function testSetContenu()
     {
-        $this->_objetReponse->setDonneesReponse(array('param' => 'variable', 'param2' => 'var2'));
-        $this->assertCount(2, $this->_objetReponse->getDonneesReponse());
+        $this->_objetReponse->setDonneesReponse('OK');
+        $this->assertEquals('OK', $this->_objetReponse->getDonneesReponse());
     }
 
     /**
@@ -47,14 +47,14 @@ class ObjetReponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testContenuInvalide()
     {
-        $this->_objetReponse->setDonneesReponse('INVALID');
+        $this->_objetReponse->setDonneesReponse(array());
     }
 
     public function testFormat()
     {
-        $this->_objetReponse->setFormat('json');
+        $this->_objetReponse->setFormatMime('application/json');
 
-        $this->assertEquals('json', $this->_objetReponse->getFormat());
+        $this->assertEquals('application/json', $this->_objetReponse->getFormatMime());
     }
 
     /**
@@ -62,6 +62,6 @@ class ObjetReponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testFormatErrone()
     {
-        $this->_objetReponse->setFormat('fake');
+        $this->_objetReponse->setFormatMime('application/fake');
     }
 }

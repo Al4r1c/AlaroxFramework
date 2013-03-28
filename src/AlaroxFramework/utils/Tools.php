@@ -23,6 +23,10 @@ class Tools
         );
     }
 
+    /**
+     * @param string $format
+     * @return string|null
+     */
     public static function getMimePourFormat($format)
     {
         if (self::isValideFormat($format)) {
@@ -32,5 +36,17 @@ class Tools
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param string $mime
+     * @return bool
+     */
+    public static function isValidMime($mime)
+    {
+        return in_array(
+            strtolower($mime),
+            array_map('strtolower', include(__DIR__ . '/const/mimes.php'))
+        );
     }
 }
