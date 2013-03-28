@@ -141,7 +141,7 @@ class Curl
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function buildPostBody($tableauDonnees, $format = 'text')
+    private function buildPostBody($tableauDonnees, $format = 'text')
     {
         if (!is_array($tableauDonnees)) {
             throw new \InvalidArgumentException('Invalid data input for postBody. Array expected.');
