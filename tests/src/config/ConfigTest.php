@@ -124,7 +124,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ->with('REQUEST_URI')
             ->will($this->returnValue('/ctrl/uri'));
 
-        $this->_config->parseServer($server);
+        $this->_config->recupererUriDepuisServer($server);
 
         $this->assertEquals('/ctrl/uri', $this->_config->getConfigValeur('ControllerConfig.Uri'));
     }
@@ -134,7 +134,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetServerTypeErrone()
     {
-        $this->_config->parseServer(5);
+        $this->_config->recupererUriDepuisServer(5);
     }
 
     public function testSetRestInfos()

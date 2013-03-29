@@ -58,7 +58,7 @@ class Config
      * @param Server $server
      * @throws \InvalidArgumentException
      */
-    public function parseServer($server)
+    public function recupererUriDepuisServer($server)
     {
         if (!$server instanceof Server) {
             throw new \InvalidArgumentException('Expected parameter 1 server to be Server.');

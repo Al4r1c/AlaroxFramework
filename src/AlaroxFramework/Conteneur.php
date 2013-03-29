@@ -30,7 +30,7 @@ class Conteneur
     {
         $config = new Config();
         $config->recupererConfigDepuisFichier($this->getFile($cheminVersFichierConfig));
-        $config->parseServer($this->getServer());
+        $config->recupererUriDepuisServer($this->getServer());
 
         if (!empty($cheminVersRouteMap)) {
             $config->setRouteMap($this->getRoute($cheminVersRouteMap));
