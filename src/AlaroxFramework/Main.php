@@ -12,16 +12,13 @@ class Main
 
     /**
      * @param string $cheminVersFichierConfig
-     * @param string $cheminVersFichierRestInfos
      * @param string $cheminVersFichierRouteMap
      */
-    public function __construct($cheminVersFichierConfig, $cheminVersFichierRestInfos, $cheminVersFichierRouteMap = '')
+    public function __construct($cheminVersFichierConfig, $cheminVersFichierRouteMap)
     {
         $this->_alaroxFramework = new AlaroxFramework();
         $this->_alaroxFramework->setConteneur(new Conteneur());
-        $this->_alaroxFramework->genererConfigDepuisFichiers(
-            $cheminVersFichierConfig, $cheminVersFichierRestInfos, $cheminVersFichierRouteMap
-        );
+        $this->_alaroxFramework->genererConfigDepuisFichiers($cheminVersFichierConfig, $cheminVersFichierRouteMap);
     }
 
     /**

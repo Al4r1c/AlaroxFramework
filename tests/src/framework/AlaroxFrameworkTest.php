@@ -40,12 +40,12 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $conteneur = $this->getMock('\AlaroxFramework\Conteneur', array('getConfig'));
         $conteneur->expects($this->once())
             ->method('getConfig')
-            ->with('/path/to/fichier', '/path/to/restinfos', '/path/to/routemap')
+            ->with('/path/to/fichier', '/path/to/routemap')
             ->will($this->returnValue($this->getMock('\AlaroxFramework\cfg\Config')));
 
         $this->_framework->setConteneur($conteneur);
 
-        $this->_framework->genererConfigDepuisFichiers('/path/to/fichier', '/path/to/restinfos', '/path/to/routemap');
+        $this->_framework->genererConfigDepuisFichiers('/path/to/fichier', '/path/to/routemap');
     }
 
     /**

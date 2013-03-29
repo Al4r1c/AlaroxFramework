@@ -13,6 +13,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'Name' => 'WebName',
             'Media_url' => 'http://media.addr.com'
         ),
+        'RestServer' => array(
+            'Url' => 'http://google.fr/',
+            'Format' => 'json',
+            'Username' => 'user',
+            'PassKey' => 'key'
+        ),
         'InternationalizationConfig' => array(
             'Enabled' => true,
             'Default_language' => 'fr',
@@ -47,7 +53,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->setFakeCfg(self::$cfgTest);
 
-        $this->assertAttributeEquals(self::$cfgTest, '_tabConfiguration', $this->_config);
+        $this->assertAttributeCount(4, '_tabConfiguration', $this->_config);
     }
 
     /**

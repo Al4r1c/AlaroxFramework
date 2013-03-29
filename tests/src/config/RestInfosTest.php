@@ -77,25 +77,14 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
 
     public function testRestInfosDepuisFichier()
     {
-        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
-        $fichier->expects($this->once())
-            ->method('fileExist')
-            ->will($this->returnValue(true));
-
-        $fichier->expects($this->once())
-            ->method('loadFile')
-            ->will(
-                $this->returnValue(
-                    array(
-                        'Url' => 'http://Server.com',
-                        'Format' => 'json',
-                        'Username' => 'username',
-                        'PassKey' => 'password'
-                    )
-                )
-            );
-
-        $this->_restInfos->setRestInfosDepuisFichier($fichier);
+        $this->_restInfos->parseRestInfos(
+            array(
+                'Url' => 'http://Server.com',
+                'Format' => 'json',
+                'Username' => 'username',
+                'PassKey' => 'password'
+            )
+        );
 
         $this->assertEquals('http://Server.com', $this->_restInfos->getUrl());
     }
@@ -105,29 +94,7 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
      */
     public function testRestInfosDepuisFichierMissingKey()
     {
-        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
-        $fichier->expects($this->once())
-            ->method('fileExist')
-            ->will($this->returnValue(true));
-
-        $fichier->expects($this->once())
-            ->method('loadFile')
-            ->will($this->returnValue(array()));
-
-        $this->_restInfos->setRestInfosDepuisFichier($fichier);
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testSetRouteMapDepuisFichierInexistant()
-    {
-        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
-        $fichier->expects($this->once())
-            ->method('fileExist')
-            ->will($this->returnValue(false));
-
-        $this->_restInfos->setRestInfosDepuisFichier($fichier);
+        $this->_restInfos->parseRestInfos(array());
     }
 
     /**
@@ -135,6 +102,6 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetRouteMapTypErrone()
     {
-        $this->_restInfos->setRestInfosDepuisFichier(5);
+        $this->_restInfos->parseRestInfos(5);
     }
 }

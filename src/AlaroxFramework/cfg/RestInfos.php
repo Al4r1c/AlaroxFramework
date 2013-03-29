@@ -1,7 +1,6 @@
 <?php
 namespace AlaroxFramework\cfg;
 
-use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\Utils\Tools;
 
 class RestInfos
@@ -116,31 +115,25 @@ class RestInfos
     }
 
     /**
-     * @param File $fichierRestInfos
+     * @param array $tabRestInfos
      * @throws \InvalidArgumentException
      * @throws \Exception
      */
-    public function setRestInfosDepuisFichier($fichierRestInfos)
+    public function parseRestInfos($tabRestInfos)
     {
-        if (!$fichierRestInfos instanceof File) {
-            throw new \InvalidArgumentException('Expected File.');
+        if (!is_array($tabRestInfos)) {
+            throw new \InvalidArgumentException('Expected parameter 1 tabRestInfos to be array.');
         }
 
-        if ($fichierRestInfos->fileExist() === true) {
-            $file = $fichierRestInfos->loadFile();
-
-            foreach (self::$valeursMinimales as $uneValeurMinimale) {
-                if (!array_key_exists($uneValeurMinimale, $file)) {
-                    throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
-                }
+        foreach (self::$valeursMinimales as $uneValeurMinimale) {
+            if (!array_key_exists($uneValeurMinimale, $tabRestInfos)) {
+                throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
             }
-
-            $this->setUrl($file['Url']);
-            $this->setFormatEnvoi($file['Format']);
-            $this->setUsername($file['Username']);
-            $this->setPassword($file['PassKey']);
-        } else {
-            throw new \Exception(sprintf('RestInfos file "%s" does not exist.', $fichierRestInfos->getPathToFile()));
         }
+
+        $this->setUrl($tabRestInfos['Url']);
+        $this->setFormatEnvoi($tabRestInfos['Format']);
+        $this->setUsername($tabRestInfos['Username']);
+        $this->setPassword($tabRestInfos['PassKey']);
     }
 }

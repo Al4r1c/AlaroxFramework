@@ -15,6 +15,11 @@ class Config
      * @var array
      */
     private static $valeursMinimales = array(
+        'RestServer',
+        'RestServer.Url',
+        'RestServer.Format',
+        'RestServer.Username',
+        'RestServer.PassKey',
         'TemplateConfig',
         'InternationalizationConfig',
         'TemplateConfig.Name',
@@ -81,6 +86,10 @@ class Config
         }
 
         $this->_tabConfiguration = array_merge($this->_tabConfiguration, $tabCfg);
+
+        $restInfos = new RestInfos();
+        $restInfos->parseRestInfos($this->_tabConfiguration['RestServer']);
+        $this->setRestInfos($restInfos);
     }
 
     /**
