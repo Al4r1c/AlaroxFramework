@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Config;
 
-use AlaroxFramework\cfg\RouteMap;
+use AlaroxFramework\cfg\route\RouteMap;
 
 class RouteMapTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,7 +17,7 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
 
     public function testInstance()
     {
-        $this->assertInstanceOf('\AlaroxFramework\cfg\RouteMap', $this->_routeMap);
+        $this->assertInstanceOf('\AlaroxFramework\cfg\route\RouteMap', $this->_routeMap);
     }
 
     public function testSetRouteMapDepuisFichier()

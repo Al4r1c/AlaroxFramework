@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\cfg;
+namespace AlaroxFramework\cfg\route;
 
 use AlaroxFileManager\FileManager\File;
 
