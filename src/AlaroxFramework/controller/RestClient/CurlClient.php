@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\Controller;
+namespace AlaroxFramework\controller\restclient;
 
 use AlaroxFramework\Utils\ObjetReponse;
 use AlaroxFramework\Utils\ObjetRequete;

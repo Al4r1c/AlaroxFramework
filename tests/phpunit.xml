@@ -11,7 +11,7 @@
 			<exclude>
 				<file>../src/AlaroxFramework/Conteneur.php</file>
 				<file>../src/AlaroxFramework/Main.php</file>
-				<file>../src/AlaroxFramework/controller/Curl.php</file>
+				<file>../src/AlaroxFramework/controller/restclient/CurlClient.php</file>
 			</exclude>
 		</whitelist>
 	</filter>

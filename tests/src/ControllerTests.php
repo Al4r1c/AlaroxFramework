@@ -16,6 +16,8 @@ class ControllerTests
     {
         $suite = new \PHPUnit_Framework_TestSuite('TestSuite');
 
+        $suite->addTestSuite('\Tests\Controller\RestClientTest');
+
         return $suite;
     }
 }
