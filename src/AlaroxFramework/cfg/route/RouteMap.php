@@ -6,16 +6,59 @@ use AlaroxFileManager\FileManager\File;
 class RouteMap
 {
     /**
+     * @var Route[]
+     */
+    private $_routes = array();
+
+    /**
      * @var array
      */
-    private $_routeMap;
+    private $_staticAliases;
+
+    /**
+     * @var array
+     */
+    private static $valeursMinimales = array('RouteMap', 'Static');
+
+    /**
+     * @return Route[]
+     */
+    public function getRoutes()
+    {
+        return $this->_routes;
+    }
 
     /**
      * @return array
      */
-    public function getRouteMap()
+    public function getStaticAliases()
     {
-        return $this->_routeMap;
+        return $this->_staticAliases;
+    }
+
+    /**
+     * @param Route $route
+     * @throws \InvalidArgumentException
+     */
+    public function ajouterRoute($route)
+    {
+        if (!$route instanceof Route) {
+            throw new \InvalidArgumentException('Expected parameter 1 route to be Route.');
+        }
+
+        $this->_routes[] = $route;
+    }
+
+    /**
+     * @param array $staticAliases
+     */
+    public function setStaticAliases($staticAliases)
+    {
+        if (!is_array($staticAliases)) {
+            throw new \InvalidArgumentException('Expected parameter 1 staticAliases to be array.');
+        }
+
+        $this->_staticAliases = $staticAliases;
     }
 
     /**
@@ -29,10 +72,29 @@ class RouteMap
             throw new \InvalidArgumentException('Expected File.');
         }
 
-        if ($fichierRouteMap->fileExist() === true) {
-            $this->_routeMap = $fichierRouteMap->loadFile();
-        } else {
+        if ($fichierRouteMap->fileExist() === false) {
             throw new \Exception(sprintf('Config file %s does not exist.', $fichierRouteMap->getPathToFile()));
         }
+
+        $routeMap = $fichierRouteMap->loadFile();
+
+        foreach (self::$valeursMinimales as $uneValeurMinimale) {
+            if (!array_key_exists($uneValeurMinimale, $routeMap)) {
+                throw new \Exception(sprintf('Missing route map key "%s".', $uneValeurMinimale));
+            }
+        }
+
+        foreach ($routeMap['RouteMap'] as $uri => $uneRoute) {
+            $route = new Route();
+            $route->setUri($uri);
+            $route->setController($uneRoute['controller']);
+            $route->setPattern($uneRoute['pattern']);
+            $route->setDefaultAction($uneRoute['defaultAction']);
+            $route->setMapping($uneRoute['mapping']);
+
+            $this->ajouterRoute($route);
+        }
+
+        $this->setStaticAliases($routeMap['Static']);
     }
 }

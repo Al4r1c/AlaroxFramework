@@ -26,8 +26,6 @@ class RestInfos
      */
     private $_formatEnvoi;
 
-
-
     /**
      * @var array
      */

@@ -1,6 +1,7 @@
 <?php
 namespace Tests\Config;
 
+use AlaroxFramework\cfg\route\Route;
 use AlaroxFramework\cfg\route\RouteMap;
 
 class RouteMapTest extends \PHPUnit_Framework_TestCase
@@ -20,6 +21,38 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\AlaroxFramework\cfg\route\RouteMap', $this->_routeMap);
     }
 
+    public function testAjouterUneRoute()
+    {
+        $route = new Route();
+
+        $this->_routeMap->ajouterRoute($route);
+
+        $this->assertContains($route, $this->_routeMap->getRoutes());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAjouterUneRouteTestType()
+    {
+        $this->_routeMap->ajouterRoute(50);
+    }
+
+    public function testSetStaticAliases()
+    {
+        $this->_routeMap->setStaticAliases(array('static'));
+
+        $this->assertEquals(array('static'), $this->_routeMap->getStaticAliases());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetStaticAliasesArray()
+    {
+        $this->_routeMap->setStaticAliases('exception');
+    }
+
     public function testSetRouteMapDepuisFichier()
     {
         $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
@@ -29,11 +62,24 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
 
         $fichier->expects($this->once())
             ->method('loadFile')
-            ->will($this->returnValue(array('route1' => 'ctrl1')));
+            ->will(
+                $this->returnValue(
+                    array('RouteMap' => array(
+                        'pattern' => array(
+                            'controller' => 'ctrl',
+                            'pattern' => 'pattern',
+                            'defaultAction' => 'defAct',
+                            'mapping' => array())
+                    ),
+                        'Static' => array('statik'))
+                )
+            );
 
         $this->_routeMap->setRouteMapDepuisFichier($fichier);
 
-        $this->assertEquals(array('route1' => 'ctrl1'), $this->_routeMap->getRouteMap());
+        $this->assertCount(1, $this->_routeMap->getRoutes());
+        $this->assertContainsOnlyInstancesOf('\AlaroxFramework\cfg\route\Route', $this->_routeMap->getRoutes());
+        $this->assertEquals(array('statik'), $this->_routeMap->getStaticAliases());
     }
 
     /**
@@ -50,9 +96,26 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Exception
+     */
+    public function testSetRouteMapMissingKey()
+    {
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier->expects($this->once())
+            ->method('fileExist')
+            ->will($this->returnValue(true));
+
+        $fichier->expects($this->once())
+            ->method('loadFile')
+            ->will($this->returnValue(array('Static' => array())));
+
+        $this->_routeMap->setRouteMapDepuisFichier($fichier);
+    }
+
+    /**
      * @expectedException \InvalidArgumentException
      */
-    public function testSetRouteMapTypErrone()
+    public function testSetRouteMapTypeErrone()
     {
         $this->_routeMap->setRouteMapDepuisFichier(array());
     }
