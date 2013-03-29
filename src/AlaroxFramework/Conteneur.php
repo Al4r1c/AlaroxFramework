@@ -5,7 +5,7 @@ use AlaroxFileManager\AlaroxFile;
 use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\cfg\Config;
 use AlaroxFramework\cfg\RestInfos;
-use AlaroxFramework\cfg\RouteMap;
+use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\cfg\Server;
 
 class Conteneur
