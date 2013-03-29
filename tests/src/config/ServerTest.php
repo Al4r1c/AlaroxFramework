@@ -1,5 +1,5 @@
 <?php
-namespace Tests\ServeurTests\Requete;
+namespace Tests\Config;
 
 use AlaroxFramework\cfg\Server;
 
