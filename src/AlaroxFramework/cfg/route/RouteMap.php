@@ -6,6 +6,11 @@ use AlaroxFileManager\FileManager\File;
 class RouteMap
 {
     /**
+     * @var string
+     */
+    private $_controlerParDefaut;
+
+    /**
      * @var Route[]
      */
     private $_routes = array();
@@ -18,7 +23,15 @@ class RouteMap
     /**
      * @var array
      */
-    private static $valeursMinimales = array('RouteMap', 'Static');
+    private static $valeursMinimales = array('Default_controller', 'RouteMap', 'Static');
+
+    /**
+     * @return string
+     */
+    public function getControlerParDefaut()
+    {
+        return $this->_controlerParDefaut;
+    }
 
     /**
      * @return Route[]
@@ -37,6 +50,14 @@ class RouteMap
     }
 
     /**
+     * @param string $controleurParDefaut
+     */
+    public function setControlerParDefaut($controleurParDefaut)
+    {
+        $this->_controlerParDefaut = $controleurParDefaut;
+    }
+
+    /**
      * @param Route $route
      * @throws \InvalidArgumentException
      */
@@ -51,6 +72,7 @@ class RouteMap
 
     /**
      * @param array $staticAliases
+     * @throws \InvalidArgumentException
      */
     public function setStaticAliases($staticAliases)
     {
@@ -95,6 +117,7 @@ class RouteMap
             $this->ajouterRoute($route);
         }
 
+        $this->setControlerParDefaut($routeMap['Default_controller']);
         $this->setStaticAliases($routeMap['Static']);
     }
 }

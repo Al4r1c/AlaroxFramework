@@ -53,6 +53,13 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
         $this->_routeMap->setStaticAliases('exception');
     }
 
+    public function testSetControleurDefaut()
+    {
+        $this->_routeMap->setControlerParDefaut('controlleurNom');
+
+        $this->assertEquals('controlleurNom', $this->_routeMap->getControlerParDefaut());
+    }
+
     public function testSetRouteMapDepuisFichier()
     {
         $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
@@ -64,13 +71,14 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
             ->method('loadFile')
             ->will(
                 $this->returnValue(
-                    array('RouteMap' => array(
-                        'pattern' => array(
-                            'controller' => 'ctrl',
-                            'pattern' => 'pattern',
-                            'defaultAction' => 'defAct',
-                            'mapping' => array())
-                    ),
+                    array('Default_controller' => 'defCtrl',
+                        'RouteMap' => array(
+                            '/routeTo' => array(
+                                'controller' => 'ctrl',
+                                'pattern' => 'pattern',
+                                'defaultAction' => 'defAct',
+                                'mapping' => array())
+                        ),
                         'Static' => array('statik'))
                 )
             );
@@ -79,6 +87,7 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(1, $this->_routeMap->getRoutes());
         $this->assertContainsOnlyInstancesOf('\AlaroxFramework\cfg\route\Route', $this->_routeMap->getRoutes());
+        $this->assertEquals('defCtrl', $this->_routeMap->getControlerParDefaut());
         $this->assertEquals(array('statik'), $this->_routeMap->getStaticAliases());
     }
 

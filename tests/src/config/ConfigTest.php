@@ -9,16 +9,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     private $_config;
 
     protected static $cfgTest = array(
-        'ControllerConfig' => array(
-            'Default_controller' => 'ctrldef',
-            'RestServer' => array(
-                'Url' => 'http://addr.com',
-                'Username' => 'Username',
-                'Key' => 'MaClef',
-                'Format' => 'json'
-            ),
-            'RouteMap' => true
-        ),
         'TemplateConfig' => array(
             'Name' => 'WebName',
             'Media_url' => 'http://media.addr.com'
@@ -79,7 +69,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testValeursMinimales()
     {
         $tableauConfigTest = self::$cfgTest;
-        unset($tableauConfigTest['ControllerConfig']);
+        unset($tableauConfigTest['TemplateConfig']);
         $this->setFakeCfg($tableauConfigTest);
     }
 
@@ -87,7 +77,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->setFakeCfg(self::$cfgTest);
 
-        $this->assertEquals('ctrldef', $this->_config->getConfigValeur('controllerconfig.default_controller'));
+        $this->assertEquals('WebName', $this->_config->getConfigValeur('TemplateConfig.name'));
         $this->assertEquals(
             array(
                 'Name' => 'WebName',
@@ -105,11 +95,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRouteMap()
     {
-        $routeMap = $this->getMock('AlaroxFramework\cfg\RouteMap');
+        $routeMap = $this->getMock('AlaroxFramework\cfg\route\RouteMap');
 
         $this->_config->setRouteMap($routeMap);
 
-        $this->assertEquals($routeMap, $this->_config->getConfigValeur('ControllerConfig.RouteMapFile'));
+        $this->assertEquals($routeMap, $this->_config->getConfigValeur('ControllerConfig.RouteMap'));
     }
 
     /**

@@ -2,6 +2,7 @@
 namespace AlaroxFramework\cfg;
 
 use AlaroxFileManager\FileManager\File;
+use AlaroxFramework\cfg\route\RouteMap;
 
 class Config
 {
@@ -13,11 +14,9 @@ class Config
     /**
      * @var array
      */
-    private static $valeursMinimales = array('ControllerConfig',
+    private static $valeursMinimales = array(
         'TemplateConfig',
         'InternationalizationConfig',
-        'ControllerConfig.Default_controller',
-        'ControllerConfig.RouteMap',
         'TemplateConfig.Name',
         'TemplateConfig.Media_url',
         'InternationalizationConfig.Enabled',
@@ -31,10 +30,10 @@ class Config
     public function setRouteMap($routeMap)
     {
         if (!$routeMap instanceof RouteMap) {
-            throw new \InvalidArgumentException('Expected RouteMap.');
+            throw new \InvalidArgumentException('Expected parameter 1 routeMap to be RouteMap.');
         }
 
-        $this->_tabConfiguration['ControllerConfig']['RouteMapFile'] = $routeMap;
+        $this->_tabConfiguration['ControllerConfig']['RouteMap'] = $routeMap;
     }
 
     /**
@@ -44,7 +43,7 @@ class Config
     public function setRestInfos($restInfos)
     {
         if (!$restInfos instanceof RestInfos) {
-            throw new \InvalidArgumentException('Expected RestInfos.');
+            throw new \InvalidArgumentException('Expected paramete 1 restInfos to be RestInfos.');
         }
 
         $this->_tabConfiguration['ControllerConfig']['RestServer'] = $restInfos;
@@ -57,7 +56,7 @@ class Config
     public function parseServer($server)
     {
         if (!$server instanceof Server) {
-            throw new \InvalidArgumentException('Expected Server.');
+            throw new \InvalidArgumentException('Expected parameter 1 server to be Server.');
         }
 
         $this->_tabConfiguration['ControllerConfig']['Uri'] = $server->getUneVariableServeur('REQUEST_URI');
