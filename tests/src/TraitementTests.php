@@ -2,10 +2,10 @@
 namespace Tests;
 
 if (!defined('PHPUnit_MAIN_METHOD')) {
-    define('PHPUnit_MAIN_METHOD', 'ControllerTests::main');
+    define('PHPUnit_MAIN_METHOD', 'TraitementTests::main');
 }
 
-class ControllerTests
+class TraitementTests
 {
     public static function main()
     {
@@ -16,12 +16,13 @@ class ControllerTests
     {
         $suite = new \PHPUnit_Framework_TestSuite('TestSuite');
 
-        $suite->addTestSuite('\Tests\Controller\RestClientTest');
+        $suite->addTestSuite('\Tests\traitement\RestClientTest');
+        $suite->addTestSuite('\Tests\traitement\ControllerFactoryTest');
 
         return $suite;
     }
 }
 
-if (PHPUnit_MAIN_METHOD == 'ControllerTests::main') {
-    ControllerTests::main();
+if (PHPUnit_MAIN_METHOD == 'TraitementTests::main') {
+    TraitementTests::main();
 }

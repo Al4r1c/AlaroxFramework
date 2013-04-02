@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Controller;
+namespace Tests\traitement;
 
 use AlaroxFramework\traitement\restclient\RestClient;
 

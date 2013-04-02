@@ -17,7 +17,7 @@ class AllTests
         $suite->addTestSuite('\Tests\Framework\AlaroxFrameworkTest');
         $suite->addTest(\Tests\LibTests::suite());
         $suite->addTest(\Tests\ConfigTests::suite());
-        $suite->addTest(\Tests\ControllerTests::suite());
+        $suite->addTest(\Tests\TraitementTests::suite());
 
         return $suite;
     }
