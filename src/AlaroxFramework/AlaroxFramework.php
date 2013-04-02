@@ -31,13 +31,16 @@ class AlaroxFramework
     /**
      * @param string $cheminVersFichierConfig
      * @param string $cheminVersFichierRouteMap
+     * @param string $repertoireControlleurs
      * @throws \InvalidArgumentException
      */
-    public function genererConfigDepuisFichiers($cheminVersFichierConfig,
-        $cheminVersFichierRouteMap)
+    public function genererConfigDepuisFichiers(
+        $cheminVersFichierConfig,
+        $cheminVersFichierRouteMap,
+        $repertoireControlleurs)
     {
         if (!($config =
-            $this->_conteneur->getConfig($cheminVersFichierConfig, $cheminVersFichierRouteMap))
+            $this->_conteneur->getConfig($cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs))
             instanceof
             Config
         ) {

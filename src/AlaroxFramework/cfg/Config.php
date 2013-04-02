@@ -93,6 +93,19 @@ class Config
     }
 
     /**
+     * @param ControllerFactory $controllerFactory
+     * @throws \InvalidArgumentException
+     */
+    public function setControllerFactory($controllerFactory)
+    {
+        if (!$controllerFactory instanceof ControllerFactory) {
+            throw new \InvalidArgumentException('Expected parameter 1 server to be Server.');
+        }
+
+        $this->_tabConfiguration['ControllerConfig']['CtrlFactory'] = $controllerFactory;
+    }
+
+    /**
      * @param string $clefConfig
      * @return mixed|null
      */

@@ -1,7 +1,7 @@
 <?php
 namespace AlaroxFramework;
 
-include_once(__DIR__ . '../../functions/functions.php');
+include_once(__DIR__ . '/../../functions/functions.php');
 
 class Main
 {
@@ -13,12 +13,13 @@ class Main
     /**
      * @param string $cheminVersFichierConfig
      * @param string $cheminVersFichierRouteMap
+     * @param string $repertoireControlleurs
      */
-    public function __construct($cheminVersFichierConfig, $cheminVersFichierRouteMap)
+    public function __construct($cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs)
     {
         $this->_alaroxFramework = new AlaroxFramework();
         $this->_alaroxFramework->setConteneur(new Conteneur());
-        $this->_alaroxFramework->genererConfigDepuisFichiers($cheminVersFichierConfig, $cheminVersFichierRouteMap);
+        $this->_alaroxFramework->genererConfigDepuisFichiers($cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs);
     }
 
     /**

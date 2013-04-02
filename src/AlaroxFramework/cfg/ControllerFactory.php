@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\traitement\controller;
+namespace AlaroxFramework\cfg;
 
 class ControllerFactory
 {

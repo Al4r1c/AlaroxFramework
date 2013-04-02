@@ -17,6 +17,7 @@ class LibTests
         $suite = new \PHPUnit_Framework_TestSuite('TestSuite');
 
         $suite->addTestSuite('\Tests\lib\ObjetReponseTest');
+        $suite->addTestSuite('\Tests\lib\ObjetRequeteTest');
 
         return $suite;
     }

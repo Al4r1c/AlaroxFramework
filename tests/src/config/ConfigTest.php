@@ -153,4 +153,20 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->_config->setRestInfos(5);
     }
+
+    public function testSetControllerFactory()
+    {
+        $ctrlFactory = $this->getMock('AlaroxFramework\cfg\ControllerFactory');
+
+        $this->_config->setControllerFactory($ctrlFactory);
+
+        $this->assertSame($ctrlFactory, $this->_config->getConfigValeur('ControllerConfig.CtrlFactory'));
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testSetCtrlFactoErrone() {
+        $this->_config->setControllerFactory('yalll');
+    }
 }

@@ -17,7 +17,6 @@ class TraitementTests
         $suite = new \PHPUnit_Framework_TestSuite('TestSuite');
 
         $suite->addTestSuite('\Tests\traitement\RestClientTest');
-        $suite->addTestSuite('\Tests\traitement\ControllerFactoryTest');
 
         return $suite;
     }
