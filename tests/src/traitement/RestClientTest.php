@@ -88,7 +88,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuteRestInfosMissing()
     {
-        $curlClient = $this->getMock('AlaroxFramework\controller\restclient\CurlClient');
+        $curlClient = $this->getMock('AlaroxFramework\traitement\restclient\CurlClient');
         $this->_restClient->setCurlClient($curlClient);
 
         $this->_restClient->executerRequete($this->getMock('AlaroxFramework\Utils\ObjetRequete'));
