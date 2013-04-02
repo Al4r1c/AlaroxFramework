@@ -78,7 +78,7 @@ class Route
             throw new \Exception('Missing controller key.');
         }
 
-        $this->_controller = $controller;
+        $this->_controller = strtolower($controller);
     }
 
     /**
@@ -137,6 +137,6 @@ class Route
             $uri = '/' . $uri;
         }
 
-        $this->_uri = $uri;
+        $this->_uri = strtolower($uri);
     }
 }
