@@ -33,11 +33,12 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCall()
     {
-        $this->_ctrlFactory->setListControllers(array(__CLASS__));
+        $this->_ctrlFactory->setListControllers(array('\\Tests\\fakecontrollers\\Index'));
 
-        $class = explode('\\', __CLASS__);
-
-        $this->assertInstanceOf(__CLASS__, $this->_ctrlFactory->{end($class)}());
+        $this->assertInstanceOf(
+            '\\Tests\\fakecontrollers\\Index',
+            $this->_ctrlFactory->{'index'}($this->getMock('AlaroxFramework\traitement\restclient\RestClient'))
+        );
     }
 
     /**

@@ -1,6 +1,8 @@
 <?php
 namespace AlaroxFramework\cfg;
 
+use AlaroxFramework\traitement\controller\GenericController;
+
 class ControllerFactory
 {
     /**
@@ -36,8 +38,12 @@ class ControllerFactory
         foreach (array_map('strtolower', $plainListControllers) as $unControllerTrouve) {
             $tempNamespacesSepares = explode('\\', $unControllerTrouve);
             $this->_listControllers[end($tempNamespacesSepares)] =
-                function () use ($unControllerTrouve) {
-                    return new $unControllerTrouve();
+                function ($restClient) use ($unControllerTrouve) {
+                    /** @var GenericController $controller */
+                    $controller = new $unControllerTrouve();
+                    $controller->setRestClient($restClient);
+
+                    return $controller;
                 };
         }
     }
