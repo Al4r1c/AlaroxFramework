@@ -26,7 +26,7 @@ class Route
     /**
      * @var array
      */
-    private $_mapping = array();
+    private $_mapping;
 
     /**
      * @return string
@@ -102,6 +102,10 @@ class Route
      */
     public function setPattern($pattern)
     {
+        if (!startsWith($pattern, '/')) {
+            $pattern = '/' . $pattern;
+        }
+
         $this->_pattern = $pattern;
     }
 
@@ -110,6 +114,10 @@ class Route
      */
     public function setUri($uri)
     {
+        if (!startsWith($uri, '/')) {
+            $uri = '/' . $uri;
+        }
+
         $this->_uri = $uri;
     }
 }
