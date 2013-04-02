@@ -22,49 +22,80 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     public function testUri()
     {
-        $this->_route->setUri('/monuri');
+        $uri = '/monuri';
+        $this->_route->setUri($uri);
 
         $this->assertEquals('/monuri', $this->_route->getUri());
     }
 
     public function testSetUriAjouterSlashSiNonPresent()
     {
-        $this->_route->setUri('monuri');
+        $uri = 'monuri';
+        $this->_route->setUri($uri);
 
         $this->assertEquals('/monuri', $this->_route->getUri());
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testUriNotSet()
+    {
+        $this->_route->setUri($uri);
+    }
+
     public function testController()
     {
-        $this->_route->setController('controller');
+        $ctrl = 'controller';
+        $this->_route->setController($ctrl);
 
         $this->assertEquals('controller', $this->_route->getController());
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testControllerNotSet()
+    {
+        $this->_route->setController($ctrl);
+    }
+
     public function testPattern()
     {
-        $this->_route->setPattern('/$action?');
+        $pattern = '/$action?';
+        $this->_route->setPattern($pattern);
 
         $this->assertEquals('/$action?', $this->_route->getPattern());
     }
 
     public function testPatternAjouterSlashSiNonPresent()
     {
-        $this->_route->setPattern('pattern');
+        $pattern = 'pattern';
+        $this->_route->setPattern($pattern);
 
         $this->assertEquals('/pattern', $this->_route->getPattern());
     }
 
     public function testDefaultAction()
     {
-        $this->_route->setDefaultAction('actionDef');
+        $actionDef = 'actionDef';
+        $this->_route->setDefaultAction($actionDef);
 
         $this->assertEquals('actionDef', $this->_route->getDefaultAction());
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testDefaultActionNotSet()
+    {
+        $this->_route->setDefaultAction($defAct);
+    }
+
     public function testMapping()
     {
-        $this->_route->setMapping(array('/*' => 'actionMapped'));
+        $mapping = array('/*' => 'actionMapped');
+        $this->_route->setMapping($mapping);
 
         $this->assertEquals(array('/*' => 'actionMapped'), $this->_route->getMapping());
     }
@@ -74,6 +105,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function testMappingArray()
     {
-        $this->_route->setMapping('exception');
+        $mapping = 'exception';
+        $this->_route->setMapping($mapping);
     }
 }

@@ -107,12 +107,16 @@ class RouteMap
         }
 
         foreach ($routeMap['RouteMap'] as $uri => $uneRoute) {
-            $route = new Route();
-            $route->setUri($uri);
-            $route->setController($uneRoute['controller']);
-            $route->setPattern($uneRoute['pattern']);
-            $route->setDefaultAction($uneRoute['defaultAction']);
-            $route->setMapping($uneRoute['mapping']);
+            try {
+                $route = new Route();
+                $route->setUri($uri);
+                $route->setController($uneRoute['controller']);
+                $route->setPattern($uneRoute['pattern']);
+                $route->setDefaultAction($uneRoute['defaultAction']);
+                $route->setMapping($uneRoute['mapping']);
+            } catch (\Exception $e) {
+                throw new \Exception('RouteMap parse error: ' . $e->getMessage());
+            }
 
             $this->ajouterRoute($route);
         }

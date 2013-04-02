@@ -70,17 +70,27 @@ class Route
 
     /**
      * @param string $controller
+     * @throws \Exception
      */
-    public function setController($controller)
+    public function setController(&$controller)
     {
+        if (!isset($controller)) {
+            throw new \Exception('Missing controller key.');
+        }
+
         $this->_controller = $controller;
     }
 
     /**
      * @param string $defaultAction
+     * @throws \Exception
      */
-    public function setDefaultAction($defaultAction)
+    public function setDefaultAction(&$defaultAction)
     {
+        if (!isset($defaultAction)) {
+            throw new \Exception('Missing defaultAction key.');
+        }
+
         $this->_defaultAction = $defaultAction;
     }
 
@@ -88,32 +98,41 @@ class Route
      * @param array $mapping
      * @throws \InvalidArgumentException
      */
-    public function setMapping($mapping)
+    public function setMapping(&$mapping)
     {
-        if (!is_array($mapping)) {
-            throw new \InvalidArgumentException('Expected array for parameter 1 mapping.');
-        }
+        if (isset($mapping)) {
+            if (!is_array($mapping)) {
+                throw new \InvalidArgumentException('Expected array for parameter 1 mapping.');
+            }
 
-        $this->_mapping = $mapping;
+            $this->_mapping = $mapping;
+        }
     }
 
     /**
      * @param string $pattern
      */
-    public function setPattern($pattern)
+    public function setPattern(&$pattern)
     {
-        if (!startsWith($pattern, '/')) {
-            $pattern = '/' . $pattern;
-        }
+        if (isset($pattern)) {
+            if (!startsWith($pattern, '/')) {
+                $pattern = '/' . $pattern;
+            }
 
-        $this->_pattern = $pattern;
+            $this->_pattern = $pattern;
+        }
     }
 
     /**
      * @param string $uri
+     * @throws \Exception
      */
-    public function setUri($uri)
+    public function setUri(&$uri)
     {
+        if (!isset($uri)) {
+            throw new \Exception('Missing uri.');
+        }
+
         if (!startsWith($uri, '/')) {
             $uri = '/' . $uri;
         }

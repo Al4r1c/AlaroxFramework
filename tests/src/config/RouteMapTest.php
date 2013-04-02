@@ -122,6 +122,25 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Exception
+     */
+    public function testSetRouteMapMissingKeyInMap()
+    {
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier->expects($this->once())
+            ->method('fileExist')
+            ->will($this->returnValue(true));
+
+        $fichier->expects($this->once())
+            ->method('loadFile')
+            ->will(
+                $this->returnValue(array('Default_controller' => '', 'RouteMap' => array('hello'), 'Static' => '',))
+            );
+
+        $this->_routeMap->setRouteMapDepuisFichier($fichier);
+    }
+
+    /**
      * @expectedException \InvalidArgumentException
      */
     public function testSetRouteMapTypeErrone()
