@@ -3,10 +3,10 @@ namespace Tests\fakecontrollers;
 
 use AlaroxFramework\traitement\controller\GenericController;
 
-class Index extends GenericController
+class TestCtrl extends GenericController
 {
     public function indexAction()
     {
-        return true;
+        return null;
     }
 }

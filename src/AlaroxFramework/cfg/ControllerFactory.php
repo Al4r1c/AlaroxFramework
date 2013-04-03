@@ -13,7 +13,7 @@ class ControllerFactory
     /**
      * @param string $nomMethode
      * @param array $arguments
-     * @return object
+     * @return GenericController
      * @throws \Exception
      */
     public function __call($nomMethode, $arguments)

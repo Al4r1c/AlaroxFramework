@@ -42,6 +42,40 @@ class RouteMap
     }
 
     /**
+     * @param string $uriRecherchee
+     * @return Route|null
+     */
+    public function getUneRouteByUri($uriRecherchee)
+    {
+        if (!startsWith($uriRecherchee, '/')) {
+            $uriRecherchee = '/' . $uriRecherchee;
+        }
+
+        foreach ($this->_routes as $uneRoute) {
+            if (strcmp(strtolower($uriRecherchee), $uneRoute->getUri()) == 0) {
+                return $uneRoute;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $ctrlRecherche
+     * @return Route|null
+     */
+    public function getUneRouteByController($ctrlRecherche)
+    {
+        foreach ($this->_routes as $uneRoute) {
+            if (strcmp(strtolower($ctrlRecherche), $uneRoute->getController()) == 0) {
+                return $uneRoute;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return array
      */
     public function getStaticAliases()
