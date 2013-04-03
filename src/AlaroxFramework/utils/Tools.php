@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\Utils;
+namespace AlaroxFramework\utils;
 
 class Tools
 {

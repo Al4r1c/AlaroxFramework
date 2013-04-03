@@ -1,7 +1,7 @@
 <?php
 namespace AlaroxFramework\cfg;
 
-use AlaroxFramework\Utils\Tools;
+use AlaroxFramework\utils\Tools;
 
 class RestInfos
 {

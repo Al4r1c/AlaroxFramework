@@ -1,9 +1,9 @@
 <?php
 namespace AlaroxFramework\traitement\restclient;
 
-use AlaroxFramework\Utils\ObjetReponse;
-use AlaroxFramework\Utils\ObjetRequete;
-use AlaroxFramework\Utils\Tools;
+use AlaroxFramework\utils\ObjetReponse;
+use AlaroxFramework\utils\ObjetRequete;
+use AlaroxFramework\utils\Tools;
 use AlaroxFramework\cfg\RestInfos;
 
 class CurlClient

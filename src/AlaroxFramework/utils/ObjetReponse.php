@@ -1,7 +1,7 @@
 <?php
-namespace AlaroxFramework\Utils;
+namespace AlaroxFramework\utils;
 
-use AlaroxFramework\Utils\Tools;
+use AlaroxFramework\utils\Tools;
 
 class ObjetReponse
 {

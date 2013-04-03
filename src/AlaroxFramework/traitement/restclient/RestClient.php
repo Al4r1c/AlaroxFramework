@@ -1,8 +1,8 @@
 <?php
 namespace AlaroxFramework\traitement\restclient;
 
-use AlaroxFramework\Utils\ObjetReponse;
-use AlaroxFramework\Utils\ObjetRequete;
+use AlaroxFramework\utils\ObjetReponse;
+use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\cfg\RestInfos;
 
 class RestClient

@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\Utils;
+namespace AlaroxFramework\utils;
 
 use AlaroxFramework\cfg\RestInfos;
 

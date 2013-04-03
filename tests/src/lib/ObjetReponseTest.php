@@ -1,7 +1,7 @@
 <?php
 namespace Tests\lib;
 
-use AlaroxFramework\Utils\ObjetReponse;
+use AlaroxFramework\utils\ObjetReponse;
 
 class ObjetReponseTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,7 +1,7 @@
 <?php
 namespace Tests\lib;
 
-use AlaroxFramework\Utils\ObjetRequete;
+use AlaroxFramework\utils\ObjetRequete;
 
 class ObjetRequeteTest extends \PHPUnit_Framework_TestCase
 {
