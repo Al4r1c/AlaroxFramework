@@ -32,4 +32,31 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($restClient, $method->invoke($this->_genericCtrl));
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testRestClientERrone()
+    {
+        $this->_genericCtrl->setRestClient(9);
+    }
+
+    public function testTabVariables()
+    {
+        $this->_genericCtrl->setVariables(array('var1' => 'val1'));
+
+        $class = new \ReflectionClass('AlaroxFramework\traitement\controller\GenericController');
+        $method = $class->getMethod('getVariables');
+        $method->setAccessible(true);
+
+        $this->assertEquals(array('var1' => 'val1'), $method->invoke($this->_genericCtrl));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testTabVariablesArray()
+    {
+        $this->_genericCtrl->setVariables('exception');
+    }
 }

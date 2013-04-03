@@ -38,10 +38,11 @@ class ControllerFactory
         foreach (array_map('strtolower', $plainListControllers) as $unControllerTrouve) {
             $tempNamespacesSepares = explode('\\', $unControllerTrouve);
             $this->_listControllers[end($tempNamespacesSepares)] =
-                function ($restClient) use ($unControllerTrouve) {
+                function ($restClient, $tabVariables) use ($unControllerTrouve) {
                     /** @var GenericController $controller */
                     $controller = new $unControllerTrouve();
                     $controller->setRestClient($restClient);
+                    $controller->setVariables($tabVariables);
 
                     return $controller;
                 };
