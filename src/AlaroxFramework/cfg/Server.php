@@ -49,5 +49,7 @@ class Server
         }
 
         $this->_serveurVariables = $serverVar;
+        $this->_serveurVariables['REQUEST_URI_NODIR'] =
+            str_replace(pathinfo($serverVar['PHP_SELF'])['dirname'], '', $serverVar['REQUEST_URI']);
     }
 }

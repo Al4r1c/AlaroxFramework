@@ -121,7 +121,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $server = $this->getMock('AlaroxFramework\cfg\Server', array('getUneVariableServeur'));
         $server->expects($this->once())
             ->method('getUneVariableServeur')
-            ->with('REQUEST_URI')
+            ->with('REQUEST_URI_NODIR')
             ->will($this->returnValue('/ctrl/uri'));
 
         $this->_config->recupererUriDepuisServer($server);

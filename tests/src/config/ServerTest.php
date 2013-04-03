@@ -16,7 +16,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         'SERVER_PORT' => '80',
         'REMOTE_ADDR' => '127.0.0.1',
         'DOCUMENT_ROOT' => 'C:\www\nice',
-        'REQUEST_URI' => '/ctrl/id'
+        'REQUEST_URI' => '/nice/ctrl/id',
+        'PHP_SELF' => '/nice/index.php'
     );
 
     public function setUp()
@@ -28,7 +29,8 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     {
         $this->_server->setServeurVariables(self::$donneesServer);
 
-        $this->assertEquals(self::$donneesServer, $this->_server->getServeurVariables());
+        $this->assertInternalType('array', $this->_server->getServeurVariables());
+        $this->assertArrayHasKey('REQUEST_URI_NODIR', $this->_server->getServeurVariables());
     }
 
     /**

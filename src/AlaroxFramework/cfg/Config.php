@@ -64,7 +64,7 @@ class Config
             throw new \InvalidArgumentException('Expected parameter 1 server to be Server.');
         }
 
-        $this->_tabConfiguration['ControllerConfig']['Uri'] = $server->getUneVariableServeur('REQUEST_URI');
+        $this->_tabConfiguration['ControllerConfig']['Uri'] = $server->getUneVariableServeur('REQUEST_URI_NODIR');
     }
 
     /**
