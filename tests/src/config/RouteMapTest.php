@@ -148,37 +148,6 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
         $this->_routeMap->setRouteMapDepuisFichier(array());
     }
 
-    public function testGetUneRouteByUri()
-    {
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getUri'));
-
-        $route->expects($this->once())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
-
-        $this->_routeMap->ajouterRoute($route);
-
-        $this->assertSame($route, $this->_routeMap->getUneRouteByUri('/monuri'));
-    }
-
-    public function testGetUneRouteByUriAjoutSlash()
-    {
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getUri'));
-
-        $route->expects($this->once())
-            ->method('getUri')
-            ->will($this->returnValue('/noslash'));
-
-        $this->_routeMap->ajouterRoute($route);
-
-        $this->assertSame($route, $this->_routeMap->getUneRouteByUri('noslash'));
-    }
-
-    public function testGetUneRouteByUriNonTrouvee()
-    {
-        $this->assertNull($this->_routeMap->getUneRouteByUri('monuri'));
-    }
-
     public function testGetUneRouteByCtrl()
     {
         $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getController'));
