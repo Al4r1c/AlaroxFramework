@@ -43,7 +43,7 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testTabVariables()
     {
-        $this->_genericCtrl->setVariables(array('var1' => 'val1'));
+        $this->_genericCtrl->setVariablesRequete(array('var1' => 'val1'));
 
         $class = new \ReflectionClass('AlaroxFramework\traitement\controller\GenericController');
         $method = $class->getMethod('getVariables');
@@ -57,6 +57,6 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testTabVariablesArray()
     {
-        $this->_genericCtrl->setVariables('exception');
+        $this->_genericCtrl->setVariablesRequete('exception');
     }
 }

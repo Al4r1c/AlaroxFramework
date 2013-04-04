@@ -13,7 +13,7 @@ abstract class GenericController
     /**
      * @var array
      */
-    private $_variables;
+    private $_variablesRequete;
 
     /**
      * @return RestClient
@@ -26,9 +26,9 @@ abstract class GenericController
     /**
      * @return array
      */
-    protected function getVariables()
+    protected function getVariablesRequete()
     {
-        return $this->_variables;
+        return $this->_variablesRequete;
     }
 
     /**
@@ -48,12 +48,12 @@ abstract class GenericController
      * @param array $tabVariables
      * @throws \InvalidArgumentException
      */
-    public function setVariables($tabVariables)
+    public function setVariablesRequete($tabVariables)
     {
         if (!is_array($tabVariables)) {
             throw new \InvalidArgumentException('Expected parameter 1 tabVariables to be array.');
         }
 
-        $this->_variables = $tabVariables;
+        $this->_variablesRequete = $tabVariables;
     }
 }
