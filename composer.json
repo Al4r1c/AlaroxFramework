@@ -14,12 +14,16 @@
 		{
 			"type": "vcs",
 			"url": "https://github.com/Al4r1c/AlaroxXMLParser"
+		},		{
+			"type": "vcs",
+			"url": "https://github.com/Al4r1c/Twig_I18n"
 		}
 	],
 	"require": {
-		"alarox/AlaroxClassLoader": "dev-master",
-		"alarox/AlaroxFileManager": "dev-master",
-		"alarox/AlaroxXMLParser": "dev-master"
+		"alarox/AlaroxClassLoader": "v1.0",
+		"alarox/AlaroxFileManager": "v0.2",
+		"twig/twigi18n": "v1.0",
+		"twig/twig": "v1.12.2"
 	},
 	"autoload": {
 		"psr-0": {
