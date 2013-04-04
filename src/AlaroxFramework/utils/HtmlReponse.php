@@ -14,6 +14,16 @@ class HtmlReponse
     private $_corpsReponse;
 
     /**
+     * @param int $codeHttp
+     * @param string $corps
+     */
+    public function __construct($codeHttp = 200, $corps = '')
+    {
+        $this->setStatusHttp($codeHttp);
+        $this->setCorpsReponse($corps);
+    }
+
+    /**
      * @return string
      */
     public function getCorpsReponse()
