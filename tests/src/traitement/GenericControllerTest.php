@@ -46,7 +46,7 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $this->_genericCtrl->setVariablesRequete(array('var1' => 'val1'));
 
         $class = new \ReflectionClass('AlaroxFramework\traitement\controller\GenericController');
-        $method = $class->getMethod('getVariables');
+        $method = $class->getMethod('getVariablesRequete');
         $method->setAccessible(true);
 
         $this->assertEquals(array('var1' => 'val1'), $method->invoke($this->_genericCtrl));

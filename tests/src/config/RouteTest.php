@@ -36,12 +36,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/monuri', $this->_route->getUri());
     }
 
-    /**
-     * @expectedException \Exception
-     */
-    public function testUriNotSet()
+    public function testUrSlashFormalisee()
     {
+        $uri = 'monuri/getto/';
         $this->_route->setUri($uri);
+
+        $this->assertEquals('/monuri/getto', $this->_route->getUri());
     }
 
     public function testController()
@@ -50,14 +50,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->_route->setController($ctrl);
 
         $this->assertEquals('controller', $this->_route->getController());
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testControllerNotSet()
-    {
-        $this->_route->setController($ctrl);
     }
 
     public function testPattern()
@@ -82,14 +74,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->_route->setDefaultAction($actionDef);
 
         $this->assertEquals('actionDef', $this->_route->getDefaultAction());
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testDefaultActionNotSet()
-    {
-        $this->_route->setDefaultAction($defAct);
     }
 
     public function testMapping()

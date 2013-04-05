@@ -18,8 +18,8 @@ class LibTests
 
         $suite->addTestSuite('\Tests\lib\ObjetReponseTest');
         $suite->addTestSuite('\Tests\lib\ObjetRequeteTest');
-        $suite->addTestSuite('\Tests\lib\HtmlReponse');
-        $suite->addTestSuite('\Tests\lib\View');
+        $suite->addTestSuite('\Tests\lib\HtmlReponseTest');
+        $suite->addTestSuite('\Tests\lib\ViewTest');
 
         return $suite;
     }

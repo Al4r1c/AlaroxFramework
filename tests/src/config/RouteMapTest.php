@@ -124,7 +124,7 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testSetRouteMapMissingKeyInMap()
+    public function testSetRouteMapKeyUriWrong()
     {
         $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
         $fichier->expects($this->once())
@@ -134,7 +134,59 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
         $fichier->expects($this->once())
             ->method('loadFile')
             ->will(
-                $this->returnValue(array('Default_controller' => '', 'RouteMap' => array('hello'), 'Static' => '',))
+                $this->returnValue(
+                    array('Default_controller' => '',
+                        'RouteMap' => array(array()),
+                        'Static' => '')
+                )
+            );
+
+        $this->_routeMap->setRouteMapDepuisFichier($fichier);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testSetRouteMapMissingKeyControllerInMap()
+    {
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier->expects($this->once())
+            ->method('fileExist')
+            ->will($this->returnValue(true));
+
+        $fichier->expects($this->once())
+            ->method('loadFile')
+            ->will(
+                $this->returnValue(
+                    array('Default_controller' => '',
+                        'RouteMap' => array('/hello' => array()),
+                        'Static' => '',)
+                )
+            );
+
+        $this->_routeMap->setRouteMapDepuisFichier($fichier);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testSetRouteMapMissingKeysDefualtCtrlAndMappingInMap()
+    {
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier->expects($this->once())
+            ->method('fileExist')
+            ->will($this->returnValue(true));
+
+        $fichier->expects($this->once())
+            ->method('loadFile')
+            ->will(
+                $this->returnValue(
+                    array('Default_controller' => '',
+                        'RouteMap' => array('/hello' => array(
+                            'controller' => 'ctrl'
+                        )),
+                        'Static' => '',)
+                )
             );
 
         $this->_routeMap->setRouteMapDepuisFichier($fichier);

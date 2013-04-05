@@ -122,15 +122,32 @@ class RouteMap
         }
 
         foreach ($routeMap['RouteMap'] as $uri => $uneRoute) {
-            try {
-                $route = new Route();
-                $route->setUri($uri);
-                $route->setController($uneRoute['controller']);
+            if (!is_string($uri)) {
+                throw new \Exception('RouteMap parse error: no uri set or invalid uri.');
+            }
+
+            if (!isset($uneRoute['controller'])) {
+                throw new \Exception('RouteMap parse error: key controller is missing.');
+            }
+
+            if (!isset($uneRoute['defaultAction']) && !isset($uneRoute['mapping'])) {
+                throw new \Exception('RouteMap parse error: no action attached to controller: key defaultAction and mapping are missing.');
+            }
+
+            $route = new Route();
+            $route->setUri($uri);
+            $route->setController($uneRoute['controller']);
+
+            if (isset($uneRoute['pattern'])) {
                 $route->setPattern($uneRoute['pattern']);
+            }
+
+            if (isset($uneRoute['defaultAction'])) {
                 $route->setDefaultAction($uneRoute['defaultAction']);
+            }
+
+            if (isset($uneRoute['mapping'])) {
                 $route->setMapping($uneRoute['mapping']);
-            } catch (\Exception $e) {
-                throw new \Exception('RouteMap parse error: ' . $e->getMessage());
             }
 
             $this->ajouterRoute($route);
