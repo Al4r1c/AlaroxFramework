@@ -70,19 +70,27 @@ class Route
 
     /**
      * @param string $controller
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     public function setController($controller)
     {
+        if (!is_string($controller)) {
+            throw new \InvalidArgumentException('Expected parameter 1 controller to be string.');
+        }
+
         $this->_controller = strtolower($controller);
     }
 
     /**
      * @param string $defaultAction
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     public function setDefaultAction($defaultAction)
     {
+        if (!is_string($defaultAction)) {
+            throw new \InvalidArgumentException('Expected parameter 1 defaultAction to be string.');
+        }
+
         $this->_defaultAction = $defaultAction;
     }
 
@@ -101,9 +109,14 @@ class Route
 
     /**
      * @param string $pattern
+     * @throws \InvalidArgumentException
      */
     public function setPattern($pattern)
     {
+        if (!is_string($pattern)) {
+            throw new \InvalidArgumentException('Expected parameter 1 pattern to be string.');
+        }
+
         if (!startsWith($pattern = preg_replace('#(\/)\1+#', '$1', $pattern), '/')) {
             $pattern = '/' . $pattern;
         }
@@ -113,10 +126,14 @@ class Route
 
     /**
      * @param string $uri
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     public function setUri($uri)
     {
+        if (!is_string($uri)) {
+            throw new \InvalidArgumentException('Expected parameter 1 controller to be string.');
+        }
+
         if (!startsWith($uri = rtrim(preg_replace('#(\/)\1+#', '$1', $uri), '/'), '/')) {
             $uri = '/' . $uri;
         }

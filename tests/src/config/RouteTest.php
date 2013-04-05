@@ -28,6 +28,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/monuri', $this->_route->getUri());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testUriString()
+    {
+        $this->_route->setUri(array());
+    }
+
     public function testSetUriAjouterSlashSiNonPresent()
     {
         $uri = 'monuri';
@@ -36,7 +44,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/monuri', $this->_route->getUri());
     }
 
-    public function testUrSlashFormalisee()
+    public function testUriSlashFormalisee()
     {
         $uri = 'monuri//////getto//////slashed//slasheeee////';
         $this->_route->setUri($uri);
@@ -52,12 +60,28 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('controller', $this->_route->getController());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testControllerString()
+    {
+        $this->_route->setController(array());
+    }
+
     public function testPattern()
     {
         $pattern = '/$action?';
         $this->_route->setPattern($pattern);
 
         $this->assertEquals('/$action?', $this->_route->getPattern());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testPatterString()
+    {
+        $this->_route->setPattern(array());
     }
 
     public function testPatternAjouterSlashSiNonPresent()
@@ -82,6 +106,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->_route->setDefaultAction($actionDef);
 
         $this->assertEquals('actionDef', $this->_route->getDefaultAction());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDefaultActionString()
+    {
+        $this->_route->setDefaultAction(array());
     }
 
     public function testMapping()
