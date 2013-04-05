@@ -127,11 +127,14 @@ class RouteMap
             }
 
             if (!isset($uneRoute['controller'])) {
-                throw new \Exception('RouteMap parse error: key controller is missing.');
+                throw new \Exception(sprintf('RouteMap parse error: key controller is missing for uri %s.', $uri));
             }
 
             if (!isset($uneRoute['defaultAction']) && !isset($uneRoute['mapping'])) {
-                throw new \Exception('RouteMap parse error: no action attached to controller: key defaultAction and mapping are missing.');
+                throw new \Exception(sprintf(
+                    'RouteMap parse error: no action attached for uri %s: key defaultAction OR mapping must be set.',
+                    $uri
+                ));
             }
 
             $route = new Route();
