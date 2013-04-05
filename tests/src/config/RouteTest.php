@@ -38,10 +38,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     public function testUrSlashFormalisee()
     {
-        $uri = 'monuri/getto/';
+        $uri = 'monuri//////getto//////slashed//slasheeee////';
         $this->_route->setUri($uri);
 
-        $this->assertEquals('/monuri/getto', $this->_route->getUri());
+        $this->assertEquals('/monuri/getto/slashed/slasheeee', $this->_route->getUri());
     }
 
     public function testController()
@@ -66,6 +66,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->_route->setPattern($pattern);
 
         $this->assertEquals('/pattern', $this->_route->getPattern());
+    }
+
+    public function testPatternFormalise()
+    {
+        $pattern = '/$action?////slashed//$next?';
+        $this->_route->setPattern($pattern);
+
+        $this->assertEquals('/$action?/slashed/$next?', $this->_route->getPattern());
     }
 
     public function testDefaultAction()

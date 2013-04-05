@@ -104,7 +104,7 @@ class Route
      */
     public function setPattern($pattern)
     {
-        if (!startsWith($pattern, '/')) {
+        if (!startsWith($pattern = preg_replace('#(\/)\1+#', '$1', $pattern), '/')) {
             $pattern = '/' . $pattern;
         }
 
@@ -117,7 +117,7 @@ class Route
      */
     public function setUri($uri)
     {
-        if (!startsWith($uri = rtrim($uri, '/'), '/')) {
+        if (!startsWith($uri = rtrim(preg_replace('#(\/)\1+#', '$1', $uri), '/'), '/')) {
             $uri = '/' . $uri;
         }
 
