@@ -24,7 +24,22 @@ class Tools
     }
 
     /**
-     * @param string $mime
+     * @param string $format
+     * @return string|null
+     * @codeCoverageIgnore
+     */
+    public static function getMimePourFormat($format)
+    {
+        if (self::isValideFormat($format)) {
+            $tabFormats = include(__DIR__ . '/const/mimes.php');
+
+            return $tabFormats[$format];
+        } else {
+            return null;
+        }
+    }
+
+    /**     * @param string $mime
      * @return bool
      */
     public static function isValidMime($mime)
