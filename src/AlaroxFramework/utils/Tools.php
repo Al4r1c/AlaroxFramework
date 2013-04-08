@@ -23,6 +23,19 @@ class Tools
         );
     }
 
+
+    /**
+     * @param string $mime
+     * @return bool
+     */
+    public static function isValidMime($mime)
+    {
+        return in_array(
+            strtolower($mime),
+            array_map('strtolower', include(__DIR__ . '/const/mimes.php'))
+        );
+    }
+
     /**
      * @param string $format
      * @return string|null
@@ -39,14 +52,18 @@ class Tools
         }
     }
 
-    /**     * @param string $mime
-     * @return bool
+    /**
+     * @param string $mime
+     * @return string|null
      */
-    public static function isValidMime($mime)
+    public static function getFormat($mime)
     {
-        return in_array(
-            strtolower($mime),
-            array_map('strtolower', include(__DIR__ . '/const/mimes.php'))
-        );
+        if (self::isValidMime($mime)) {
+            $tabFormats = include(__DIR__ . '/const/mimes.php');
+
+            return array_search($mime, $tabFormats);
+        } else {
+            return null;
+        }
     }
 }
