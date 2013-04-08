@@ -95,6 +95,16 @@ class RouteMap
             throw new \InvalidArgumentException('Expected parameter 1 staticAliases to be array.');
         }
 
+        $i = 0;
+        while ($i < count($staticAliases)) {
+            if (!startsWith($uri = rtrim(preg_replace('#(\/)\1+#', '$1', $staticAliases[$i]), '/'), '/')) {
+                $uri = '/' . $uri;
+            }
+
+            $staticAliases[$i] = $uri;
+            $i++;
+        }
+
         $this->_staticAliases = $staticAliases;
     }
 

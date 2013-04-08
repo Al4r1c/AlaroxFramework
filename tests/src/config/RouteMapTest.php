@@ -40,9 +40,16 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
 
     public function testSetStaticAliases()
     {
-        $this->_routeMap->setStaticAliases(array('static'));
+        $this->_routeMap->setStaticAliases(array('/static'));
 
-        $this->assertEquals(array('static'), $this->_routeMap->getStaticAliases());
+        $this->assertEquals(array('/static'), $this->_routeMap->getStaticAliases());
+    }
+
+    public function testSetUriFormalisee()
+    {
+        $this->_routeMap->setStaticAliases(array('///sta-tic//path///way/go///'));
+
+        $this->assertEquals(array('/sta-tic/path/way/go'), $this->_routeMap->getStaticAliases());
     }
 
     /**
@@ -88,7 +95,7 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $this->_routeMap->getRoutes());
         $this->assertContainsOnlyInstancesOf('\AlaroxFramework\cfg\route\Route', $this->_routeMap->getRoutes());
         $this->assertEquals('defCtrl', $this->_routeMap->getControlerParDefaut());
-        $this->assertEquals(array('statik'), $this->_routeMap->getStaticAliases());
+        $this->assertEquals(array('/statik'), $this->_routeMap->getStaticAliases());
     }
 
     /**
