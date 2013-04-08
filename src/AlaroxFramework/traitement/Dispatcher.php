@@ -213,7 +213,8 @@ class Dispatcher
                 $this->_controllerFactory->{$nomClasseController}($this->getRestClient(), $tabVariablesRequete);
         } catch (\Exception $uneException) {
             throw new \Exception(sprintf(
-                'Can\'t load controller "%s" for uri "%s": %s.', $nomClasseController, $this->_uriDemandee, $uneException->getMessage()
+                'Can\'t load controller "%s" for uri "%s": %s.', $nomClasseController, $this->_uriDemandee,
+                $uneException->getMessage()
             ));
         }
 

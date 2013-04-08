@@ -26,6 +26,18 @@ class ObjetRequete
     private static $_methodesHttpAutorisees = array('GET', 'POST', 'PUT', 'DELETE');
 
     /**
+     * @param string $uri
+     * @param string $methodeHttp
+     * @param array $body
+     */
+    public function __construct($uri = '/', $methodeHttp = 'GET', $body = array())
+    {
+        $this->setUri($uri);
+        $this->setMethodeHttp($methodeHttp);
+        $this->setBody($body);
+    }
+
+    /**
      * @return array
      */
     public function getBody()

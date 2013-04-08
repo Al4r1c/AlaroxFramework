@@ -64,5 +64,4 @@ class HtmlReponse
 
         $this->_statusHttp = $statusHttp;
     }
-
 }

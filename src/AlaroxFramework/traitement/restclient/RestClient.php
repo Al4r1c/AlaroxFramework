@@ -1,9 +1,9 @@
 <?php
 namespace AlaroxFramework\traitement\restclient;
 
+use AlaroxFramework\cfg\RestInfos;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
-use AlaroxFramework\cfg\RestInfos;
 
 class RestClient
 {

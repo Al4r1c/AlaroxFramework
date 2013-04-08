@@ -118,7 +118,7 @@ class Conteneur
      */
     public function getDispatcher($config)
     {
-        if(!$config instanceof Config) {
+        if (!$config instanceof Config) {
             throw new \InvalidArgumentException('Expected parameter 1 config to be instance of Config.');
         }
 

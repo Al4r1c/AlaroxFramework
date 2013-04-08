@@ -1,10 +1,10 @@
 <?php
 namespace AlaroxFramework\traitement\restclient;
 
+use AlaroxFramework\cfg\RestInfos;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\Tools;
-use AlaroxFramework\cfg\RestInfos;
 
 class CurlClient
 {
@@ -27,9 +27,10 @@ class CurlClient
 
     /**
      * @param RestInfos $restInfos
+     * @param string $uri
      * @return mixed
      */
-    private function curlExec($restInfos)
+    private function curlExec($restInfos, $uri)
     {
         if (!is_null($restInfos->getUsername()) && !is_null($restInfos->getPassword())) {
             curl_setopt($this->_curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
@@ -44,7 +45,7 @@ class CurlClient
             $formatMime = 'text/plain';
         }
 
-        curl_setopt($this->_curl, CURLOPT_URL, $restInfos->getUrl());
+        curl_setopt($this->_curl, CURLOPT_URL, $restInfos->getUrl() . $uri);
         curl_setopt(
             $this->_curl, CURLOPT_HTTPHEADER, array(
                 'Accept: ' . $formatMime,
@@ -72,12 +73,16 @@ class CurlClient
      */
     public function executer($restInfos, $objetRequete)
     {
+        if (!startsWith($uri = $objetRequete->getUri(), '/')) {
+            $uri = '/' . $uri;
+        }
+
         switch ($methodeHttp = strtoupper($objetRequete->getMethodeHttp())) {
             case 'GET':
                 if (count($objetRequete->getBody()) > 0) {
                     $donnees = $this->buildPostBody($objetRequete->getBody());
 
-                    $restInfos->setUrl($restInfos->getUrl() . '?' . $donnees);
+                    $uri .= '?' . $donnees;
                 }
                 break;
             case 'POST':
@@ -105,7 +110,7 @@ class CurlClient
                 throw new \InvalidArgumentException('Unsupported HTTP method "' . $methodeHttp . '".');
         }
 
-        $responseCurl = $this->curlExec($restInfos);
+        $responseCurl = $this->curlExec($restInfos, $uri);
         $reponseInfo = curl_getinfo($this->_curl);
 
         if (($pos = strpos($contentType = $reponseInfo['content_type'], ';')) !== false) {
