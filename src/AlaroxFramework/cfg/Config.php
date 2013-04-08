@@ -15,15 +15,16 @@ class Config
      * @var array
      */
     private static $valeursMinimales = array(
+        'Website_version',
         'RestServer',
-        'RestServer.Url',
-        'RestServer.Format',
-        'RestServer.Username',
-        'RestServer.PassKey',
         'TemplateConfig',
         'InternationalizationConfig',
         'TemplateConfig.Name',
         'TemplateConfig.Media_url',
+        'RestServer.Url',
+        'RestServer.Format',
+        'RestServer.Username',
+        'RestServer.PassKey',
         'InternationalizationConfig.Enabled',
         'InternationalizationConfig.Default_language',
         'InternationalizationConfig.Available');

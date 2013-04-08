@@ -18,6 +18,7 @@ class TraitementTests
 
         $suite->addTestSuite('\Tests\traitement\RestClientTest');
         $suite->addTestSuite('\Tests\traitement\GenericControllerTest');
+        $suite->addTestSuite('\Tests\traitement\DispatcherTest');
 
         return $suite;
     }

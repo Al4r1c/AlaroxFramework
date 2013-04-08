@@ -8,6 +8,7 @@ use AlaroxFramework\cfg\ControllerFactory;
 use AlaroxFramework\cfg\RestInfos;
 use AlaroxFramework\cfg\Server;
 use AlaroxFramework\cfg\route\RouteMap;
+use AlaroxFramework\traitement\Dispatcher;
 
 class Conteneur
 {
@@ -108,5 +109,22 @@ class Conteneur
         $server->setServeurVariables($_SERVER);
 
         return $server;
+    }
+
+    /**
+     * @param Config $config
+     * @throws \InvalidArgumentException
+     * @return Dispatcher
+     */
+    public function getDispatcher($config)
+    {
+        if(!$config instanceof Config) {
+            throw new \InvalidArgumentException('Expected parameter 1 config to be instance of Config.');
+        }
+
+        $dispatcher = new Dispatcher();
+        $dispatcher->parseConfig($config->getConfigValeur('ControllerConfig'));
+
+        return $dispatcher;
     }
 }

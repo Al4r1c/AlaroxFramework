@@ -7,17 +7,17 @@ class TestCtrl extends GenericController
 {
     public function indexAction()
     {
-        return true;
+        return 'THIS IS INDEX ACTION';
     }
 
     public function myActionFirst()
     {
-        return 'myFirst';
+        return 'myFirst ACTION';
     }
 
     public function myActionSecond()
     {
-        return 'mySecond';
+        return 'mySecond ACTION';
     }
 
     private function privatemethod()

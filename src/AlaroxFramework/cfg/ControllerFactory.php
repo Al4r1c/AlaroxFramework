@@ -22,7 +22,7 @@ class ControllerFactory
             return call_user_func_array($this->_listControllers[$nomMethode], $arguments);
         }
 
-        throw new \Exception(sprintf('Controller %s not found.', $nomMethode));
+        throw new \Exception('controller not found in controller directory');
     }
 
     /**
@@ -42,7 +42,7 @@ class ControllerFactory
                     /** @var GenericController $controller */
                     $controller = new $unControllerTrouve();
                     $controller->setRestClient($restClient);
-                    $controller->setVariables($tabVariables);
+                    $controller->setVariablesRequete($tabVariables);
 
                     return $controller;
                 };

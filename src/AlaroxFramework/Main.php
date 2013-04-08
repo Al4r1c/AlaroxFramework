@@ -19,7 +19,9 @@ class Main
     {
         $this->_alaroxFramework = new AlaroxFramework();
         $this->_alaroxFramework->setConteneur(new Conteneur());
-        $this->_alaroxFramework->genererConfigDepuisFichiers($cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs);
+        $this->_alaroxFramework->genererConfigDepuisFichiers(
+            $cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs
+        );
     }
 
     /**
@@ -27,6 +29,10 @@ class Main
      */
     public function run()
     {
-        return $this->_alaroxFramework->process();
+        $reponse = $this->_alaroxFramework->process();
+
+        http_response_code($reponse->getStatusHttp());
+
+        return $reponse->getCorpsReponse();
     }
 }

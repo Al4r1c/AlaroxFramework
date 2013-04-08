@@ -9,6 +9,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     private $_config;
 
     protected static $cfgTest = array(
+        'Website_version' => 'dev',
         'TemplateConfig' => array(
             'Name' => 'WebName',
             'Media_url' => 'http://media.addr.com'
@@ -53,7 +54,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->setFakeCfg(self::$cfgTest);
 
-        $this->assertAttributeCount(4, '_tabConfiguration', $this->_config);
+        $this->assertAttributeCount(5, '_tabConfiguration', $this->_config);
     }
 
     /**

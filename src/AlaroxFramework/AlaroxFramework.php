@@ -2,6 +2,7 @@
 namespace AlaroxFramework;
 
 use AlaroxFramework\cfg\Config;
+use AlaroxFramework\utils\HtmlReponse;
 
 class AlaroxFramework
 {
@@ -29,6 +30,19 @@ class AlaroxFramework
     }
 
     /**
+     * @param Config $config
+     * @throws \InvalidArgumentException
+     */
+    public function setConfig($config)
+    {
+        if (!$config instanceof Config) {
+            throw new \InvalidArgumentException('Expected Config.');
+        }
+
+        $this->_config = $config;
+    }
+
+    /**
      * @param string $cheminVersFichierConfig
      * @param string $cheminVersFichierRouteMap
      * @param string $repertoireControlleurs
@@ -39,19 +53,28 @@ class AlaroxFramework
         $cheminVersFichierRouteMap,
         $repertoireControlleurs)
     {
-        if (!($config =
-            $this->_conteneur->getConfig($cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs))
-            instanceof
-            Config
-        ) {
-            throw new \InvalidArgumentException('Expected Config.');
-        }
 
-        $this->_config = $config;
+        $this->setConfig(
+            $this->_conteneur->getConfig($cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs)
+        );
     }
 
+    /**
+     * @throws \Exception
+     * @return HtmlReponse
+     */
     public function process()
     {
-        return null;
+        try {
+            $reponse = $this->_conteneur->getDispatcher($this->_config)->executerActionRequise();
+        } catch (\Exception $exception) {
+            if (strcmp(strtolower($this->_config->getConfigValeur('Website_version')), 'prod') == 0) {
+                return new HtmlReponse(404);
+            } else {
+                throw $exception;
+            }
+        }
+
+        return new HtmlReponse(200, $reponse);
     }
 }
