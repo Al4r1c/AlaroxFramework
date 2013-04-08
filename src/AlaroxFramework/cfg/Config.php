@@ -86,6 +86,14 @@ class Config
             }
         }
 
+        if (!array_key_exists(
+            $langue = $this->rechercheValeurTableauMultidim('InternationalizationConfig.Default_language', $tabCfg),
+            $this->rechercheValeurTableauMultidim('InternationalizationConfig.Available', $tabCfg)
+        )
+        ) {
+            throw new \Exception(sprintf('Default language "%s" not found in available language list.', $langue));
+        }
+
         $this->_tabConfiguration = array_merge($this->_tabConfiguration, $tabCfg);
 
         $restInfos = new RestInfos();

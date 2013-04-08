@@ -22,8 +22,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         ),
         'InternationalizationConfig' => array(
             'Enabled' => true,
-            'Default_language' => 'fr',
-            'Available' => array('English' => 'en'))
+            'Default_language' => 'English',
+            'Available' => array('English' => 'en', 'French' => 'fr'))
     );
 
     public function setUp()
@@ -68,6 +68,17 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(false));
 
         $this->_config->recupererConfigDepuisFichier($fichier);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testLangueNonAvailable()
+    {
+        $tabCfg = self::$cfgTest;
+        unset($tabCfg['InternationalizationConfig']['Available']['English']);
+
+        $this->setFakeCfg($tabCfg);
     }
 
     /**
@@ -167,7 +178,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testSetCtrlFactoErrone() {
+    public function testSetCtrlFactoErrone()
+    {
         $this->_config->setControllerFactory('yalll');
     }
 }
