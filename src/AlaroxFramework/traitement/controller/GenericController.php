@@ -32,6 +32,19 @@ abstract class GenericController
     }
 
     /**
+     * @param string $clef
+     * @return string|null
+     */
+    protected function getUneVariableRequete($clef)
+    {
+        if (array_key_exists($clef, $this->_variablesRequete)) {
+            return $this->_variablesRequete[$clef];
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @param RestClient $restClient
      * @throws \InvalidArgumentException
      */

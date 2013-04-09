@@ -36,7 +36,7 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testRestClientERrone()
+    public function testRestClientErrone()
     {
         $this->_genericCtrl->setRestClient(9);
     }
@@ -58,5 +58,16 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
     public function testTabVariablesArray()
     {
         $this->_genericCtrl->setVariablesRequete('exception');
+    }
+
+    public function testGetUneVariable() {
+        $this->_genericCtrl->setVariablesRequete(array('paramKey' => 'maVar'));
+
+        $class = new \ReflectionClass('AlaroxFramework\traitement\controller\GenericController');
+        $method = $class->getMethod('getUneVariableRequete');
+        $method->setAccessible(true);
+
+        $this->assertEquals('maVar', $method->invokeArgs($this->_genericCtrl, array('paramKey')));
+        $this->assertNull($method->invokeArgs($this->_genericCtrl, array('keyNotFound')));
     }
 }
