@@ -5,10 +5,15 @@ class Tools
 {
     /**
      * @param int $codeHttp
+     * @throws \InvalidArgumentException
      * @return bool
      */
     public static function isValideHttpCode($codeHttp)
     {
+        if (!is_int($codeHttp)) {
+            throw new \InvalidArgumentException('Parameter 1 codeHttp must be integer.');
+        }
+
         return array_key_exists($codeHttp, include(__DIR__ . '/const/httpcode.php'));
     }
 
@@ -23,17 +28,13 @@ class Tools
         );
     }
 
-
     /**
      * @param string $mime
      * @return bool
      */
     public static function isValidMime($mime)
     {
-        return in_array(
-            strtolower($mime),
-            array_map('strtolower', include(__DIR__ . '/const/mimes.php'))
-        );
+        return in_array(strtolower($mime), array_map('strtolower', include(__DIR__ . '/const/mimes.php')));
     }
 
     /**
@@ -47,21 +48,6 @@ class Tools
             $tabFormats = include(__DIR__ . '/const/mimes.php');
 
             return $tabFormats[$format];
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @param string $mime
-     * @return string|null
-     */
-    public static function getFormat($mime)
-    {
-        if (self::isValidMime($mime)) {
-            $tabFormats = include(__DIR__ . '/const/mimes.php');
-
-            return array_search($mime, $tabFormats);
         } else {
             return null;
         }

@@ -2,10 +2,10 @@
 namespace AlaroxFramework\utils;
 
 use AlaroxFramework\utils\Tools;
-use AlaroxFramework\utils\translate\AbstractTranslate;
 
 class ObjetReponse
 {
+
     /**
      * @var int
      */
@@ -94,21 +94,5 @@ class ObjetReponse
         }
 
         $this->_formatMime = $format;
-    }
-
-    public function toArray()
-    {
-        if (class_exists(
-            $nomClasseConversion =
-                'AlaroxFramework\\utils\\translate\\' . ucfirst(strtolower(Tools::getFormat($this->_formatMime)))
-        )
-        ) {
-            /** @var AbstractTranslate $classeConversion */
-            $classeConversion = new $nomClasseConversion();
-
-            return $classeConversion->toArray($this->_donneesReponse);
-        } else {
-            throw new \Exception(sprintf('Format "%s" not supported.', $this->_formatMime));
-        }
     }
 }

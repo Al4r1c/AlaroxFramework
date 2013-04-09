@@ -64,32 +64,4 @@ class ObjetReponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->_objetReponse->setFormatMime('application/fake');
     }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testToArrayInexistant()
-    {
-        $this->_objetReponse->setFormatMime('image/jpeg');
-
-        $this->_objetReponse->toArray();
-    }
-
-    public function testJsonToArray()
-    {
-        $this->_objetReponse->setDonneesReponse('{"id1":{"parametre1":"variable1"}}');
-        $this->_objetReponse->setFormatMime('application/json');
-
-        $this->assertEquals(array('id1' => array('parametre1' => 'variable1')), $this->_objetReponse->toArray());
-    }
-
-    public function testXmlToArray()
-    {
-        $this->_objetReponse->setDonneesReponse(
-            '<root><element attr="id1"><element attr="parametre1">variable1</element></element></root>'
-        );
-        $this->_objetReponse->setFormatMime('application/xml');
-
-        $this->assertEquals(array('id1' => array('parametre1' => 'variable1')), $this->_objetReponse->toArray());
-    }
 }

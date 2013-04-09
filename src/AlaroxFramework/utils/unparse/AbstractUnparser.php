@@ -1,7 +1,7 @@
 <?php
-namespace AlaroxFramework\utils\translate;
+namespace AlaroxFramework\utils\unparse;
 
-abstract class AbstractTranslate
+abstract class AbstractUnparser
 {
     /**
      * @param string $donnees

@@ -1,7 +1,7 @@
 <?php
-namespace AlaroxFramework\utils\translate;
+namespace AlaroxFramework\utils\unparse;
 
-class Json extends AbstractTranslate
+class Json extends AbstractUnparser
 {
     /**
      * @param string $donnees

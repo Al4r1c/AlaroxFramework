@@ -16,10 +16,14 @@ class LibTests
     {
         $suite = new \PHPUnit_Framework_TestSuite('TestSuite');
 
+        $suite->addTestSuite('\Tests\lib\HtmlReponseTest');
         $suite->addTestSuite('\Tests\lib\ObjetReponseTest');
         $suite->addTestSuite('\Tests\lib\ObjetRequeteTest');
-        $suite->addTestSuite('\Tests\lib\HtmlReponseTest');
+        $suite->addTestSuite('\Tests\lib\ToolsTest');
+        $suite->addTestSuite('\Tests\lib\UnparserTest');
+        $suite->addTestSuite('\Tests\lib\UnparserFactoryTest');
         $suite->addTestSuite('\Tests\lib\ViewTest');
+
 
         return $suite;
     }
