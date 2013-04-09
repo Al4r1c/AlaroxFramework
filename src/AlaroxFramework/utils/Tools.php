@@ -52,4 +52,15 @@ class Tools
             return null;
         }
     }
+
+    public static function getFormatPourMime($formatMime)
+    {
+        if (self::isValidMime($formatMime)) {
+            $tabFormats = include(__DIR__ . '/const/mimes.php');
+
+            return array_search($formatMime, $tabFormats);
+        } else {
+            return null;
+        }
+    }
 }

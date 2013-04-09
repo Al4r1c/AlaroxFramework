@@ -64,4 +64,12 @@ class ObjetReponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->_objetReponse->setFormatMime('application/fake');
     }
+
+    public function testToArray()
+    {
+        $this->_objetReponse->setDonneesReponse('{"id1":{"parametre1":"variable1"}}');
+        $this->_objetReponse->setFormatMime('application/json');
+
+        $this->assertEquals(array('id1' => array('parametre1' => 'variable1')), $this->_objetReponse->toArray());
+    }
 }

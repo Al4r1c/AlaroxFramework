@@ -117,8 +117,7 @@ class CurlClient
             $contentType = substr($reponseInfo['content_type'], 0, $pos);
         }
 
-        return
-            new ObjetReponse($reponseInfo['http_code'], $responseCurl, $contentType);
+        return new ObjetReponse($reponseInfo['http_code'], $responseCurl, $contentType);
     }
 
     /**

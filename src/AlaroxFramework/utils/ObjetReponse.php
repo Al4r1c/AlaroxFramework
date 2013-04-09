@@ -2,6 +2,8 @@
 namespace AlaroxFramework\utils;
 
 use AlaroxFramework\utils\Tools;
+use AlaroxFramework\utils\unparse\Unparser;
+use AlaroxFramework\utils\unparse\UnparserFactory;
 
 class ObjetReponse
 {
@@ -94,5 +96,17 @@ class ObjetReponse
         }
 
         $this->_formatMime = $format;
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function toArray()
+    {
+        $unparser = new Unparser();
+        $unparser->setUnparserFactory(new UnparserFactory());
+
+        return $unparser->toArray($this->_donneesReponse, Tools::getFormatPourMime($this->_formatMime));
     }
 }

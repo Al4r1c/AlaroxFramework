@@ -36,4 +36,10 @@ class ToolsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('application/json', Tools::getMimePourFormat('json'));
         $this->assertNull(Tools::getMimePourFormat('not_exist'));
     }
+
+    public function testGetFormatPourMime()
+    {
+        $this->assertEquals('json', Tools::getFormatPourMime('application/json'));
+        $this->assertNull(Tools::getFormatPourMime('not_exist'));
+    }
 }
