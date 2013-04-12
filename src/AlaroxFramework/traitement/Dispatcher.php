@@ -118,16 +118,16 @@ class Dispatcher
             }
         }
 
-        $isStatic = false;
+        $staticAliasFound = false;
         foreach ($this->_routeMap->getStaticAliases() as $unAliasStatic) {
             if (startsWith($this->_uriDemandee, $unAliasStatic)) {
-                $isStatic = true;
+                $staticAliasFound = $unAliasStatic;
                 break;
             }
         }
 
-        if ($isStatic === true) {
-            $uriSansBaseDuMapping = trim(substr($this->_uriDemandee, strlen($unAliasStatic)), '/');
+        if ($staticAliasFound !== false) {
+            $uriSansBaseDuMapping = trim(substr($this->_uriDemandee, strlen($staticAliasFound)), '/');
 
             if (!empty($uriSansBaseDuMapping)) {
                 $view = new View();
