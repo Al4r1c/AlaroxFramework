@@ -50,6 +50,13 @@ class ObjetRequeteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/mon/uri', $this->_objetRequete->getUri());
     }
 
+    public function testSetUriNormalization()
+    {
+        $this->_objetRequete->setUri('mon/////uri//////');
+
+        $this->assertEquals('/mon/uri', $this->_objetRequete->getUri());
+    }
+
     /**
      * @expectedException \InvalidArgumentException
      */
