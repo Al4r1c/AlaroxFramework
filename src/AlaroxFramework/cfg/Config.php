@@ -21,8 +21,10 @@ class Config
         'InternationalizationConfig',
         'RestServer.Url',
         'RestServer.Format',
-        'RestServer.Username',
-        'RestServer.PassKey',
+        'RestServer.Authentification',
+        'RestServer.Authentification.Enabled',
+        'RestServer.Authentification.Username',
+        'RestServer.Authentification.PassKey',
         'InternationalizationConfig.Enabled',
         'InternationalizationConfig.Default_language',
         'InternationalizationConfig.Available');
@@ -79,14 +81,15 @@ class Config
         }
 
         foreach (self::$valeursMinimales as $uneValeurMinimale) {
-            if (is_null($this->rechercheValeurTableauMultidim($uneValeurMinimale, $tabCfg))) {
+            if (is_null(array_multisearch($uneValeurMinimale, $tabCfg, true))) {
+                var_dump($uneValeurMinimale);
                 throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
             }
         }
 
         if (!array_key_exists(
-            $langue = $this->rechercheValeurTableauMultidim('InternationalizationConfig.Default_language', $tabCfg),
-            $this->rechercheValeurTableauMultidim('InternationalizationConfig.Available', $tabCfg)
+            $langue = array_multisearch('InternationalizationConfig.Default_language', $tabCfg, true),
+            array_multisearch('InternationalizationConfig.Available', $tabCfg, true)
         )
         ) {
             throw new \Exception(sprintf('Default language "%s" not found in available language list.', $langue));
@@ -118,24 +121,6 @@ class Config
      */
     public function getConfigValeur($clefConfig)
     {
-        return $this->rechercheValeurTableauMultidim($clefConfig, $this->_tabConfiguration);
-    }
-
-    /**
-     * @param string $clefRecherchee
-     * @param array $tableauConcerne
-     * @return mixed|null
-     */
-    private function rechercheValeurTableauMultidim($clefRecherchee, $tableauConcerne)
-    {
-        foreach (array_map('strtolower', explode('.', $clefRecherchee)) as $uneClef) {
-            if (array_key_exists($uneClef, $tableauConcerne = array_change_key_case($tableauConcerne, CASE_LOWER))) {
-                $tableauConcerne = $tableauConcerne[$uneClef];
-            } else {
-                return null;
-            }
-        }
-
-        return $tableauConcerne;
+        return array_multisearch($clefConfig, $this->_tabConfiguration, true);
     }
 }

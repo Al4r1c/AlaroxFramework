@@ -81,8 +81,11 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
             array(
                 'Url' => 'http://Server.com',
                 'Format' => 'json',
-                'Username' => 'username',
-                'PassKey' => 'password'
+                'Authentification' => array(
+                    'Enabled' => true,
+                    'Username' => 'username',
+                    'PassKey' => 'password'
+                )
             )
         );
 
@@ -100,8 +103,24 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testSetRouteMapTypErrone()
+    public function testSetRouteMapTypeErrone()
     {
         $this->_restInfos->parseRestInfos(5);
     }
+
+    public function testAuthentifEnabled()
+    {
+        $this->_restInfos->setAuthentifEnabled(true);
+
+        $this->assertTrue($this->_restInfos->isAuthEnabled());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAuthentifEnableddErrone()
+    {
+        $this->_restInfos->setAuthentifEnabled('exception');
+    }
 }
+

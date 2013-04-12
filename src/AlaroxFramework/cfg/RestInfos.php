@@ -11,6 +11,11 @@ class RestInfos
     private $_url;
 
     /**
+     * @var boolean
+     */
+    private $_authentifEnabled;
+
+    /**
      * @var string
      */
     private $_username;
@@ -28,7 +33,12 @@ class RestInfos
     /**
      * @var array
      */
-    private static $valeursMinimales = array('Url', 'Format', 'Username', 'PassKey');
+    private static $valeursMinimales = array('Url',
+        'Format',
+        'Authentification',
+        'Authentification.Enabled',
+        'Authentification.Username',
+        'Authentification.PassKey');
 
     /**
      * @return string
@@ -36,6 +46,11 @@ class RestInfos
     public function getFormatEnvoi()
     {
         return $this->_formatEnvoi;
+    }
+
+    public function isAuthEnabled()
+    {
+        return $this->_authentifEnabled;
     }
 
     /**
@@ -73,6 +88,19 @@ class RestInfos
         }
 
         $this->_formatEnvoi = $formatEnvoi;
+    }
+
+    /**
+     * @param boolean $authentifEnabled
+     * @throws \InvalidArgumentException
+     */
+    public function setAuthentifEnabled($authentifEnabled)
+    {
+        if (!is_bool($authentifEnabled)) {
+            throw new \InvalidArgumentException(sprintf('Expected boolean as Authentification Enabled.'));
+        }
+
+        $this->_authentifEnabled = $authentifEnabled;
     }
 
     /**
@@ -126,14 +154,15 @@ class RestInfos
         }
 
         foreach (self::$valeursMinimales as $uneValeurMinimale) {
-            if (!array_key_exists($uneValeurMinimale, $tabRestInfos)) {
+            if (is_null(array_multisearch($uneValeurMinimale, $tabRestInfos))) {
                 throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
             }
         }
 
         $this->setUrl($tabRestInfos['Url']);
         $this->setFormatEnvoi($tabRestInfos['Format']);
-        $this->setUsername($tabRestInfos['Username']);
-        $this->setPassword($tabRestInfos['PassKey']);
+        $this->setAuthentifEnabled($tabRestInfos['Authentification']['Enabled']);
+        $this->setUsername($tabRestInfos['Authentification']['Username']);
+        $this->setPassword($tabRestInfos['Authentification']['PassKey']);
     }
 }
