@@ -28,17 +28,12 @@ class CurlClient
     /**
      * @param RestInfos $restInfos
      * @param string $uri
+     * @param string $signature
+     * @param string $date
      * @return mixed
      */
-    private function curlExec($restInfos, $uri)
+    private function curlExec($restInfos, $uri, $signature, $date)
     {
-        if (!is_null($restInfos->getUsername()) && !is_null($restInfos->getPassword())) {
-            curl_setopt($this->_curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-            curl_setopt(
-                $this->_curl, CURLOPT_USERPWD, $restInfos->getUsername() . ':' . $restInfos->getPassword()
-            );
-        }
-
         if (!is_null($restInfos->getFormatEnvoi())) {
             $formatMime = Tools::getMimePourFormat($restInfos->getFormatEnvoi());
         } else {
@@ -49,7 +44,9 @@ class CurlClient
         curl_setopt(
             $this->_curl, CURLOPT_HTTPHEADER, array(
                 'Accept: ' . $formatMime,
-                'Content-type: ' . $formatMime
+                'Content-type: ' . $formatMime,
+                'Date: ' . $date,
+                $signature
             )
         );
 
@@ -73,6 +70,8 @@ class CurlClient
      */
     public function executer($restInfos, $objetRequete)
     {
+        $donnees = '';
+
         if (!startsWith($uri = $objetRequete->getUri(), '/')) {
             $uri = '/' . $uri;
         }
@@ -110,7 +109,18 @@ class CurlClient
                 throw new \InvalidArgumentException('Unsupported HTTP method "' . $methodeHttp . '".');
         }
 
-        $responseCurl = $this->curlExec($restInfos, $uri);
+        $dateGmt = gmdate("D, d M Y H:i:s T", time());
+
+        $signature = $this->getIdentificationIfRequired(
+            $restInfos->getUsername(),
+            $restInfos->getPassword(),
+            $methodeHttp,
+            $donnees,
+            Tools::getMimePourFormat($restInfos->getFormatEnvoi()),
+            strtotime($dateGmt)
+        );
+
+        $responseCurl = $this->curlExec($restInfos, $uri, $signature, $dateGmt);
         $reponseInfo = curl_getinfo($this->_curl);
 
         if (($pos = strpos($contentType = $reponseInfo['content_type'], ';')) !== false) {
@@ -191,5 +201,18 @@ class CurlClient
                 $simpleXmlObject->addChild('element', $value)->addAttribute('attr', $clef);
             }
         }
+    }
+
+    private function getIdentificationIfRequired($nomUtil, $clef, $methode, $donnees, $formatMime, $timestamp)
+    {
+        $signature = null;
+
+        if (!is_null($nomUtil) && !is_null($clef)) {
+            $encode = base64_encode(hash_hmac('sha256', $donnees, $clef . $methode . $formatMime . $timestamp, true));
+
+            $signature = 'Authorization: ARS ' . $nomUtil . ':' . $encode;
+        }
+
+        return $signature;
     }
 }

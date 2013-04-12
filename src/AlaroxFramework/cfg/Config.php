@@ -17,10 +17,8 @@ class Config
     private static $valeursMinimales = array(
         'Website_version',
         'RestServer',
-        'TemplateConfig',
+        'TemplateVars',
         'InternationalizationConfig',
-        'TemplateConfig.Name',
-        'TemplateConfig.Media_url',
         'RestServer.Url',
         'RestServer.Format',
         'RestServer.Username',

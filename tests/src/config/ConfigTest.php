@@ -10,7 +10,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     protected static $cfgTest = array(
         'Website_version' => 'dev',
-        'TemplateConfig' => array(
+        'TemplateVars' => array(
             'Name' => 'WebName',
             'Media_url' => 'http://media.addr.com'
         ),
@@ -87,7 +87,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testValeursMinimales()
     {
         $tableauConfigTest = self::$cfgTest;
-        unset($tableauConfigTest['TemplateConfig']);
+        unset($tableauConfigTest['TemplateVars']);
         $this->setFakeCfg($tableauConfigTest);
     }
 
@@ -95,12 +95,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->setFakeCfg(self::$cfgTest);
 
-        $this->assertEquals('WebName', $this->_config->getConfigValeur('TemplateConfig.name'));
+        $this->assertEquals('WebName', $this->_config->getConfigValeur('TemplateVars.name'));
         $this->assertEquals(
             array(
                 'Name' => 'WebName',
                 'Media_url' => 'http://media.addr.com'
-            ), $this->_config->getConfigValeur('TemplateConfig')
+            ), $this->_config->getConfigValeur('TemplateVars')
         );
     }
 
