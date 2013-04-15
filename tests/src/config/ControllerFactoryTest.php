@@ -37,7 +37,9 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(
             '\\Tests\\fakecontrollers\\TestCtrl',
-            $this->_ctrlFactory->{'testctrl'}($this->getMock('AlaroxFramework\traitement\restclient\RestClient'), array())
+            $this->_ctrlFactory->{'testctrl'}(
+                $this->getMock('AlaroxFramework\traitement\restclient\RestClient'), array()
+            )
         );
     }
 

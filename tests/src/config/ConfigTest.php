@@ -17,7 +17,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         'RestServer' => array(
             'Url' => 'http://google.fr/',
             'Format' => 'json',
-            'Authentification' => array (
+            'Authentification' => array(
                 'Enabled' => true,
                 'Method' => 'method',
                 'Username' => 'user',

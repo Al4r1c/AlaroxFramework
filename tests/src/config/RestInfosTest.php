@@ -124,7 +124,8 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
         $this->_restInfos->setAuthentifEnabled('exception');
     }
 
-    public function testSetMethode() {
+    public function testSetMethode()
+    {
         $this->_restInfos->setAuthentifMethode('maMethode');
 
         $this->assertEquals('maMethode', $this->_restInfos->getAuthentifMethode());
@@ -133,7 +134,8 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testSetMethodeString() {
+    public function testSetMethodeString()
+    {
         $this->_restInfos->setAuthentifMethode(array());
     }
 }

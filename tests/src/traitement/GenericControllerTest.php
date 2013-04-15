@@ -60,7 +60,8 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $this->_genericCtrl->setVariablesRequete('exception');
     }
 
-    public function testGetUneVariable() {
+    public function testGetUneVariable()
+    {
         $this->_genericCtrl->setVariablesRequete(array('paramKey' => 'maVar'));
 
         $class = new \ReflectionClass('AlaroxFramework\traitement\controller\GenericController');
