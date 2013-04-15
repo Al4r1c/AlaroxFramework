@@ -53,6 +53,7 @@ class Config
         }
 
         $this->_tabConfiguration['ControllerConfig']['RestServer'] = $restInfos;
+        unset($this->_tabConfiguration['RestServer']);
     }
 
     /**
