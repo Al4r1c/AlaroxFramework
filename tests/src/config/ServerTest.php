@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Config;
 
-use AlaroxFramework\cfg\Server;
+use AlaroxFramework\cfg\configs\Server;
 
 class ServerTest extends \PHPUnit_Framework_TestCase
 {

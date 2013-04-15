@@ -58,7 +58,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->setFakeCfg(self::$cfgTest);
 
-        $this->assertAttributeCount(5, '_tabConfiguration', $this->_config);
+        $this->assertAttributeCount(4, '_tabConfiguration', $this->_config);
     }
 
     /**
@@ -134,7 +134,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetServer()
     {
-        $server = $this->getMock('AlaroxFramework\cfg\Server', array('getUneVariableServeur'));
+        $server = $this->getMock('AlaroxFramework\cfg\configs\Server', array('getUneVariableServeur'));
         $server->expects($this->once())
             ->method('getUneVariableServeur')
             ->with('REQUEST_URI_NODIR')
@@ -155,7 +155,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRestInfos()
     {
-        $routeMap = $this->getMock('AlaroxFramework\cfg\RestInfos');
+        $routeMap = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
 
         $this->_config->setRestInfos($routeMap);
 
@@ -172,7 +172,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetControllerFactory()
     {
-        $ctrlFactory = $this->getMock('AlaroxFramework\cfg\ControllerFactory');
+        $ctrlFactory = $this->getMock('AlaroxFramework\cfg\configs\ControllerFactory');
 
         $this->_config->setControllerFactory($ctrlFactory);
 

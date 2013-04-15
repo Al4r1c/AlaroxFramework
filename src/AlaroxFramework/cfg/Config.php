@@ -2,6 +2,9 @@
 namespace AlaroxFramework\cfg;
 
 use AlaroxFileManager\FileManager\File;
+use AlaroxFramework\cfg\configs\ControllerFactory;
+use AlaroxFramework\cfg\configs\RestInfos;
+use AlaroxFramework\cfg\configs\Server;
 use AlaroxFramework\cfg\route\RouteMap;
 
 class Config

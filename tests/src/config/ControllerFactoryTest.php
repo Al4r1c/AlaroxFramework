@@ -1,7 +1,7 @@
 <?php
 namespace Tests\config;
 
-use AlaroxFramework\cfg\ControllerFactory;
+use AlaroxFramework\cfg\configs\ControllerFactory;
 
 class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 {

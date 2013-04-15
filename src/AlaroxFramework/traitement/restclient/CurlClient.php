@@ -1,7 +1,7 @@
 <?php
 namespace AlaroxFramework\traitement\restclient;
 
-use AlaroxFramework\cfg\RestInfos;
+use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\utils\Curl;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;

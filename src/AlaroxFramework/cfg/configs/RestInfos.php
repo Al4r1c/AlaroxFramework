@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\cfg;
+namespace AlaroxFramework\cfg\configs;
 
 use AlaroxFramework\utils\Tools;
 

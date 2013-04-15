@@ -1,8 +1,8 @@
 <?php
 namespace AlaroxFramework\traitement;
 
-use AlaroxFramework\cfg\ControllerFactory;
-use AlaroxFramework\cfg\RestInfos;
+use AlaroxFramework\cfg\configs\ControllerFactory;
+use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\route\Route;
 use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\traitement\restclient\RestClient;

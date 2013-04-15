@@ -78,7 +78,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuterObjetRequeteTest()
     {
-        $this->_curlClient->executer($this->getMock('\AlaroxFramework\cfg\RestInfos'), 'exception');
+        $this->_curlClient->executer($this->getMock('\AlaroxFramework\cfg\configs\RestInfos'), 'exception');
     }
 
     /**
@@ -87,7 +87,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
     public function testExecuterCurlNotSet()
     {
         $this->_curlClient->executer(
-            $this->getMock('\AlaroxFramework\cfg\RestInfos'), $this->getMock('\AlaroxFramework\utils\ObjetRequete')
+            $this->getMock('\AlaroxFramework\cfg\configs\RestInfos'), $this->getMock('\AlaroxFramework\utils\ObjetRequete')
         );
     }
 
@@ -101,7 +101,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
 
         $parser = $this->getMock('\AlaroxFramework\utils\parser\Parser', array('parse'));
         $curl = $this->getMock('\AlaroxFramework\utils\Curl', array('executer', 'ajouterOption', 'ajouterHeaders'));
-        $restInfos = $this->getMock('\AlaroxFramework\cfg\RestInfos', array('isAuthEnabled', 'getFormatEnvoi'));
+        $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos', array('isAuthEnabled', 'getFormatEnvoi'));
         $objetRequete =
             $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp', 'getBody'));
 
@@ -150,7 +150,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
     public function testExecuterNoAuthInvalidMethod()
     {
         $curl = $this->getMock('\AlaroxFramework\utils\Curl');
-        $restInfos = $this->getMock('\AlaroxFramework\cfg\RestInfos');
+        $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos');
         $objetRequete = $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp'));
 
         $objetRequete->expects($this->once())->method('getUri')->will($this->returnValue('/mon/uri'));
@@ -176,7 +176,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
             );
         $restInfos =
             $this->getMock(
-                '\AlaroxFramework\cfg\RestInfos',
+                '\AlaroxFramework\cfg\configs\RestInfos',
                 array('isAuthEnabled', 'getFormatEnvoi', 'getPrivateKey', 'getUsername', 'getAuthentifMethode')
             );
         $objetRequete =

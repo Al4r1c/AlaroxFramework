@@ -17,7 +17,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRestInfos()
     {
-        $restInfos = $this->getMock('AlaroxFramework\cfg\RestInfos');
+        $restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
 
         $this->_restClient->setRestInfos($restInfos);
 
@@ -52,7 +52,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     public function testExecute()
     {
         $curlClient = $this->getMock('AlaroxFramework\traitement\restclient\CurlClient', array('executer'));
-        $restInfos = $this->getMock('AlaroxFramework\cfg\RestInfos');
+        $restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
         $objetRequete = $this->getMock('AlaroxFramework\Utils\ObjetRequete');
         $objetReponse = $this->getMock('AlaroxFramework\Utils\ObjetReponse');
 

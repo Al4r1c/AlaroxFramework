@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Config;
 
-use AlaroxFramework\cfg\RestInfos;
+use AlaroxFramework\cfg\configs\RestInfos;
 
 class RestInfosTest extends \PHPUnit_Framework_TestCase
 {
