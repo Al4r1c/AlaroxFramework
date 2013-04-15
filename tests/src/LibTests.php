@@ -20,6 +20,8 @@ class LibTests
         $suite->addTestSuite('\Tests\lib\ObjetReponseTest');
         $suite->addTestSuite('\Tests\lib\ObjetRequeteTest');
         $suite->addTestSuite('\Tests\lib\ToolsTest');
+        $suite->addTestSuite('\Tests\lib\ParserTest');
+        $suite->addTestSuite('\Tests\lib\ParserFactoryTest');
         $suite->addTestSuite('\Tests\lib\UnparserTest');
         $suite->addTestSuite('\Tests\lib\UnparserFactoryTest');
         $suite->addTestSuite('\Tests\lib\ViewTest');
@@ -30,5 +32,5 @@ class LibTests
 }
 
 if (PHPUnit_MAIN_METHOD == 'LibTests::main') {
-    ConfigTests::main();
+    LibTests::main();
 }

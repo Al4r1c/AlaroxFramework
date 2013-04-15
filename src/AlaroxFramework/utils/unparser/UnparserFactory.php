@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\utils\unparse;
+namespace AlaroxFramework\utils\unparser;
 
 class UnparserFactory
 {

@@ -1,11 +1,11 @@
 <?php
-namespace AlaroxFramework\utils\unparse;
+namespace AlaroxFramework\utils\unparser;
 
 class Json extends AbstractUnparser
 {
     /**
      * @param string $donnees
-     * @return string
+     * @return array
      */
     public function toArray($donnees)
     {

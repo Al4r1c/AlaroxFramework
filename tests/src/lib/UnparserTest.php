@@ -1,7 +1,7 @@
 <?php
 namespace Tests\lib;
 
-use AlaroxFramework\utils\unparse\Unparser;
+use AlaroxFramework\utils\unparser\Unparser;
 
 class UnparserTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,7 +17,7 @@ class UnparserTest extends \PHPUnit_Framework_TestCase
 
     public function testSetUnparserFactory()
     {
-        $unParserFactory = $this->getMock('\\AlaroxFramework\\utils\\unparse\\UnparserFactory');
+        $unParserFactory = $this->getMock('\\AlaroxFramework\\utils\\unparser\\UnparserFactory');
 
         $this->_unparser->setUnparserFactory($unParserFactory);
 
@@ -34,8 +34,8 @@ class UnparserTest extends \PHPUnit_Framework_TestCase
 
     public function testToArray()
     {
-        $unParserFactory = $this->getMock('\\AlaroxFramework\\utils\\unparse\\UnparserFactory', array('getClass'));
-        $abstractUnparser = $this->getMockForAbstractClass('\\AlaroxFramework\\utils\\unparse\\AbstractUnparser');
+        $unParserFactory = $this->getMock('\\AlaroxFramework\\utils\\unparser\\UnparserFactory', array('getClass'));
+        $abstractUnparser = $this->getMockForAbstractClass('\\AlaroxFramework\\utils\\unparser\\AbstractUnparser');
 
         $unParserFactory->expects($this->once())
             ->method('getClass')

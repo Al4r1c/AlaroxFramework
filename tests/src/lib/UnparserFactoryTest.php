@@ -1,7 +1,7 @@
 <?php
 namespace Tests\lib;
 
-use AlaroxFramework\utils\unparse\UnparserFactory;
+use AlaroxFramework\utils\unparser\UnparserFactory;
 
 class UnparserFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,12 +25,12 @@ class UnparserFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testJsonClass()
     {
-        $this->assertInstanceOf('\\AlaroxFramework\\utils\\unparse\\Json', $this->_unparserFactory->getClass('json'));
+        $this->assertInstanceOf('\\AlaroxFramework\\utils\\unparser\\Json', $this->_unparserFactory->getClass('json'));
     }
 
     public function testXmlClass()
     {
-        $this->assertInstanceOf('\\AlaroxFramework\\utils\\unparse\\Xml', $this->_unparserFactory->getClass('xml'));
+        $this->assertInstanceOf('\\AlaroxFramework\\utils\\unparser\\Xml', $this->_unparserFactory->getClass('xml'));
     }
 
     public function testJsonToArray()
