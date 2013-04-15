@@ -39,6 +39,10 @@ class AlaroxFramework
             throw new \InvalidArgumentException('Expected Config.');
         }
 
+        if (strcmp(strtolower($config->getConfigValeur('Website_version')), 'prod') != 0) {
+            $this->_conteneur->getErreurHandler()->setHandler();
+        }
+
         $this->_config = $config;
     }
 

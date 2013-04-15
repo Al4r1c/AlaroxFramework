@@ -8,6 +8,7 @@ use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\configs\Server;
 use AlaroxFramework\cfg\route\RouteMap;
+use AlaroxFramework\exceptions\ErreurHandler;
 use AlaroxFramework\traitement\Dispatcher;
 use AlaroxFramework\traitement\restclient\CurlClient;
 use AlaroxFramework\traitement\restclient\RestClient;
@@ -26,6 +27,14 @@ class Conteneur
         $alaroxFile = new AlaroxFile();
 
         return $alaroxFile->getFile($cheminVersFichier);
+    }
+
+    /**
+     * @return ErreurHandler
+     */
+    public function getErreurHandler()
+    {
+        return new ErreurHandler();
     }
 
     /**
