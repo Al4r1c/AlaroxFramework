@@ -31,7 +31,7 @@ class View
 
     /**
      * @param string $viewName
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      * @return $this
      */
     public function renderView($viewName)
@@ -39,7 +39,7 @@ class View
         $pathInfo = pathinfo($viewName);
 
         if (!isset($pathInfo['extension']) || strcmp($pathInfo['extension'], 'twig') != 0) {
-            throw new \Exception('Expected twig template.');
+            throw new \InvalidArgumentException('Expected twig template.');
         }
 
         $this->_viewName = $viewName;
@@ -50,17 +50,17 @@ class View
     /**
      * @param string $key
      * @param mixed $value
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      * @return $this
      */
     public function with($key, $value)
     {
         if (empty($key)) {
-            throw new \Exception('Variable key is empty.');
+            throw new \InvalidArgumentException('Variable key is empty.');
         }
 
         if (is_callable($value) || is_resource($value)) {
-            throw new \Exception(sprintf('Invalid value type for key %s.', $key));
+            throw new \InvalidArgumentException(sprintf('Invalid value type for key %s.', $key));
         }
 
         $this->_variables[$key] = $value;
@@ -70,18 +70,34 @@ class View
 
     /**
      * @param array $mapVar
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      * @return $this
      */
     public function withMap($mapVar)
     {
         if (!is_array($mapVar)) {
-            throw new \Exception('Expected parameter 1 mapVar to be array.');
+            throw new \InvalidArgumentException('Expected parameter 1 mapVar to be array.');
         }
 
         foreach ($mapVar as $uneClef => $uneVariable) {
             $this->with($uneClef, $uneVariable);
         }
+
+        return $this;
+    }
+
+    /**
+     * @param ObjetReponse $objetReponse
+     * @throws \InvalidArgumentException
+     * @return $this
+     */
+    public function withResponseObject($objetReponse)
+    {
+        if (!$objetReponse instanceof ObjetReponse) {
+            throw new \InvalidArgumentException('Expected parameter 1 objetReponse to be instance of ObjetReponse.');
+        }
+
+        $this->with('responseObject', $objetReponse->toArray());
 
         return $this;
     }

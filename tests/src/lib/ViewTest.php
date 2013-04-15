@@ -28,7 +28,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \InvalidArgumentException
      */
     public function testSetViewNameExtensionTwig()
     {
@@ -52,7 +52,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \InvalidArgumentException
      */
     public function testWithValueInterdite()
     {
@@ -73,10 +73,32 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \InvalidArgumentException
      */
     public function testWithMapArray()
     {
         $this->_view->withMap('key');
+    }
+
+    public function testWithObjetReponse()
+    {
+        $objetReponse = $this->getMock('\\AlaroxFramework\\utils\\ObjetReponse', array('toArray'));
+        $objetReponse
+            ->expects($this->once())
+            ->method('toArray')
+            ->will($this->returnValue(array('idObj' => array('attribute' => 'valeur'))));
+
+        $this->_view->withResponseObject($objetReponse);
+
+        $this->assertCount(1, $this->_view->getVariables());
+        $this->assertArrayHasKey('responseObject', $this->_view->getVariables());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWithObjetReponseType()
+    {
+        $this->_view->withResponseObject(array());
     }
 }
