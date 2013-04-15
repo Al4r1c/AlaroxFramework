@@ -23,7 +23,7 @@ class ParserFactory
                 return new Plain();
                 break;
             default:
-                throw new \Exception(sprintf('Response format "%s" not supported.', $nomClasse));
+                throw new \Exception(sprintf('Format "%s" not supported for parsing.', $nomClasse));
                 break;
         }
     }

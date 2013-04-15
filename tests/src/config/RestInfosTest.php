@@ -83,6 +83,7 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
                 'Format' => 'json',
                 'Authentification' => array(
                     'Enabled' => true,
+                    'Method' => 'method',
                     'Username' => 'username',
                     'PassKey' => 'password'
                 )
@@ -121,6 +122,19 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
     public function testAuthentifEnableddErrone()
     {
         $this->_restInfos->setAuthentifEnabled('exception');
+    }
+
+    public function testSetMethode() {
+        $this->_restInfos->setAuthentifMethode('maMethode');
+
+        $this->assertEquals('maMethode', $this->_restInfos->getAuthentifMethode());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetMethodeString() {
+        $this->_restInfos->setAuthentifMethode(array());
     }
 }
 

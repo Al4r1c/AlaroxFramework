@@ -18,6 +18,11 @@ class RestInfos
     /**
      * @var string
      */
+    private $_authentifMethode;
+
+    /**
+     * @var string
+     */
     private $_username;
 
     /**
@@ -37,6 +42,7 @@ class RestInfos
         'Format',
         'Authentification',
         'Authentification.Enabled',
+        'Authentification.Method',
         'Authentification.Username',
         'Authentification.PassKey');
 
@@ -48,9 +54,20 @@ class RestInfos
         return $this->_formatEnvoi;
     }
 
+    /**
+     * @return bool
+     */
     public function isAuthEnabled()
     {
         return $this->_authentifEnabled;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthentifMethode()
+    {
+        return $this->_authentifMethode;
     }
 
     /**
@@ -101,6 +118,19 @@ class RestInfos
         }
 
         $this->_authentifEnabled = $authentifEnabled;
+    }
+
+    /**
+     * @param string $authentifMethode
+     * @throws \InvalidArgumentException
+     */
+    public function setAuthentifMethode($authentifMethode)
+    {
+        if (!is_string($authentifMethode)) {
+            throw new \InvalidArgumentException('Expected string for authentification method.');
+        }
+
+        $this->_authentifMethode = $authentifMethode;
     }
 
     /**

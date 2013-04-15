@@ -19,6 +19,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'Format' => 'json',
             'Authentification' => array (
                 'Enabled' => true,
+                'Method' => 'method',
                 'Username' => 'user',
                 'PassKey' => 'key'
             )
