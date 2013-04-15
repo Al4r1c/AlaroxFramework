@@ -43,7 +43,8 @@ class HtmlReponseTest extends \PHPUnit_Framework_TestCase
         $this->_htmlReponse->setStatusHttp(999);
     }
 
-    public function testSetHtml() {
+    public function testSetHtml()
+    {
         $this->_htmlReponse->setCorpsReponse('<html></html>');
 
         $this->assertEquals('<html></html>', $this->_htmlReponse->getCorpsReponse());

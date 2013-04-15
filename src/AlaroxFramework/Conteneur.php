@@ -9,6 +9,11 @@ use AlaroxFramework\cfg\RestInfos;
 use AlaroxFramework\cfg\Server;
 use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\traitement\Dispatcher;
+use AlaroxFramework\traitement\restclient\CurlClient;
+use AlaroxFramework\traitement\restclient\RestClient;
+use AlaroxFramework\utils\Curl;
+use AlaroxFramework\utils\parser\Parser;
+use AlaroxFramework\utils\parser\ParserFactory;
 
 class Conteneur
 {
@@ -124,7 +129,45 @@ class Conteneur
 
         $dispatcher = new Dispatcher();
         $dispatcher->parseConfig($config->getConfigValeur('ControllerConfig'));
+        $dispatcher->setRestClient($this->getRestClient($dispatcher->getRestInfos()));
 
         return $dispatcher;
+    }
+
+    /**
+     * @param RestInfos $restInfos
+     * @return RestClient
+     */
+    private function getRestClient($restInfos)
+    {
+        $restClient = new RestClient();
+        $restClient->setRestInfos($restInfos);
+        $restClient->setCurlClient($this->getCurlClient());
+
+        return $restClient;
+    }
+
+    /**
+     * @return CurlClient
+     */
+    private function getCurlClient()
+    {
+        $curlClient = new CurlClient();
+        $curlClient->setCurl(new Curl());
+        $curlClient->setParser($this->getParser());
+        $curlClient->setTime(time());
+
+        return $curlClient;
+    }
+
+    /**
+     * @return Parser
+     */
+    private function getParser()
+    {
+        $parser = new Parser();
+        $parser->setParserFactory(new ParserFactory());
+
+        return $parser;
     }
 }

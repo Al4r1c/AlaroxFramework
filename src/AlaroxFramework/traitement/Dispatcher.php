@@ -5,7 +5,6 @@ use AlaroxFramework\cfg\ControllerFactory;
 use AlaroxFramework\cfg\RestInfos;
 use AlaroxFramework\cfg\route\Route;
 use AlaroxFramework\cfg\route\RouteMap;
-use AlaroxFramework\traitement\restclient\CurlClient;
 use AlaroxFramework\traitement\restclient\RestClient;
 use AlaroxFramework\utils\View;
 
@@ -32,6 +31,19 @@ class Dispatcher
     private $_routeMap;
 
     /**
+     * @var RestClient
+     */
+    private $_restClient;
+
+    /**
+     * @return RestInfos
+     */
+    public function getRestInfos()
+    {
+        return $this->_restInfos;
+    }
+
+    /**
      * @param string $uriDemandee
      * @throws \Exception
      */
@@ -55,6 +67,19 @@ class Dispatcher
         }
 
         $this->_controllerFactory = $controllerFactory;
+    }
+
+    /**
+     * @param RestClient $restClient
+     * @throws \InvalidArgumentException
+     */
+    public function setRestClient($restClient)
+    {
+        if (!$restClient instanceof RestClient) {
+            throw new \InvalidArgumentException('Expected parameter 1 restClient to be RestClient.');
+        }
+
+        $this->_restClient = $restClient;
     }
 
     /**
@@ -92,18 +117,6 @@ class Dispatcher
         $this->setRestInfos($tabConfig['RestServer']);
         $this->setRouteMap($tabConfig['RouteMap']);
         $this->setControllerFactory($tabConfig['CtrlFactory']);
-    }
-
-    /**
-     * @return RestClient
-     */
-    private function getRestClient()
-    {
-        $restClient = new RestClient();
-        $restClient->setRestInfos($this->_restInfos);
-        $restClient->setCurlClient(new CurlClient());
-
-        return $restClient;
     }
 
     /**
@@ -157,7 +170,7 @@ class Dispatcher
 
         try {
             $controlleur =
-                $this->_controllerFactory->{$nomClasseController}($this->getRestClient(), $tabVariablesRequete);
+                $this->_controllerFactory->{$nomClasseController}($this->_restClient, $tabVariablesRequete);
         } catch (\Exception $uneException) {
             throw new \Exception(sprintf(
                 'Can\'t load controller "%s" for uri "%s": %s.', $nomClasseController, $this->_uriDemandee,

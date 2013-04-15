@@ -32,9 +32,9 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
 
     public function testSetPassword()
     {
-        $this->_restInfos->setPassword('PWD');
+        $this->_restInfos->setPrivateKey('PWD');
 
-        $this->assertEquals('PWD', $this->_restInfos->getPassword());
+        $this->assertEquals('PWD', $this->_restInfos->getPrivateKey());
     }
 
     /**
@@ -42,7 +42,7 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetPasswordFausse()
     {
-        $this->_restInfos->setPassword(array());
+        $this->_restInfos->setPrivateKey(array());
     }
 
     public function testSetUrl()

@@ -82,7 +82,6 @@ class Config
 
         foreach (self::$valeursMinimales as $uneValeurMinimale) {
             if (is_null(array_multisearch($uneValeurMinimale, $tabCfg, true))) {
-                var_dump($uneValeurMinimale);
                 throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
             }
         }

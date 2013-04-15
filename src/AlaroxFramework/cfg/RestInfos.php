@@ -28,7 +28,7 @@ class RestInfos
     /**
      * @var string
      */
-    private $_password;
+    private $_privateKey;
 
     /**
      * @var string
@@ -73,9 +73,9 @@ class RestInfos
     /**
      * @return string
      */
-    public function getPassword()
+    public function getPrivateKey()
     {
-        return $this->_password;
+        return $this->_privateKey;
     }
 
     /**
@@ -137,13 +137,13 @@ class RestInfos
      * @param string $password
      * @throws \InvalidArgumentException
      */
-    public function setPassword($password)
+    public function setPrivateKey($password)
     {
         if (!is_string($password)) {
             throw new \InvalidArgumentException('Expected string for password.');
         }
 
-        $this->_password = $password;
+        $this->_privateKey = $password;
     }
 
     /**
@@ -192,7 +192,8 @@ class RestInfos
         $this->setUrl($tabRestInfos['Url']);
         $this->setFormatEnvoi($tabRestInfos['Format']);
         $this->setAuthentifEnabled($tabRestInfos['Authentification']['Enabled']);
+        $this->setAuthentifMethode($tabRestInfos['Authentification']['Method']);
         $this->setUsername($tabRestInfos['Authentification']['Username']);
-        $this->setPassword($tabRestInfos['Authentification']['PassKey']);
+        $this->setPrivateKey($tabRestInfos['Authentification']['PassKey']);
     }
 }
