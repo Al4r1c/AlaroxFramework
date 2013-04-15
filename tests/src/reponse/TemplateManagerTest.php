@@ -35,6 +35,21 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
         $this->_templateManager->setTwigEnv('raye');
     }
 
+    public function testGlobalVar()
+    {
+        $this->_templateManager->setGlobalVar($globalVar = array('title' => 'mon titre'));
+
+        $this->assertAttributeSame($globalVar, '_globalVar', $this->_templateManager);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testGlobalVarType()
+    {
+        $this->_templateManager->setGlobalVar('exception');
+    }
+
     public function testRender()
     {
         $viewName = 'monTpl.twig';
@@ -59,6 +74,34 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->_templateManager->setTwigEnv($twigEnv);
         $this->assertEquals('My template as string', $this->_templateManager->render($view));
+    }
+
+    public function testRenderAvecGlobalVar()
+    {
+        $viewName = 'monTpl.twig';
+        $tabVar = array('id' => array('attr' => 'valeur'));
+        $globalVar = array('title' => 'mon titre');
+
+        $view = $this->getMock('\\AlaroxFramework\\utils\\View', array('getViewName', 'getVariables'));
+        $twigEnv = $this->getMock('\\Twig_Environment', array('loadTemplate'));
+        $twigTemplate = $this->getMockForAbstractClass('\\Twig_TemplateInterface');
+
+        $view->expects($this->once())->method('getViewName')->will($this->returnValue($viewName));
+        $view->expects($this->once())->method('getVariables')->will(
+            $this->returnValue($tabVar)
+        );
+
+        $twigEnv->expects($this->once())->method('loadTemplate')->with($viewName)->will(
+            $this->returnValue($twigTemplate)
+        );
+
+        $twigTemplate->expects($this->once())->method('render')->with($globalVar + $tabVar)->will(
+            $this->returnValue('My other template')
+        );
+
+        $this->_templateManager->setTwigEnv($twigEnv);
+        $this->_templateManager->setGlobalVar($globalVar);
+        $this->assertEquals('My other template', $this->_templateManager->render($view));
     }
 
     /**

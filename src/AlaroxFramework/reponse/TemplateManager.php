@@ -11,6 +11,11 @@ class TemplateManager
     private $_twigEnv;
 
     /**
+     * @var array
+     */
+    private $_globalVar = array();
+
+    /**
      * @param \Twig_Environment $twigEnv
      * @throws \InvalidArgumentException
      */
@@ -21,6 +26,19 @@ class TemplateManager
         }
 
         $this->_twigEnv = $twigEnv;
+    }
+
+    /**
+     * @param array $generalVar
+     * @throws \InvalidArgumentException
+     */
+    public function setGlobalVar($generalVar)
+    {
+        if (!is_array($generalVar)) {
+            throw new \InvalidArgumentException('Expected parameter 1 generalVar to be array.');
+        }
+
+        $this->_globalVar = $generalVar;
     }
 
     /**
@@ -41,6 +59,6 @@ class TemplateManager
 
         $template = $this->_twigEnv->loadTemplate($view->getViewName());
 
-        return $template->render($view->getVariables());
+        return $template->render($view->getVariables() + $this->_globalVar);
     }
 }
