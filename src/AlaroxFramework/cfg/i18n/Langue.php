@@ -1,7 +1,7 @@
 <?php
 namespace AlaroxFramework\cfg\i18n;
 
-class LangueDispo
+class Langue
 {
     /**
      * @var string

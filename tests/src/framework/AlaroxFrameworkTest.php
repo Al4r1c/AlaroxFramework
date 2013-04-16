@@ -95,7 +95,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
     {
         $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
-        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('getVersion'));
+        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
 
 
         $dispatcher
@@ -109,8 +109,8 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($dispatcher));
 
         $config->expects($this->atLeastOnce())
-            ->method('getVersion')
-            ->will($this->returnValue('dev'));
+            ->method('isProdVersion')
+            ->will($this->returnValue(false));
 
 
         $this->_framework->setConteneur($conteneur);
@@ -123,7 +123,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
     {
         $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
-        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('getVersion'));
+        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
 
 
         $dispatcher
@@ -137,8 +137,8 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($dispatcher));
 
         $config->expects($this->atLeastOnce())
-            ->method('getVersion')
-            ->will($this->returnValue('prod'));
+            ->method('isProdVersion')
+            ->will($this->returnValue(true));
 
 
         $this->_framework->setConteneur($conteneur);

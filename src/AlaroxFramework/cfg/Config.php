@@ -6,7 +6,7 @@ use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\configs\Server;
 use AlaroxFramework\cfg\i18n\Internationalization;
-use AlaroxFramework\cfg\i18n\LangueDispo;
+use AlaroxFramework\cfg\i18n\Langue;
 use AlaroxFramework\cfg\route\RouteMap;
 
 class Config
@@ -240,7 +240,7 @@ class Config
             $i18n->setActif(true);
             $i18n->setLangueDefaut($langue);
             foreach ($languesDispos as $clef => $langueDispo) {
-                $langueDispoObj = new LangueDispo();
+                $langueDispoObj = new Langue();
                 $langueDispoObj->setIdentifiant($clef);
                 $langueDispoObj->setAlias($langueDispo['alias']);
                 $langueDispoObj->setNomFichier($langueDispo['filename']);

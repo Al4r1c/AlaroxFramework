@@ -56,8 +56,8 @@ class InternationalizationTest extends \PHPUnit_Framework_TestCase
 
     public function testAddLangueDispo()
     {
-        $this->_i18nConfig->addLanguesDispo($uneLangue = $this->getMock('\\AlaroxFramework\\cfg\\i18n\\LangueDispo'));
-        $this->_i18nConfig->addLanguesDispo($this->getMock('\\AlaroxFramework\\cfg\\i18n\\LangueDispo'));
+        $this->_i18nConfig->addLanguesDispo($uneLangue = $this->getMock('\\AlaroxFramework\\cfg\\i18n\\Langue'));
+        $this->_i18nConfig->addLanguesDispo($this->getMock('\\AlaroxFramework\\cfg\\i18n\\Langue'));
 
         $this->assertAttributeContains($uneLangue, '_languesDispo', $this->_i18nConfig);
         $this->assertAttributeCount(2, '_languesDispo', $this->_i18nConfig);
@@ -73,7 +73,7 @@ class InternationalizationTest extends \PHPUnit_Framework_TestCase
 
     public function testGetLanguesDispoByAlias()
     {
-        $uneLangue = $this->getMock('\\AlaroxFramework\\cfg\\i18n\\LangueDispo');
+        $uneLangue = $this->getMock('\\AlaroxFramework\\cfg\\i18n\\Langue');
         $uneLangue->expects($this->once())->method('getAlias')->will($this->returnValue('fr'));
 
         $this->_i18nConfig->addLanguesDispo($uneLangue);

@@ -19,7 +19,7 @@ class ConfigTests
         $suite->addTestSuite('\Tests\config\ConfigTest');
         $suite->addTestSuite('\Tests\config\ControllerFactoryTest');
         $suite->addTestSuite('\Tests\config\InternationalizationTest');
-        $suite->addTestSuite('\Tests\config\LangueDispoTest');
+        $suite->addTestSuite('\Tests\config\LangueTest');
         $suite->addTestSuite('\Tests\config\RestInfosTest');
         $suite->addTestSuite('\Tests\config\RouteTest');
         $suite->addTestSuite('\Tests\config\RouteMapTest');

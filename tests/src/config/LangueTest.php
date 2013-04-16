@@ -1,23 +1,23 @@
 <?php
 namespace Tests\Config;
 
-use AlaroxFramework\cfg\i18n\LangueDispo;
+use AlaroxFramework\cfg\i18n\Langue;
 
-class LangueDispoTest extends \PHPUnit_Framework_TestCase
+class LangueTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var LangueDispo
+     * @var Langue
      */
     private $_langueDispo;
 
     public function setUp()
     {
-        $this->_langueDispo = new LangueDispo();
+        $this->_langueDispo = new Langue();
     }
 
     public function testInstance()
     {
-        $this->assertInstanceOf('\\AlaroxFramework\\cfg\\i18n\\LangueDispo', $this->_langueDispo);
+        $this->assertInstanceOf('\\AlaroxFramework\\cfg\\i18n\\Langue', $this->_langueDispo);
     }
 
     public function testAlias()

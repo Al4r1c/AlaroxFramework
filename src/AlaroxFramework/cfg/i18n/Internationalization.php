@@ -14,7 +14,7 @@ class Internationalization
     private $_langueDefaut;
 
     /**
-     * @var LangueDispo[]
+     * @var Langue[]
      */
     private $_languesDispo = array();
 
@@ -36,7 +36,7 @@ class Internationalization
 
     /**
      * @param string $alias
-     * @return LangueDispo
+     * @return Langue
      */
     public function getLanguesDispoByAlias($alias)
     {
@@ -76,12 +76,12 @@ class Internationalization
     }
 
     /**
-     * @param LangueDispo $languesDispo
+     * @param Langue $languesDispo
      * @throws \InvalidArgumentException
      */
     public function addLanguesDispo($languesDispo)
     {
-        if (!$languesDispo instanceof LangueDispo) {
+        if (!$languesDispo instanceof Langue) {
             throw new \InvalidArgumentException('Expected parameter 1 languesDispo to be instance of LanguesDispo.');
         }
 
