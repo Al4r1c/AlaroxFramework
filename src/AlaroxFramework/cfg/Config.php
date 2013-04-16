@@ -44,6 +44,11 @@ class Config
     /**
      * @var array
      */
+    private $_globals;
+
+    /**
+     * @var array
+     */
     private static $valeursMinimales = array(
         'Website_version',
         'RestServer',
@@ -73,6 +78,14 @@ class Config
     public function getCtrlFactory()
     {
         return $this->_ctrlFactory;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGlobals()
+    {
+        return $this->_globals;
     }
 
     /**
@@ -108,6 +121,45 @@ class Config
     }
 
     /**
+     * @param ControllerFactory $controllerFactory
+     * @throws \InvalidArgumentException
+     */
+    public function setCtrlFactory($controllerFactory)
+    {
+        if (!$controllerFactory instanceof ControllerFactory) {
+            throw new \InvalidArgumentException('Expected parameter 1 controllerFactory to be instance of ControllerFactory.');
+        }
+
+        $this->_ctrlFactory = $controllerFactory;
+    }
+
+    /**
+     * @param array $globals
+     * @throws \InvalidArgumentException
+     */
+    public function setGlobals($globals)
+    {
+        if (!is_array($globals)) {
+            throw new \InvalidArgumentException('Expected parameter 1 globals to be array.');
+        }
+
+        $this->_globals = $globals;
+    }
+
+    /**
+     * @param Internationalization $i18n
+     * @throws \InvalidArgumentException
+     */
+    public function setI18nConfig($i18n)
+    {
+        if (!$i18n instanceof Internationalization) {
+            throw new \InvalidArgumentException('Expected parameter 1 i18n to be instance of Internationalization.');
+        }
+
+        $this->_i18nConfig = $i18n;
+    }
+
+    /**
      * @param RouteMap $routeMap
      * @throws \InvalidArgumentException
      */
@@ -131,32 +183,6 @@ class Config
         }
 
         $this->_restInfos = $restInfos;
-    }
-
-    /**
-     * @param Internationalization $i18n
-     * @throws \InvalidArgumentException
-     */
-    public function setI18nConfig($i18n)
-    {
-        if (!$i18n instanceof Internationalization) {
-            throw new \InvalidArgumentException('Expected parameter 1 i18n to be instance of Internationalization.');
-        }
-
-        $this->_i18nConfig = $i18n;
-    }
-
-    /**
-     * @param ControllerFactory $controllerFactory
-     * @throws \InvalidArgumentException
-     */
-    public function setControllerFactory($controllerFactory)
-    {
-        if (!$controllerFactory instanceof ControllerFactory) {
-            throw new \InvalidArgumentException('Expected parameter 1 server to be Server.');
-        }
-
-        $this->_ctrlFactory = $controllerFactory;
     }
 
     /**
@@ -199,6 +225,7 @@ class Config
         }
 
         $this->setVersion(array_multisearch('Website_version', $tabCfg, true));
+        $this->setGlobals(array_multisearch('TemplateVars', $tabCfg, true));
 
         $i18n = new Internationalization();
         if ($langueActif = array_multisearch('InternationalizationConfig.Enabled', $tabCfg, true) === true) {

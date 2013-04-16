@@ -109,9 +109,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRouteMap()
     {
-        $routeMap = $this->getMock('AlaroxFramework\cfg\route\RouteMap');
-
-        $this->_config->setRouteMap($routeMap);
+        $this->_config->setRouteMap($routeMap = $this->getMock('AlaroxFramework\cfg\route\RouteMap'));
 
         $this->assertSame($routeMap, $this->_config->getRouteMap());
     }
@@ -126,9 +124,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetServer()
     {
-        $server = $this->getMock('AlaroxFramework\cfg\configs\Server');
-
-        $this->_config->setServer($server);
+        $this->_config->setServer($server = $this->getMock('AlaroxFramework\cfg\configs\Server'));
 
         $this->assertSame($server, $this->_config->getServer());
     }
@@ -143,9 +139,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRestInfos()
     {
-        $restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
-
-        $this->_config->setRestInfos($restInfos);
+        $this->_config->setRestInfos($restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos'));
 
         $this->assertSame($restInfos, $this->_config->getRestInfos());
     }
@@ -160,9 +154,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetControllerFactory()
     {
-        $ctrlFactory = $this->getMock('AlaroxFramework\cfg\configs\ControllerFactory');
-
-        $this->_config->setControllerFactory($ctrlFactory);
+        $this->_config->setCtrlFactory($ctrlFactory = $this->getMock('AlaroxFramework\cfg\configs\ControllerFactory'));
 
         $this->assertSame($ctrlFactory, $this->_config->getCtrlFactory());
     }
@@ -172,14 +164,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetCtrlFactoErrone()
     {
-        $this->_config->setControllerFactory('yalll');
+        $this->_config->setCtrlFactory('yalll');
     }
 
     public function testSetI18n()
     {
-        $i18n = $this->getMock('AlaroxFramework\cfg\i18n\Internationalization');
-
-        $this->_config->setI18nConfig($i18n);
+        $this->_config->setI18nConfig($i18n = $this->getMock('AlaroxFramework\cfg\i18n\Internationalization'));
 
         $this->assertSame($i18n, $this->_config->getI18nConfig());
     }
@@ -190,5 +180,22 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testSetI18nType()
     {
         $this->_config->setI18nConfig('exception');
+    }
+
+    public function testSetGlobals()
+    {
+        $globals = array('varone' => 'valeurone');
+
+        $this->_config->setGlobals($globals);
+
+        $this->assertSame($globals, $this->_config->getGlobals());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetGlobalsArray()
+    {
+        $this->_config->setGlobals('exception');
     }
 }

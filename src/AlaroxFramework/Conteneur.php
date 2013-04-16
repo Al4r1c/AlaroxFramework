@@ -48,7 +48,7 @@ class Conteneur
         $config = new Config();
         $config->recupererConfigDepuisFichier($this->getFile($cheminVersFichierConfig));
         $config->setServer($this->getServer());
-        $config->setControllerFactory($this->getControllerFactory($repertoireControlleurs));
+        $config->setCtrlFactory($this->getControllerFactory($repertoireControlleurs));
 
         if (!empty($cheminVersRouteMap)) {
             $config->setRouteMap($this->getRoute($cheminVersRouteMap));
