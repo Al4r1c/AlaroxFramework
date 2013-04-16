@@ -39,7 +39,7 @@ class AlaroxFramework
             throw new \InvalidArgumentException('Expected Config.');
         }
 
-        if (strcmp(strtolower($config->getConfigValeur('Website_version')), 'prod') != 0) {
+        if (strcmp(strtolower($config->getVersion()), 'prod') == 0) {
             $this->_conteneur->getErreurHandler()->setHandler();
         }
 
@@ -72,7 +72,7 @@ class AlaroxFramework
         try {
             $reponse = $this->_conteneur->getDispatcher($this->_config)->executerActionRequise();
         } catch (\Exception $exception) {
-            if (strcmp(strtolower($this->_config->getConfigValeur('Website_version')), 'prod') == 0) {
+            if (strcmp(strtolower($this->_config->getVersion()), 'prod') == 0) {
                 return new HtmlReponse(404);
             } else {
                 throw $exception;

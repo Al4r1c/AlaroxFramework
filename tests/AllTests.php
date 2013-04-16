@@ -14,7 +14,8 @@ class AllTests
     {
         $suite = new \PHPUnit_Framework_TestSuite('AlaroxFramework Tests');
 
-        $suite->addTestSuite('\Tests\Framework\AlaroxFrameworkTest');
+        $suite->addTestSuite('\\Tests\\Framework\\AlaroxFrameworkTest');
+        $suite->addTestSuite('\\Tests\\Exceptions\\ErreurHandlerTest');
         $suite->addTest(\Tests\LibTests::suite());
         $suite->addTest(\Tests\ConfigTests::suite());
         $suite->addTest(\Tests\ReponseTests::suite());

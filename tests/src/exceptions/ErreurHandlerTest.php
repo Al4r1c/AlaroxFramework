@@ -38,7 +38,7 @@ class ErreurHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testErrorHandlerThrow()
     {
-        $errorReport = error_reporting(E_ALL);
+        error_reporting(E_ALL);
 
         $this->assertFalse($this->_erreurHandler->errorHandler(2, 'message', 'fichier', 10));
     }

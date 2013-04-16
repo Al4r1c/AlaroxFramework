@@ -5,14 +5,41 @@ use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\configs\Server;
+use AlaroxFramework\cfg\i18n\Internationalization;
+use AlaroxFramework\cfg\i18n\LangueDispo;
 use AlaroxFramework\cfg\route\RouteMap;
 
 class Config
 {
     /**
-     * @var array
+     * @var string
      */
-    private $_tabConfiguration = array();
+    private $_version;
+
+    /**
+     * @var RouteMAp
+     */
+    private $_routeMap;
+
+    /**
+     * @var ControllerFactory
+     */
+    private $_ctrlFactory;
+
+    /**
+     * @var RestInfos
+     */
+    private $_restInfos;
+
+    /**
+     * @var Internationalization
+     */
+    private $_i18nConfig;
+
+    /**
+     * @var Server
+     */
+    private $_server;
 
     /**
      * @var array
@@ -33,16 +60,64 @@ class Config
         'InternationalizationConfig.Available');
 
     /**
+     * @return Internationalization
+     */
+    public function getI18nConfig()
+    {
+        return $this->_i18nConfig;
+    }
+
+    /**
+     * @return ControllerFactory
+     */
+    public function getCtrlFactory()
+    {
+        return $this->_ctrlFactory;
+    }
+
+    /**
+     * @return RestInfos
+     */
+    public function getRestInfos()
+    {
+        return $this->_restInfos;
+    }
+
+    /**
+     * @return RouteMap
+     */
+    public function getRouteMap()
+    {
+        return $this->_routeMap;
+    }
+
+    /**
+     * @return Server
+     */
+    public function getServer()
+    {
+        return $this->_server;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->_version;
+    }
+
+    /**
      * @param RouteMap $routeMap
      * @throws \InvalidArgumentException
      */
     public function setRouteMap($routeMap)
     {
         if (!$routeMap instanceof RouteMap) {
-            throw new \InvalidArgumentException('Expected parameter 1 routeMap to be RouteMap.');
+            throw new \InvalidArgumentException('Expected parameter 1 routeMap to be instance of RouteMap.');
         }
 
-        $this->_tabConfiguration['ControllerConfig']['RouteMap'] = $routeMap;
+        $this->_routeMap = $routeMap;
     }
 
     /**
@@ -52,24 +127,57 @@ class Config
     public function setRestInfos($restInfos)
     {
         if (!$restInfos instanceof RestInfos) {
-            throw new \InvalidArgumentException('Expected paramete 1 restInfos to be RestInfos.');
+            throw new \InvalidArgumentException('Expected parameter 1 restInfos to be instance of RestInfos.');
         }
 
-        $this->_tabConfiguration['ControllerConfig']['RestServer'] = $restInfos;
-        unset($this->_tabConfiguration['RestServer']);
+        $this->_restInfos = $restInfos;
+    }
+
+    /**
+     * @param Internationalization $i18n
+     * @throws \InvalidArgumentException
+     */
+    public function setI18nConfig($i18n)
+    {
+        if (!$i18n instanceof Internationalization) {
+            throw new \InvalidArgumentException('Expected parameter 1 i18n to be instance of Internationalization.');
+        }
+
+        $this->_i18nConfig = $i18n;
+    }
+
+    /**
+     * @param ControllerFactory $controllerFactory
+     * @throws \InvalidArgumentException
+     */
+    public function setControllerFactory($controllerFactory)
+    {
+        if (!$controllerFactory instanceof ControllerFactory) {
+            throw new \InvalidArgumentException('Expected parameter 1 server to be Server.');
+        }
+
+        $this->_ctrlFactory = $controllerFactory;
     }
 
     /**
      * @param Server $server
      * @throws \InvalidArgumentException
      */
-    public function recupererUriDepuisServer($server)
+    public function setServer($server)
     {
         if (!$server instanceof Server) {
-            throw new \InvalidArgumentException('Expected parameter 1 server to be Server.');
+            throw new \InvalidArgumentException('Expected parameter 1 server to be instance of Server.');
         }
 
-        $this->_tabConfiguration['ControllerConfig']['Uri'] = $server->getUneVariableServeur('REQUEST_URI_NODIR');
+        $this->_server = $server;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function setVersion($version)
+    {
+        $this->_version = $version;
     }
 
     /**
@@ -90,40 +198,33 @@ class Config
             }
         }
 
-        if (!array_key_exists(
-            $langue = array_multisearch('InternationalizationConfig.Default_language', $tabCfg, true),
-            array_multisearch('InternationalizationConfig.Available', $tabCfg, true)
-        )
-        ) {
-            throw new \Exception(sprintf('Default language "%s" not found in available language list.', $langue));
-        }
+        $this->setVersion(array_multisearch('Website_version', $tabCfg, true));
 
-        $this->_tabConfiguration = array_merge($this->_tabConfiguration, $tabCfg);
+        $i18n = new Internationalization();
+        if ($langueActif = array_multisearch('InternationalizationConfig.Enabled', $tabCfg, true) === true) {
+            if (!array_key_exists(
+                $langue = array_multisearch('InternationalizationConfig.Default_language', $tabCfg, true),
+                $languesDispos = array_multisearch('InternationalizationConfig.Available', $tabCfg, true)
+            )
+            ) {
+                throw new \Exception(sprintf('Default language "%s" not found in available language list.', $langue));
+            }
+
+            $i18n->setActif(true);
+            $i18n->setLangueDefaut($langue);
+            foreach ($languesDispos as $clef => $langueDispo) {
+                $langueDispoObj = new LangueDispo();
+                $langueDispoObj->setIdentifiant($clef);
+                $langueDispoObj->setAlias($langueDispo['alias']);
+                $langueDispoObj->setNomFichier($langueDispo['filename']);
+                $i18n->addLanguesDispo($langueDispoObj);
+            }
+        }
+        $this->setI18nConfig($i18n);
+
 
         $restInfos = new RestInfos();
-        $restInfos->parseRestInfos($this->_tabConfiguration['RestServer']);
+        $restInfos->parseRestInfos($tabCfg['RestServer']);
         $this->setRestInfos($restInfos);
-    }
-
-    /**
-     * @param ControllerFactory $controllerFactory
-     * @throws \InvalidArgumentException
-     */
-    public function setControllerFactory($controllerFactory)
-    {
-        if (!$controllerFactory instanceof ControllerFactory) {
-            throw new \InvalidArgumentException('Expected parameter 1 server to be Server.');
-        }
-
-        $this->_tabConfiguration['ControllerConfig']['CtrlFactory'] = $controllerFactory;
-    }
-
-    /**
-     * @param string $clefConfig
-     * @return mixed|null
-     */
-    public function getConfigValeur($clefConfig)
-    {
-        return array_multisearch($clefConfig, $this->_tabConfiguration, true);
     }
 }

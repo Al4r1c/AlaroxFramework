@@ -109,17 +109,6 @@ class Dispatcher
     }
 
     /**
-     * @param array $tabConfig
-     */
-    public function parseConfig($tabConfig)
-    {
-        $this->setUriDemandee($tabConfig['Uri']);
-        $this->setRestInfos($tabConfig['RestServer']);
-        $this->setRouteMap($tabConfig['RouteMap']);
-        $this->setControllerFactory($tabConfig['CtrlFactory']);
-    }
-
-    /**
      * @return string|View
      * @throws \Exception
      */

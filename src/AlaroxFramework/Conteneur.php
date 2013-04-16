@@ -47,7 +47,7 @@ class Conteneur
     {
         $config = new Config();
         $config->recupererConfigDepuisFichier($this->getFile($cheminVersFichierConfig));
-        $config->recupererUriDepuisServer($this->getServer());
+        $config->setServer($this->getServer());
         $config->setControllerFactory($this->getControllerFactory($repertoireControlleurs));
 
         if (!empty($cheminVersRouteMap)) {
@@ -137,7 +137,10 @@ class Conteneur
         }
 
         $dispatcher = new Dispatcher();
-        $dispatcher->parseConfig($config->getConfigValeur('ControllerConfig'));
+        $dispatcher->setUriDemandee($config->getServer()->getUneVariableServeur('REQUEST_URI_NODIR'));
+        $dispatcher->setRestInfos($config->getRestInfos());
+        $dispatcher->setRouteMap($config->getRouteMap());
+        $dispatcher->setControllerFactory($config->getCtrlFactory());
         $dispatcher->setRestClient($this->getRestClient($dispatcher->getRestInfos()));
 
         return $dispatcher;

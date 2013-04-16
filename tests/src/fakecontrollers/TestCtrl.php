@@ -2,6 +2,8 @@
 namespace Tests\fakecontrollers;
 
 use AlaroxFramework\traitement\controller\GenericController;
+use AlaroxFramework\utils\ObjetRequete;
+use AlaroxFramework\utils\View;
 
 class TestCtrl extends GenericController
 {
@@ -23,5 +25,16 @@ class TestCtrl extends GenericController
     private function privatemethod()
     {
         return false;
+    }
+
+    public function sendRequest()
+    {
+        $view = new View();
+
+        $resultRequete = $this->getRestClient()->executerRequete(
+            new ObjetRequete('/produit', 'GET', array('_id' => $this->getUneVariableRequete('id')))
+        );
+
+        return $view->renderView('templatetest.twig')->withResponseObject($resultRequete);
     }
 }

@@ -27,7 +27,17 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         'InternationalizationConfig' => array(
             'Enabled' => true,
             'Default_language' => 'English',
-            'Available' => array('English' => 'en', 'French' => 'fr'))
+            'Available' => array(
+                'French' => array(
+                    'alias' => 'fr',
+                    'filename' => 'fr_FR.UTF-8'
+                ),
+                'English' => array(
+                    'alias' => 'en',
+                    'filename' => 'en_EN.UTF-8'
+                )
+            )
+        )
     );
 
     public function setUp()
@@ -58,7 +68,9 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->setFakeCfg(self::$cfgTest);
 
-        $this->assertAttributeCount(4, '_tabConfiguration', $this->_config);
+        $this->assertEquals('dev', $this->_config->getVersion());
+        $this->assertInstanceOf('\\AlaroxFramework\\cfg\\i18n\\Internationalization', $this->_config->getI18nConfig());
+        $this->assertInstanceOf('\\AlaroxFramework\\cfg\\configs\\RestInfos', $this->_config->getRestInfos());
     }
 
     /**
@@ -95,33 +107,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->setFakeCfg($tableauConfigTest);
     }
 
-    public function testGetValeurConfig()
-    {
-        $this->setFakeCfg(self::$cfgTest);
-
-        $this->assertEquals('WebName', $this->_config->getConfigValeur('TemplateVars.name'));
-        $this->assertEquals(
-            array(
-                'Name' => 'WebName',
-                'Media_url' => 'http://media.addr.com'
-            ), $this->_config->getConfigValeur('TemplateVars')
-        );
-    }
-
-    public function testValeurNonTrouveeNull()
-    {
-        $this->setFakeCfg(self::$cfgTest);
-
-        $this->assertNull($this->_config->getConfigValeur('nope'));
-    }
-
     public function testSetRouteMap()
     {
         $routeMap = $this->getMock('AlaroxFramework\cfg\route\RouteMap');
 
         $this->_config->setRouteMap($routeMap);
 
-        $this->assertEquals($routeMap, $this->_config->getConfigValeur('ControllerConfig.RouteMap'));
+        $this->assertSame($routeMap, $this->_config->getRouteMap());
     }
 
     /**
@@ -134,15 +126,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetServer()
     {
-        $server = $this->getMock('AlaroxFramework\cfg\configs\Server', array('getUneVariableServeur'));
-        $server->expects($this->once())
-            ->method('getUneVariableServeur')
-            ->with('REQUEST_URI_NODIR')
-            ->will($this->returnValue('/ctrl/uri'));
+        $server = $this->getMock('AlaroxFramework\cfg\configs\Server');
 
-        $this->_config->recupererUriDepuisServer($server);
+        $this->_config->setServer($server);
 
-        $this->assertEquals('/ctrl/uri', $this->_config->getConfigValeur('ControllerConfig.Uri'));
+        $this->assertSame($server, $this->_config->getServer());
     }
 
     /**
@@ -150,16 +138,16 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetServerTypeErrone()
     {
-        $this->_config->recupererUriDepuisServer(5);
+        $this->_config->setServer(5);
     }
 
     public function testSetRestInfos()
     {
-        $routeMap = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
+        $restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
 
-        $this->_config->setRestInfos($routeMap);
+        $this->_config->setRestInfos($restInfos);
 
-        $this->assertEquals($routeMap, $this->_config->getConfigValeur('ControllerConfig.RestServer'));
+        $this->assertSame($restInfos, $this->_config->getRestInfos());
     }
 
     /**
@@ -176,14 +164,31 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->_config->setControllerFactory($ctrlFactory);
 
-        $this->assertSame($ctrlFactory, $this->_config->getConfigValeur('ControllerConfig.CtrlFactory'));
+        $this->assertSame($ctrlFactory, $this->_config->getCtrlFactory());
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \InvalidArgumentException
      */
     public function testSetCtrlFactoErrone()
     {
         $this->_config->setControllerFactory('yalll');
+    }
+
+    public function testSetI18n()
+    {
+        $i18n = $this->getMock('AlaroxFramework\cfg\i18n\Internationalization');
+
+        $this->_config->setI18nConfig($i18n);
+
+        $this->assertSame($i18n, $this->_config->getI18nConfig());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetI18nType()
+    {
+        $this->_config->setI18nConfig('exception');
     }
 }

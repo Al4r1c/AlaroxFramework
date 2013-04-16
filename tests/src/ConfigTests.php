@@ -17,11 +17,13 @@ class ConfigTests
         $suite = new \PHPUnit_Framework_TestSuite('TestSuite');
 
         $suite->addTestSuite('\Tests\config\ConfigTest');
+        $suite->addTestSuite('\Tests\config\ControllerFactoryTest');
+        $suite->addTestSuite('\Tests\config\InternationalizationTest');
+        $suite->addTestSuite('\Tests\config\LangueDispoTest');
         $suite->addTestSuite('\Tests\config\RestInfosTest');
         $suite->addTestSuite('\Tests\config\RouteTest');
         $suite->addTestSuite('\Tests\config\RouteMapTest');
         $suite->addTestSuite('\Tests\config\ServerTest');
-        $suite->addTestSuite('\Tests\config\ControllerFactoryTest');
 
         return $suite;
     }

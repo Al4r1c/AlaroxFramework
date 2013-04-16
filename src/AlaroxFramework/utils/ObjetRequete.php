@@ -1,8 +1,6 @@
 <?php
 namespace AlaroxFramework\utils;
 
-use AlaroxFramework\cfg\RestInfos;
-
 class ObjetRequete
 {
     /**

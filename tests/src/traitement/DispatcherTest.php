@@ -47,14 +47,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue(new TestCtrl()));
 
-        $this->_dispatcher->parseConfig(
-            array(
-                'Uri' => $uri,
-                'RestServer' => $restInfos,
-                'RouteMap' => $routeMap,
-                'CtrlFactory' => $ctrlFactory
-            )
-        );
+        $this->_dispatcher->setUriDemandee($uri);
+        $this->_dispatcher->setRestInfos($restInfos);
+        $this->_dispatcher->setRouteMap($routeMap);
+        $this->_dispatcher->setControllerFactory($ctrlFactory);
 
         $this->_dispatcher->setRestClient($restClient);
     }
@@ -69,14 +65,11 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos');
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory');
 
-        $this->_dispatcher->parseConfig(
-            array(
-                'Uri' => $uri,
-                'RestServer' => $restInfos,
-                'RouteMap' => $routeMap,
-                'CtrlFactory' => $ctrlFactory
-            )
-        );
+        $this->_dispatcher->setUriDemandee($uri);
+        $this->_dispatcher->setRestInfos($restInfos);
+        $this->_dispatcher->setRouteMap($routeMap);
+        $this->_dispatcher->setControllerFactory($ctrlFactory);
+
         $this->_dispatcher->setRestClient($restClient);
     }
 
@@ -157,27 +150,6 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->_dispatcher->setControllerFactory('exception');
     }
 
-    public function testParseConfig()
-    {
-        $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos');
-        $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap');
-        $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory');
-
-        $this->_dispatcher->parseConfig(
-            array(
-                'Uri' => '/uri',
-                'RestServer' => $restInfos,
-                'RouteMap' => $routeMap,
-                'CtrlFactory' => $ctrlFactory
-            )
-        );
-
-        $this->assertAttributeEquals('/uri', '_uriDemandee', $this->_dispatcher);
-        $this->assertAttributeEquals($restInfos, '_restInfos', $this->_dispatcher);
-        $this->assertAttributeEquals($routeMap, '_routeMap', $this->_dispatcher);
-        $this->assertAttributeEquals($ctrlFactory, '_controllerFactory', $this->_dispatcher);
-    }
-
     /**
      * @expectedException \Exception
      */
@@ -256,14 +228,11 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->method('__call')
             ->will($this->throwException(new \Exception()));
 
-        $this->_dispatcher->parseConfig(
-            array(
-                'Uri' => '/',
-                'RestServer' => $restInfos,
-                'RouteMap' => $routeMap,
-                'CtrlFactory' => $ctrlFactory
-            )
-        );
+        $this->_dispatcher->setUriDemandee('/');
+        $this->_dispatcher->setRestInfos($restInfos);
+        $this->_dispatcher->setRouteMap($routeMap);
+        $this->_dispatcher->setControllerFactory($ctrlFactory);
+
         $this->_dispatcher->setRestClient($restClient);
 
         $this->_dispatcher->executerActionRequise();
