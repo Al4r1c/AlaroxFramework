@@ -138,6 +138,7 @@ class Conteneur
 
         $dispatcher = new Dispatcher();
         $dispatcher->setUriDemandee($config->getServer()->getUneVariableServeur('REQUEST_URI_NODIR'));
+        $dispatcher->setI18nActif($config->getI18nConfig()->isActivated());
         $dispatcher->setRestInfos($config->getRestInfos());
         $dispatcher->setRouteMap($config->getRouteMap());
         $dispatcher->setControllerFactory($config->getCtrlFactory());

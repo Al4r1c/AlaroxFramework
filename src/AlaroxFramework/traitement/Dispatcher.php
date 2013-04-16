@@ -16,6 +16,11 @@ class Dispatcher
     private $_uriDemandee;
 
     /**
+     * @var boolean
+     */
+    private $_i18nActif;
+
+    /**
      * @var ControllerFactory
      */
     private $_controllerFactory;
@@ -54,6 +59,15 @@ class Dispatcher
         }
 
         $this->_uriDemandee = $uriDemandee;
+    }
+
+    public function setI18nActif($isActivated)
+    {
+        if (!is_bool($isActivated)) {
+            throw new \InvalidArgumentException('Expected parameter 1 isActivated to be boolean.');
+        }
+
+        $this->_i18nActif = $isActivated;
     }
 
     /**
@@ -115,9 +129,15 @@ class Dispatcher
     public function executerActionRequise()
     {
         foreach (get_object_vars($this) as $clef => $unAttribut) {
-            if (empty($unAttribut)) {
+            if (is_null($unAttribut)) {
                 throw new \Exception('Can\'t execute request: ' . $clef . 'is not set.');
             }
+        }
+
+        if ($this->_i18nActif === true) {
+            $temp = array_filter(explode('/', $this->_uriDemandee), 'strlen');
+            unset($temp[1]);
+            $this->_uriDemandee = '/'.implode('/', $temp);
         }
 
         $staticAliasFound = false;
