@@ -68,7 +68,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->setFakeCfg(self::$cfgTest);
 
-        $this->assertEquals('dev', $this->_config->getVersion());
+        $this->assertFalse($this->_config->isProdVersion());
         $this->assertInstanceOf('\\AlaroxFramework\\cfg\\i18n\\Internationalization', $this->_config->getI18nConfig());
         $this->assertInstanceOf('\\AlaroxFramework\\cfg\\configs\\RestInfos', $this->_config->getRestInfos());
     }
@@ -197,5 +197,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testSetGlobalsArray()
     {
         $this->_config->setGlobals('exception');
+    }
+
+    public function testProdVersion()
+    {
+        $this->_config->setVersion('ProD');
+        $this->assertTrue($this->_config->isProdVersion());
     }
 }

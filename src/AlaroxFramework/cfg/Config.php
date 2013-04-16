@@ -113,11 +113,11 @@ class Config
     }
 
     /**
-     * @return string
+     * @return boolean
      */
-    public function getVersion()
+    public function isProdVersion()
     {
-        return $this->_version;
+        return strcmp(strtolower($this->_version), 'prod') == 0;
     }
 
     /**
