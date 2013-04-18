@@ -119,4 +119,29 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
     {
         $this->_templateManager->render('exception');
     }
+
+    public function testAddExtension()
+    {
+        $mockTwigEnv = $this->getMock('\Twig_Environment', array('addExtension'));
+        $mockTwigExtInterface = $this->getMock('\Twig_ExtensionInterface');
+
+        $mockTwigEnv->expects($this->once())->method('addExtension')->with($mockTwigExtInterface);
+
+        $this->_templateManager->setTwigEnv($mockTwigEnv);
+        $this->_templateManager->addExtension($mockTwigExtInterface);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddExtensionType() {
+        $this->_templateManager->addExtension('letsbug');
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testAddExtensionTwigEnvNotSet() {
+        $this->_templateManager->addExtension($this->getMock('\Twig_ExtensionInterface'));
+    }
 }

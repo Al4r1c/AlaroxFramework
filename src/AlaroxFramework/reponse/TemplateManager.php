@@ -42,6 +42,24 @@ class TemplateManager
     }
 
     /**
+     * @param \Twig_ExtensionInterface $extension
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public function addExtension($extension)
+    {
+        if (!$extension instanceof \Twig_ExtensionInterface) {
+            throw new \InvalidArgumentException('Expected parameter 1 extension to be instance of Twig_ExtensionInterface.');
+        }
+
+        if(is_null($this->_twigEnv)) {
+            throw new \Exception('Twig is not instantiated.');
+        }
+
+        $this->_twigEnv->addExtension($extension);
+    }
+
+    /**
      * @param View $view
      * @throws \InvalidArgumentException
      * @throws \Exception
