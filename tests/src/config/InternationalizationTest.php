@@ -59,8 +59,8 @@ class InternationalizationTest extends \PHPUnit_Framework_TestCase
         $this->_i18nConfig->addLanguesDispo($uneLangue = $this->getMock('\\AlaroxFramework\\cfg\\i18n\\Langue'));
         $this->_i18nConfig->addLanguesDispo($this->getMock('\\AlaroxFramework\\cfg\\i18n\\Langue'));
 
-        $this->assertAttributeContains($uneLangue, '_languesDispo', $this->_i18nConfig);
-        $this->assertAttributeCount(2, '_languesDispo', $this->_i18nConfig);
+        $this->assertContains($uneLangue, $this->_i18nConfig->getLanguesDispo());
+        $this->assertCount(2, $this->_i18nConfig->getLanguesDispo());
     }
 
     /**
@@ -84,5 +84,28 @@ class InternationalizationTest extends \PHPUnit_Framework_TestCase
     public function testGetLanguesDispoByAliasNonTrouve()
     {
         $this->assertFalse($this->_i18nConfig->getLanguesDispoByAlias('en'));
+    }
+
+
+    public function testGetLanguesDispoById()
+    {
+        $uneLangue = $this->getMock('\\AlaroxFramework\\cfg\\i18n\\Langue');
+        $uneLangue->expects($this->once())->method('getIdentifiant')->will($this->returnValue('French'));
+
+        $this->_i18nConfig->addLanguesDispo($uneLangue);
+
+        $this->assertSame($uneLangue, $this->_i18nConfig->getLanguesDispoById('French'));
+    }
+
+    public function testGetLanguesDispoByAliasNonId()
+    {
+        $this->assertFalse($this->_i18nConfig->getLanguesDispoById('Italiano'));
+    }
+
+    public function testDossier()
+    {
+        $this->_i18nConfig->setDossierLocales('/path');
+
+        $this->assertEquals('/path', $this->_i18nConfig->getDossierLocales());
     }
 }

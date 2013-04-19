@@ -11,16 +11,23 @@ class Main
     private $_alaroxFramework;
 
     /**
-     * @param string $cheminVersFichierConfig
-     * @param string $cheminVersFichierRouteMap
-     * @param string $repertoireControlleurs
+     * @param string $pathToConfigFile
+     * @param string $pathToRouteMapFile
+     * @param string $controllersRepertory
+     * @param string $templatesRepertory
+     * @param string $localesRepertory
      */
-    public function __construct($cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs)
+    public function __construct(
+        $pathToConfigFile,
+        $pathToRouteMapFile,
+        $controllersRepertory,
+        $templatesRepertory,
+        $localesRepertory = '')
     {
         $this->_alaroxFramework = new AlaroxFramework();
         $this->_alaroxFramework->setConteneur(new Conteneur());
         $this->_alaroxFramework->genererConfigDepuisFichiers(
-            $cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs
+            $pathToConfigFile, $pathToRouteMapFile, $controllersRepertory, $templatesRepertory, $localesRepertory
         );
     }
 

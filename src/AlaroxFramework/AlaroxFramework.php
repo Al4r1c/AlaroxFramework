@@ -50,16 +50,21 @@ class AlaroxFramework
      * @param string $cheminVersFichierConfig
      * @param string $cheminVersFichierRouteMap
      * @param string $repertoireControlleurs
-     * @throws \InvalidArgumentException
+     * @param string $repertoireTemplates
+     * @param string $repertoireLocales
      */
     public function genererConfigDepuisFichiers(
         $cheminVersFichierConfig,
         $cheminVersFichierRouteMap,
-        $repertoireControlleurs)
+        $repertoireControlleurs,
+        $repertoireTemplates,
+        $repertoireLocales)
     {
-
         $this->setConfig(
-            $this->_conteneur->getConfig($cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs)
+            $this->_conteneur->getConfig(
+                $cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs, $repertoireTemplates,
+                $repertoireLocales
+            )
         );
     }
 
@@ -71,14 +76,16 @@ class AlaroxFramework
     {
         try {
             $reponse = $this->_conteneur->getDispatcher($this->_config)->executerActionRequise();
+
+            $htmlReponse = $this->_conteneur->getResponseManager($this->_config)->getHtmlResponse($reponse);
         } catch (\Exception $exception) {
             if ($this->_config->isProdVersion() === true) {
-                return new HtmlReponse(404);
+                $htmlReponse = new HtmlReponse(500);
             } else {
                 throw $exception;
             }
         }
 
-        return new HtmlReponse(200, $reponse);
+        return $htmlReponse;
     }
 }

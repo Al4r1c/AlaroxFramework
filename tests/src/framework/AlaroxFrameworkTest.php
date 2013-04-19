@@ -62,22 +62,36 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $this->_framework->setConteneur($conteneur);
 
-        $this->_framework->genererConfigDepuisFichiers('/path/to/fichier', '/path/to/routemap', '/path/to/controllers');
+        $this->_framework->genererConfigDepuisFichiers(
+            '/path/to/fichier', '/path/to/routemap', '/path/to/controllers', '/path/to/templates', '/path/to/locales'
+        );
     }
 
     public function testProcess()
     {
-        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher'));
+        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher', 'getResponseManager'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
+        $reponseManager = $this->getMock('\\AlaroxFramework\\reponse\ReponseManager', array('getHtmlResponse'));
+        $htmlReponse = $this->getMock('\\AlaroxFramework\\utils\\HtmlReponse', array('getCorpsReponse', 'getStatusHttp'));
         $config = $this->getMock('\\AlaroxFramework\\cfg\\Config');
 
 
+        $htmlReponse->expects($this->any())->method('getCorpsReponse')->will($this->returnValue('resultat'));
+        $htmlReponse->expects($this->any())->method('getStatusHttp')->will($this->returnValue(200));
+
         $dispatcher->expects($this->once())->method('executerActionRequise')->will($this->returnValue('resultat'));
+
+        $reponseManager->expects($this->once())->method('getHtmlResponse')->with('resultat')->will($this->returnValue($htmlReponse));
 
         $conteneur->expects($this->once())
             ->method('getDispatcher')
             ->with($config)
             ->will($this->returnValue($dispatcher));
+
+        $conteneur->expects($this->once())
+            ->method('getResponseManager')
+            ->with($config)
+            ->will($this->returnValue($reponseManager));
 
 
         $this->_framework->setConteneur($conteneur);
@@ -86,6 +100,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->_framework->process());
         $this->assertEquals('resultat', $htmlReponse->getCorpsReponse());
+        $this->assertEquals(200, $htmlReponse->getStatusHttp());
     }
 
     /**
@@ -146,6 +161,6 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
 
         $this->assertInstanceOf('\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->_framework->process());
-        $this->assertEquals(404, $htmlReponse->getStatusHttp());
+        $this->assertEquals(500, $htmlReponse->getStatusHttp());
     }
 }

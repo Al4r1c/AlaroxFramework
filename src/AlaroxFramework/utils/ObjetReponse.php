@@ -7,7 +7,6 @@ use AlaroxFramework\utils\unparser\UnparserFactory;
 
 class ObjetReponse
 {
-
     /**
      * @var int
      */

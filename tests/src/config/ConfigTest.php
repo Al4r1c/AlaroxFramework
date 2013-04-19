@@ -45,7 +45,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->_config = new Config();
     }
 
-    public function setFakeCfg($tabRenvoyee)
+    public function setFakeCfg($tabRenvoyee, $folderLocales)
     {
         $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
         $fichier->expects($this->once())
@@ -56,7 +56,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ->method('loadFile')
             ->will($this->returnValue($tabRenvoyee));
 
-        $this->_config->recupererConfigDepuisFichier($fichier);
+        $this->_config->recupererConfigDepuisFichier($fichier, $folderLocales);
     }
 
     public function testInstance()
@@ -66,7 +66,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetCfg()
     {
-        $this->setFakeCfg(self::$cfgTest);
+        $this->setFakeCfg(self::$cfgTest, '/path/to/locales');
 
         $this->assertFalse($this->_config->isProdVersion());
         $this->assertInstanceOf('\\AlaroxFramework\\cfg\\i18n\\Internationalization', $this->_config->getI18nConfig());
@@ -83,7 +83,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ->method('fileExist')
             ->will($this->returnValue(false));
 
-        $this->_config->recupererConfigDepuisFichier($fichier);
+        $this->_config->recupererConfigDepuisFichier($fichier, '');
     }
 
     /**
@@ -94,7 +94,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $tabCfg = self::$cfgTest;
         unset($tabCfg['InternationalizationConfig']['Available']['English']);
 
-        $this->setFakeCfg($tabCfg);
+        $this->setFakeCfg($tabCfg, '');
     }
 
     /**
@@ -104,7 +104,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $tableauConfigTest = self::$cfgTest;
         unset($tableauConfigTest['TemplateVars']);
-        $this->setFakeCfg($tableauConfigTest);
+        $this->setFakeCfg($tableauConfigTest, '');
     }
 
     public function testSetRouteMap()
@@ -203,5 +203,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->_config->setVersion('ProD');
         $this->assertTrue($this->_config->isProdVersion());
+    }
+
+    public function testTemplateDirectory() {
+        $this->_config->setTemplateDirectory('/path');
+
+        $this->assertEquals('/path', $this->_config->getTemplateDirectory());
     }
 }

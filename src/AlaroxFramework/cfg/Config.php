@@ -47,6 +47,11 @@ class Config
     private $_globals;
 
     /**
+     * @var string
+     */
+    private $_templateDirectory;
+
+    /**
      * @var array
      */
     private static $valeursMinimales = array(
@@ -110,6 +115,14 @@ class Config
     public function getServer()
     {
         return $this->_server;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateDirectory()
+    {
+        return $this->_templateDirectory;
     }
 
     /**
@@ -199,6 +212,14 @@ class Config
     }
 
     /**
+     * @param string $repertoireTemplates
+     */
+    public function setTemplateDirectory($repertoireTemplates)
+    {
+        $this->_templateDirectory = $repertoireTemplates;
+    }
+
+    /**
      * @param string $version
      */
     public function setVersion($version)
@@ -208,9 +229,10 @@ class Config
 
     /**
      * @param File $fichier
+     * @param string $repertoireLocales
      * @throws \Exception
      */
-    public function recupererConfigDepuisFichier($fichier)
+    public function recupererConfigDepuisFichier($fichier, $repertoireLocales)
     {
         if ($fichier->fileExist() === true) {
             $tabCfg = $fichier->loadFile();
@@ -238,6 +260,7 @@ class Config
             }
 
             $i18n->setActif(true);
+            $i18n->setDossierLocales($repertoireLocales);
             $i18n->setLangueDefaut($langue);
             foreach ($languesDispos as $clef => $langueDispo) {
                 $langueDispoObj = new Langue();

@@ -19,6 +19,11 @@ class Internationalization
     private $_languesDispo = array();
 
     /**
+     * @var string
+     */
+    private $_dossierLocales;
+
+    /**
      * @return boolean
      */
     public function isActivated()
@@ -29,9 +34,40 @@ class Internationalization
     /**
      * @return string
      */
+    public function getDossierLocales()
+    {
+        return $this->_dossierLocales;
+    }
+
+    /**
+     * @return string
+     */
     public function getLangueDefaut()
     {
         return $this->_langueDefaut;
+    }
+
+    /**
+     * @return Langue[]
+     */
+    public function getLanguesDispo()
+    {
+        return $this->_languesDispo;
+    }
+
+    /**
+     * @param string $id
+     * @return Langue
+     */
+    public function getLanguesDispoById($id)
+    {
+        foreach ($this->_languesDispo as $uneLangueDispo) {
+            if (strcmp($id, $uneLangueDispo->getIdentifiant()) == 0) {
+                return $uneLangueDispo;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -60,6 +96,14 @@ class Internationalization
         }
 
         $this->_actif = $varBool;
+    }
+
+    /**
+     * @param string $dossierLocales
+     */
+    public function setDossierLocales($dossierLocales)
+    {
+        $this->_dossierLocales = $dossierLocales;
     }
 
     /**
