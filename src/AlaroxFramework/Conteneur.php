@@ -229,7 +229,7 @@ class Conteneur
 
             $templateManager->addExtension(
                 new \Twig_I18nExtension_Extension_I18n(
-                    $i18nConfig->getLanguesDispoById($i18nConfig->getLangueDefaut())->getAlias(),
+                    $i18nConfig->getLangueDefaut()->getAlias(),
                     $i18nConfig->getDossierLocales(),
                     $arrayLanguages
                 )

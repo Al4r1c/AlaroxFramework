@@ -9,7 +9,7 @@ class Internationalization
     private $_actif = false;
 
     /**
-     * @var string
+     * @var Langue
      */
     private $_langueDefaut;
 
@@ -40,7 +40,7 @@ class Internationalization
     }
 
     /**
-     * @return string
+     * @return Langue
      */
     public function getLangueDefaut()
     {
@@ -71,21 +71,6 @@ class Internationalization
     }
 
     /**
-     * @param string $alias
-     * @return Langue
-     */
-    public function getLanguesDispoByAlias($alias)
-    {
-        foreach ($this->_languesDispo as $uneLangueDispo) {
-            if (strcmp(strtolower($alias), $uneLangueDispo->getAlias()) == 0) {
-                return $uneLangueDispo;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @param boolean $actif
      * @throws \InvalidArgumentException
      */
@@ -107,13 +92,13 @@ class Internationalization
     }
 
     /**
-     * @param string $langueDefaut
+     * @param Langue $langueDefaut
      * @throws \InvalidArgumentException
      */
     public function setLangueDefaut($langueDefaut)
     {
-        if (!is_string($langueDefaut)) {
-            throw new \InvalidArgumentException('Expected parameter 1 langueDefaut to be string.');
+        if (!$langueDefaut instanceof Langue) {
+            throw new \InvalidArgumentException('Expected parameter 1 langueDefaut to be instance of Langue.');
         }
 
         $this->_langueDefaut = $langueDefaut;
@@ -126,7 +111,7 @@ class Internationalization
     public function addLanguesDispo($languesDispo)
     {
         if (!$languesDispo instanceof Langue) {
-            throw new \InvalidArgumentException('Expected parameter 1 languesDispo to be instance of LanguesDispo.');
+            throw new \InvalidArgumentException('Expected parameter 1 languesDispo to be instance of Langue.');
         }
 
         $this->_languesDispo[] = $languesDispo;

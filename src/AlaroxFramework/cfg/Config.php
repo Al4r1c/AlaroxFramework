@@ -251,24 +251,30 @@ class Config
 
         $i18n = new Internationalization();
         if ($langueActif = array_multisearch('InternationalizationConfig.Enabled', $tabCfg, true) === true) {
-            if (!array_key_exists(
-                $langue = array_multisearch('InternationalizationConfig.Default_language', $tabCfg, true),
-                $languesDispos = array_multisearch('InternationalizationConfig.Available', $tabCfg, true)
-            )
-            ) {
-                throw new \Exception(sprintf('Default language "%s" not found in available language list.', $langue));
-            }
+            $defaultLanguageId = array_multisearch('InternationalizationConfig.Default_language', $tabCfg, true);
 
             $i18n->setActif(true);
             $i18n->setDossierLocales($repertoireLocales);
-            $i18n->setLangueDefaut($langue);
-            foreach ($languesDispos as $clef => $langueDispo) {
+            foreach (array_multisearch('InternationalizationConfig.Available', $tabCfg, true) as $clef => $langueDispo)
+            {
                 $langueDispoObj = new Langue();
                 $langueDispoObj->setIdentifiant($clef);
                 $langueDispoObj->setAlias($langueDispo['alias']);
                 $langueDispoObj->setNomFichier($langueDispo['filename']);
                 $i18n->addLanguesDispo($langueDispoObj);
+
+                if (strcmp($defaultLanguageId, $langueDispoObj->getIdentifiant()) == 0) {
+                    $langueDefaut = $langueDispoObj;
+                }
             }
+
+            if (!isset($langueDefaut)) {
+                throw new \Exception(sprintf(
+                    'Default language "%s" not found in available language list.', $defaultLanguageId
+                ));
+            }
+
+            $i18n->setLangueDefaut($langueDefaut);
         }
         $this->setI18nConfig($i18n);
 

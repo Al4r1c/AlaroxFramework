@@ -41,15 +41,15 @@ class InternationalizationTest extends \PHPUnit_Framework_TestCase
 
     public function testSetLangueDefaut()
     {
-        $this->_i18nConfig->setLangueDefaut('French');
+        $this->_i18nConfig->setLangueDefaut($uneLangue = $this->getMock('\\AlaroxFramework\\cfg\\i18n\\Langue'));
 
-        $this->assertEquals('French', $this->_i18nConfig->getLangueDefaut());
+        $this->assertSame($uneLangue, $this->_i18nConfig->getLangueDefaut());
     }
 
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testSetLangueDefautString()
+    public function testSetLangueDefautType()
     {
         $this->_i18nConfig->setLangueDefaut(array());
     }
@@ -69,21 +69,6 @@ class InternationalizationTest extends \PHPUnit_Framework_TestCase
     public function testAddLangueDispoType()
     {
         $this->_i18nConfig->addLanguesDispo('exception');
-    }
-
-    public function testGetLanguesDispoByAlias()
-    {
-        $uneLangue = $this->getMock('\\AlaroxFramework\\cfg\\i18n\\Langue');
-        $uneLangue->expects($this->once())->method('getAlias')->will($this->returnValue('fr'));
-
-        $this->_i18nConfig->addLanguesDispo($uneLangue);
-
-        $this->assertSame($uneLangue, $this->_i18nConfig->getLanguesDispoByAlias('fr'));
-    }
-
-    public function testGetLanguesDispoByAliasNonTrouve()
-    {
-        $this->assertFalse($this->_i18nConfig->getLanguesDispoByAlias('en'));
     }
 
 
