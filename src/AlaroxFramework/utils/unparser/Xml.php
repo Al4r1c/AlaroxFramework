@@ -25,9 +25,9 @@ class Xml extends AbstractUnparser
 
         foreach ($tabXmlElements as $unXmlElement) {
             if ($unXmlElement->hasChildren()) {
-                $result[$unXmlElement->getUnAttribut('attr')] = $this->xmlDataToArray($unXmlElement->getChildren());
+                $result[$unXmlElement->getName()] = $this->xmlDataToArray($unXmlElement->getChildren());
             } else {
-                $result[$unXmlElement->getUnAttribut('attr')] = $unXmlElement->getValue();
+                $result[$unXmlElement->getName()] = $unXmlElement->getValue();
             }
         }
 

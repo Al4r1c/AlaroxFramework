@@ -48,7 +48,7 @@ class UnparserFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array('id1' => array('parametre1' => 'variable1')),
-            $xml->toArray('<root><element attr="id1"><element attr="parametre1">variable1</element></element></root>')
+            $xml->toArray('<root><id1><parametre1>variable1</parametre1></id1></root>')
         );
     }
 }

@@ -52,8 +52,8 @@ class ParserFactoryTest extends \PHPUnit_Framework_TestCase
         $xml = $this->_unparserFactory->getClass('xml');
 
         $this->assertEquals(
-            "<?xml version=\"1.0\"?>\n<root><element attr=\"id1\"><element attr=\"parametre1\">variable1</element></element></root>\n",
-            $xml->parse(array('id1' => array('parametre1' => 'variable1')))
+            "<?xml version=\"1.0\"?>\n<root><_id1><parametre1>variable1</parametre1></_id1></root>\n",
+            $xml->parse(array('_id1' => array('parametre1' => 'variable1')))
         );
     }
 

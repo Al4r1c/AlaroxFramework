@@ -23,11 +23,10 @@ class Xml extends AbstractParser
     {
         foreach ($contenu as $clef => $value) {
             if (is_array($value)) {
-                $subnode = $simpleXmlObject->addChild('element');
-                $subnode->addAttribute('attr', $clef);
+                $subnode = $simpleXmlObject->addChild($clef);
                 $this->arrayToXml($value, $subnode);
             } else {
-                $simpleXmlObject->addChild('element', $value)->addAttribute('attr', $clef);
+                $simpleXmlObject->addChild($clef, $value);
             }
         }
     }
