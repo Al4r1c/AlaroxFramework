@@ -232,23 +232,44 @@ class Config
         }
 
         $this->setVersion(array_multisearch('Website_version', $tabCfg, true));
+        $this->createTemplateConfig(array_multisearch('TemplateConfig', $tabCfg, true), $repertoireTemplates);
+        $this->createI18nConfig(array_multisearch('InternationalizationConfig', $tabCfg, true), $repertoireLocales);
+        $this->createRestInfos(array_multisearch('RestServer', $tabCfg, true));
+    }
+
+    /**
+     * @param array $tabTemplateConfig
+     * @param string $repertoireTemplates
+     */
+    private function createTemplateConfig($tabTemplateConfig, $repertoireTemplates)
+    {
+        $tabTemplateConfig = array_change_key_case($tabTemplateConfig, CASE_LOWER);
 
         $templateConfig = new TemplateConfig();
-        $templateConfig->setCache(array_multisearch('TemplateConfig.Cache', $tabCfg, true));
-        $templateConfig->setCharset(array_multisearch('TemplateConfig.Charset', $tabCfg, true));
-        $templateConfig->setGlobalVariables(array_multisearch('TemplateConfig.Variables', $tabCfg, true));
+        $templateConfig->setCache($tabTemplateConfig['cache']);
+        $templateConfig->setCharset($tabTemplateConfig['charset']);
+        $templateConfig->setGlobalVariables($tabTemplateConfig['variables']);
         $templateConfig->setTemplateDirectory($repertoireTemplates);
-        $this->setTemplateConfig($templateConfig);
 
+        $this->setTemplateConfig($templateConfig);
+    }
+
+    /**
+     * @param array $tabI18nConfig
+     * @param string $repertoireLocales
+     * @throws \Exception
+     */
+    private function createI18nConfig($tabI18nConfig, $repertoireLocales)
+    {
+        $tabI18nConfig = array_change_key_case($tabI18nConfig, CASE_LOWER);
 
         $i18n = new Internationalization();
-        if ($langueActif = array_multisearch('InternationalizationConfig.Enabled', $tabCfg, true) === true) {
-            $defaultLanguageId = array_multisearch('InternationalizationConfig.Default_language', $tabCfg, true);
+        if (($langueActif = $tabI18nConfig['enabled']) === true) {
+            $defaultLanguageId = $tabI18nConfig['default_language'];
 
             $i18n->setActif(true);
             $i18n->setDossierLocales($repertoireLocales);
-            foreach (array_multisearch('InternationalizationConfig.Available', $tabCfg, true) as $clef => $langueDispo)
-            {
+            foreach ($tabI18nConfig['available'] as $clef => $langueDispo) {
                 $langueDispoObj = new Langue();
                 $langueDispoObj->setIdentifiant($clef);
                 $langueDispoObj->setAlias($langueDispo['alias']);
@@ -268,11 +289,18 @@ class Config
 
             $i18n->setLangueDefaut($langueDefaut);
         }
+
         $this->setI18nConfig($i18n);
+    }
 
-
+    /**
+     * @param array $tabRestServerInfos
+     */
+    private function createRestInfos($tabRestServerInfos)
+    {
         $restInfos = new RestInfos();
-        $restInfos->parseRestInfos($tabCfg['RestServer']);
+        $restInfos->parseRestInfos($tabRestServerInfos);
+
         $this->setRestInfos($restInfos);
     }
 }

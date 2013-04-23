@@ -38,6 +38,31 @@ function endsWith($haystack, $needle)
 }
 
 /**
+ * @param array $input
+ * @param int $case
+ * @return array
+ */
+function array_change_key_case_recursive(array $input, $case = null)
+{
+    $newArray = array();
+
+    if (is_null($case)) {
+        $case = CASE_LOWER;
+    }
+
+    foreach ($input as $key => $value) {
+        if (is_array($value)) {
+            $newArray[strtolower($key)] = array_change_key_case_recursive($value, $case);
+        } else {
+            $newArray[strtolower($key)] = $value;
+        }
+    }
+
+    return $newArray;
+}
+
+
+/**
  * @param string $key
  * @param array $array
  * @param boolean $caseInsensitive

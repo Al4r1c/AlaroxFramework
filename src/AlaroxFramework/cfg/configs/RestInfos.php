@@ -189,11 +189,13 @@ class RestInfos
             }
         }
 
-        $this->setUrl($tabRestInfos['Url']);
-        $this->setFormatEnvoi($tabRestInfos['Format']);
-        $this->setAuthentifEnabled($tabRestInfos['Authentification']['Enabled']);
-        $this->setAuthentifMethode($tabRestInfos['Authentification']['Method']);
-        $this->setUsername($tabRestInfos['Authentification']['Username']);
-        $this->setPrivateKey($tabRestInfos['Authentification']['PassKey']);
+        $tabRestInfos = array_change_key_case_recursive($tabRestInfos, CASE_LOWER);
+
+        $this->setUrl($tabRestInfos['url']);
+        $this->setFormatEnvoi($tabRestInfos['format']);
+        $this->setAuthentifEnabled($tabRestInfos['authentification']['enabled']);
+        $this->setAuthentifMethode($tabRestInfos['authentification']['method']);
+        $this->setUsername($tabRestInfos['authentification']['username']);
+        $this->setPrivateKey($tabRestInfos['authentification']['passkey']);
     }
 }
