@@ -76,8 +76,8 @@ class Internationalization
      */
     public function setActif($actif)
     {
-        if (is_null($varBool = filter_var($actif, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE))) {
-            throw new \InvalidArgumentException('Expected parameter 1 actif to be boolean.');
+        if (is_null($varBool = getValidBoolean($actif))) {
+            throw new \InvalidArgumentException('Expected parameter 1 cache to be boolean.');
         }
 
         $this->_actif = $varBool;

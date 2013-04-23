@@ -1,4 +1,13 @@
 <?php
+function getValidBoolean($var)
+{
+    if (is_bool($var) || !is_null($var = filter_var($var, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE))) {
+        return $var;
+    }
+
+    return null;
+}
+
 function startsWith($haystack, $needle)
 {
     return !strncmp($haystack, $needle, strlen($needle));

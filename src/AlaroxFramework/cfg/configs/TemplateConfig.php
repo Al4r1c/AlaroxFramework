@@ -61,11 +61,11 @@ class TemplateConfig
      */
     public function setCache($cache)
     {
-        if (is_bool($cache) || !is_null($cache = filter_var($cache, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE))) {
-            $this->_cache = $cache;
-        } else {
+        if (is_null($varBool = getValidBoolean($cache))) {
             throw new \InvalidArgumentException('Expected parameter 1 cache to be boolean.');
         }
+
+        $this->_cache = $varBool;
     }
 
     /**
