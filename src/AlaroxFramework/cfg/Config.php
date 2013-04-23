@@ -5,6 +5,7 @@ use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\configs\Server;
+use AlaroxFramework\cfg\configs\TemplateConfig;
 use AlaroxFramework\cfg\i18n\Internationalization;
 use AlaroxFramework\cfg\i18n\Langue;
 use AlaroxFramework\cfg\route\RouteMap;
@@ -42,14 +43,9 @@ class Config
     private $_server;
 
     /**
-     * @var array
+     * @var TemplateConfig
      */
-    private $_globals;
-
-    /**
-     * @var string
-     */
-    private $_templateDirectory;
+    private $_templateConfig;
 
     /**
      * @var array
@@ -57,7 +53,7 @@ class Config
     private static $valeursMinimales = array(
         'Website_version',
         'RestServer',
-        'TemplateVars',
+        'TemplateConfig',
         'InternationalizationConfig',
         'RestServer.Url',
         'RestServer.Format',
@@ -67,7 +63,11 @@ class Config
         'RestServer.Authentification.PassKey',
         'InternationalizationConfig.Enabled',
         'InternationalizationConfig.Default_language',
-        'InternationalizationConfig.Available');
+        'InternationalizationConfig.Available',
+        'TemplateConfig.Cache',
+        'TemplateConfig.Charset',
+        'TemplateConfig.Variables'
+    );
 
     /**
      * @return Internationalization
@@ -83,14 +83,6 @@ class Config
     public function getCtrlFactory()
     {
         return $this->_ctrlFactory;
-    }
-
-    /**
-     * @return array
-     */
-    public function getGlobals()
-    {
-        return $this->_globals;
     }
 
     /**
@@ -118,11 +110,11 @@ class Config
     }
 
     /**
-     * @return string
+     * @return TemplateConfig
      */
-    public function getTemplateDirectory()
+    public function getTemplateConfig()
     {
-        return $this->_templateDirectory;
+        return $this->_templateConfig;
     }
 
     /**
@@ -144,19 +136,6 @@ class Config
         }
 
         $this->_ctrlFactory = $controllerFactory;
-    }
-
-    /**
-     * @param array $globals
-     * @throws \InvalidArgumentException
-     */
-    public function setGlobals($globals)
-    {
-        if (!is_array($globals)) {
-            throw new \InvalidArgumentException('Expected parameter 1 globals to be array.');
-        }
-
-        $this->_globals = $globals;
     }
 
     /**
@@ -212,11 +191,16 @@ class Config
     }
 
     /**
-     * @param string $repertoireTemplates
+     * @param TemplateConfig $templateConfig
+     * @throws \InvalidArgumentException
      */
-    public function setTemplateDirectory($repertoireTemplates)
+    public function setTemplateConfig($templateConfig)
     {
-        $this->_templateDirectory = $repertoireTemplates;
+        if (!$templateConfig instanceof TemplateConfig) {
+            throw new \InvalidArgumentException('Expected parameter 1 templateConfig to be instance of TemplateConfig.');
+        }
+
+        $this->_templateConfig = $templateConfig;
     }
 
     /**
@@ -229,10 +213,11 @@ class Config
 
     /**
      * @param File $fichier
+     * @param string $repertoireTemplates
      * @param string $repertoireLocales
      * @throws \Exception
      */
-    public function recupererConfigDepuisFichier($fichier, $repertoireLocales)
+    public function recupererConfigDepuisFichier($fichier, $repertoireTemplates, $repertoireLocales)
     {
         if ($fichier->fileExist() === true) {
             $tabCfg = $fichier->loadFile();
@@ -247,7 +232,14 @@ class Config
         }
 
         $this->setVersion(array_multisearch('Website_version', $tabCfg, true));
-        $this->setGlobals(array_multisearch('TemplateVars', $tabCfg, true));
+
+        $templateConfig = new TemplateConfig();
+        $templateConfig->setCache(array_multisearch('TemplateConfig.Cache', $tabCfg, true));
+        $templateConfig->setCharset(array_multisearch('TemplateConfig.Charset', $tabCfg, true));
+        $templateConfig->setGlobalVariables(array_multisearch('TemplateConfig.Variables', $tabCfg, true));
+        $templateConfig->setTemplateDirectory($repertoireTemplates);
+        $this->setTemplateConfig($templateConfig);
+
 
         $i18n = new Internationalization();
         if ($langueActif = array_multisearch('InternationalizationConfig.Enabled', $tabCfg, true) === true) {

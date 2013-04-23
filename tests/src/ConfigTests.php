@@ -24,6 +24,7 @@ class ConfigTests
         $suite->addTestSuite('\Tests\config\RouteTest');
         $suite->addTestSuite('\Tests\config\RouteMapTest');
         $suite->addTestSuite('\Tests\config\ServerTest');
+        $suite->addTestSuite('\Tests\config\TemplateConfigTest');
 
         return $suite;
     }

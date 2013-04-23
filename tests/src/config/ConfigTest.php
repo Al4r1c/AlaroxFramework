@@ -10,9 +10,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     protected static $cfgTest = array(
         'Website_version' => 'dev',
-        'TemplateVars' => array(
-            'Name' => 'WebName',
-            'Media_url' => 'http://media.addr.com'
+        'TemplateConfig' => array(
+            'Cache' => true,
+            'Charset' => 'utf-8',
+            'Variables' => array(
+                'Name' => 'WebName',
+                'Media_url' => 'http://media.addr.com'
+            ),
         ),
         'RestServer' => array(
             'Url' => 'http://google.fr/',
@@ -45,7 +49,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->_config = new Config();
     }
 
-    public function setFakeCfg($tabRenvoyee, $folderLocales)
+    public function setFakeCfg($tabRenvoyee, $folderTemplates, $folderLocales)
     {
         $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
         $fichier->expects($this->once())
@@ -56,7 +60,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ->method('loadFile')
             ->will($this->returnValue($tabRenvoyee));
 
-        $this->_config->recupererConfigDepuisFichier($fichier, $folderLocales);
+        $this->_config->recupererConfigDepuisFichier($fichier, $folderTemplates, $folderLocales);
     }
 
     public function testInstance()
@@ -66,7 +70,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetCfg()
     {
-        $this->setFakeCfg(self::$cfgTest, '/path/to/locales');
+        $this->setFakeCfg(self::$cfgTest, '/path/to/templates', '/path/to/locales');
 
         $this->assertFalse($this->_config->isProdVersion());
         $this->assertInstanceOf('\\AlaroxFramework\\cfg\\i18n\\Internationalization', $this->_config->getI18nConfig());
@@ -83,7 +87,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ->method('fileExist')
             ->will($this->returnValue(false));
 
-        $this->_config->recupererConfigDepuisFichier($fichier, '');
+        $this->_config->recupererConfigDepuisFichier($fichier, '', '');
     }
 
     /**
@@ -94,7 +98,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $tabCfg = self::$cfgTest;
         unset($tabCfg['InternationalizationConfig']['Available']['English']);
 
-        $this->setFakeCfg($tabCfg, '');
+        $this->setFakeCfg($tabCfg, '', '');
     }
 
     /**
@@ -103,8 +107,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testValeursMinimales()
     {
         $tableauConfigTest = self::$cfgTest;
-        unset($tableauConfigTest['TemplateVars']);
-        $this->setFakeCfg($tableauConfigTest, '');
+        unset($tableauConfigTest['TemplateConfig']);
+        $this->setFakeCfg($tableauConfigTest, '', '');
     }
 
     public function testSetRouteMap()
@@ -182,32 +186,26 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->_config->setI18nConfig('exception');
     }
 
-    public function testSetGlobals()
-    {
-        $globals = array('varone' => 'valeurone');
-
-        $this->_config->setGlobals($globals);
-
-        $this->assertSame($globals, $this->_config->getGlobals());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testSetGlobalsArray()
-    {
-        $this->_config->setGlobals('exception');
-    }
-
     public function testProdVersion()
     {
         $this->_config->setVersion('ProD');
         $this->assertTrue($this->_config->isProdVersion());
     }
 
-    public function testTemplateDirectory() {
-        $this->_config->setTemplateDirectory('/path');
+    public function testSetTemplateConfig()
+    {
+        $this->_config->setTemplateConfig(
+            $templateConfig = $this->getMock('AlaroxFramework\cfg\configs\TemplateConfig')
+        );
 
-        $this->assertEquals('/path', $this->_config->getTemplateDirectory());
+        $this->assertSame($templateConfig, $this->_config->getTemplateConfig());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetTemplateConfigType()
+    {
+        $this->_config->setTemplateConfig('exception');
     }
 }

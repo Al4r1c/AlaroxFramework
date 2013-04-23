@@ -7,6 +7,7 @@ use AlaroxFramework\cfg\Config;
 use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\configs\Server;
+use AlaroxFramework\cfg\configs\TemplateConfig;
 use AlaroxFramework\cfg\i18n\Internationalization;
 use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\exceptions\ErreurHandler;
@@ -55,10 +56,11 @@ class Conteneur
         $repertoireLocales)
     {
         $config = new Config();
-        $config->recupererConfigDepuisFichier($this->getFile($cheminVersFichierConfig), $repertoireLocales);
+        $config->recupererConfigDepuisFichier(
+            $this->getFile($cheminVersFichierConfig), $repertoireTemplates, $repertoireLocales
+        );
         $config->setServer($this->getServer());
         $config->setCtrlFactory($this->getControllerFactory($repertoireControlleurs));
-        $config->setTemplateDirectory($repertoireTemplates);
 
         if (!empty($cheminVersRouteMap)) {
             $config->setRouteMap($this->getRoute($cheminVersRouteMap));
@@ -202,23 +204,23 @@ class Conteneur
     {
         $responseManager = new ReponseManager();
         $responseManager->setTemplateManager(
-            $this->getTemplateManager($config->getGlobals(), $config->getI18nConfig(), $config->getTemplateDirectory())
+            $this->getTemplateManager($config->getTemplateConfig(), $config->getI18nConfig())
         );
 
         return $responseManager;
     }
 
     /**
-     * @param array $globalVars
+     * @param TemplateConfig $templateConfig
      * @param Internationalization $i18nConfig
      * @param string $templateDirectory
      * @return TemplateManager
      */
-    private function getTemplateManager($globalVars, $i18nConfig, $templateDirectory)
+    private function getTemplateManager($templateConfig, $i18nConfig)
     {
         $templateManager = new TemplateManager();
-        $templateManager->setGlobalVar($globalVars);
-        $templateManager->setTwigEnv($this->initTwig($templateDirectory));
+        $templateManager->setGlobalVar($templateConfig->getGlobalVariables());
+        $templateManager->setTwigEnv($this->initTwig($templateConfig));
 
         if ($i18nConfig->isActivated() === true) {
             $arrayLanguages = array();
@@ -240,16 +242,29 @@ class Conteneur
     }
 
     /**
-     * @param string $templateDirectory
+     * @param TemplateConfig $templateConfig
      * @return \Twig_Environment
      */
-    private function initTwig($templateDirectory)
+    private function initTwig($templateConfig)
     {
-        $loader = new \Twig_Loader_Filesystem(array($templateDirectory));
+        $loader = new \Twig_Loader_Filesystem(array($templateConfig->getTemplateDirectory()));
 
-        $twigEnv = new \Twig_Environment($loader, array(
-            'cache' => false
-        ));
+        $options = array(
+            'cache' => false,
+            'charset' => $templateConfig->getCharset(),
+            'autoescape' => 'html',
+            'strict_variables' => false,
+            'optimizations' => -1
+        );
+
+        if ($templateConfig->isCacheEnabled() === true) {
+            $options = array(
+                'cache' => $templateConfig->getTemplateDirectory() . '/cache/',
+                'auto_reload' => true
+            ) + $options;
+        }
+
+        $twigEnv = new \Twig_Environment($loader, $options);
 
         return $twigEnv;
     }
