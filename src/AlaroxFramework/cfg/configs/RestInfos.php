@@ -113,11 +113,11 @@ class RestInfos
      */
     public function setAuthentifEnabled($authentifEnabled)
     {
-        if (!is_bool($authentifEnabled)) {
+        if (is_null($varBool = getValidBoolean($authentifEnabled))) {
             throw new \InvalidArgumentException(sprintf('Expected boolean as Authentification Enabled.'));
         }
 
-        $this->_authentifEnabled = $authentifEnabled;
+        $this->_authentifEnabled = $varBool;
     }
 
     /**

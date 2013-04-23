@@ -61,13 +61,17 @@ class Dispatcher
         $this->_uriDemandee = $uriDemandee;
     }
 
+    /**
+     * @param boolean $isActivated
+     * @throws \InvalidArgumentException
+     */
     public function setI18nActif($isActivated)
     {
-        if (!is_bool($isActivated)) {
+        if (is_null($varBool = getValidBoolean($isActivated))) {
             throw new \InvalidArgumentException('Expected parameter 1 isActivated to be boolean.');
         }
 
-        $this->_i18nActif = $isActivated;
+        $this->_i18nActif = $varBool;
     }
 
     /**
@@ -137,7 +141,7 @@ class Dispatcher
         if ($this->_i18nActif === true) {
             $temp = array_filter(explode('/', $this->_uriDemandee), 'strlen');
             unset($temp[1]);
-            $this->_uriDemandee = '/'.implode('/', $temp);
+            $this->_uriDemandee = '/' . implode('/', $temp);
         }
 
         $staticAliasFound = false;
