@@ -1,4 +1,8 @@
 <?php
+/**
+ * @param mixed $var
+ * @return bool|null
+ */
 function getValidBoolean($var)
 {
     if (is_bool($var) || !is_null($var = filter_var($var, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE))) {
@@ -8,11 +12,21 @@ function getValidBoolean($var)
     return null;
 }
 
+/**
+ * @param string $haystack
+ * @param string $needle
+ * @return boolean
+ */
 function startsWith($haystack, $needle)
 {
     return !strncmp($haystack, $needle, strlen($needle));
 }
 
+/**
+ * @param string $haystack
+ * @param string $needle
+ * @return boolean
+ */
 function endsWith($haystack, $needle)
 {
     $length = strlen($needle);
