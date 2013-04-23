@@ -2,6 +2,9 @@
 namespace Tests\Config;
 
 use AlaroxFramework\cfg\Config;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\vfsStreamWrapper;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -49,6 +52,14 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->_config = new Config();
     }
 
+    private function setFakeFolders($templates, $locales)
+    {
+        vfsStreamWrapper::register();
+        vfsStreamWrapper::setRoot(new vfsStreamDirectory('basePath'));
+        mkdir(vfsStream::url('basePath') . '/' . $templates);
+        mkdir(vfsStream::url('basePath') . '/' . $locales);
+    }
+
     public function setFakeCfg($tabRenvoyee, $folderTemplates, $folderLocales)
     {
         $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
@@ -70,7 +81,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSetCfg()
     {
-        $this->setFakeCfg(self::$cfgTest, '/path/to/templates', '/path/to/locales');
+        $this->setFakeFolders('templatesFolder', 'localesFolder');
+
+        $this->setFakeCfg(
+            self::$cfgTest, vfsStream::url('basePath/templatesFolder'), vfsStream::url('basePath/localesFolder')
+        );
 
         $this->assertFalse($this->_config->isProdVersion());
         $this->assertInstanceOf('\\AlaroxFramework\\cfg\\i18n\\Internationalization', $this->_config->getI18nConfig());
@@ -95,10 +110,13 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testLangueNonAvailable()
     {
+        $this->setFakeFolders('templatesFolder', 'localesFolder');
         $tabCfg = self::$cfgTest;
         unset($tabCfg['InternationalizationConfig']['Available']['English']);
 
-        $this->setFakeCfg($tabCfg, '', '');
+        $this->setFakeCfg(
+            $tabCfg, vfsStream::url('basePath/templatesFolder'), vfsStream::url('basePath/localesFolder')
+        );
     }
 
     /**

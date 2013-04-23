@@ -100,9 +100,16 @@ class TemplateConfig
 
     /**
      * @param string $repertoireTemplates
+     * @throws \Exception
      */
     public function setTemplateDirectory($repertoireTemplates)
     {
+        if (!is_dir($repertoireTemplates)) {
+            throw new \Exception(sprintf(
+                'Defined template directory "%s" does not exist.', realpath($repertoireTemplates)
+            ));
+        }
+
         $this->_templateDirectory = $repertoireTemplates;
     }
 }

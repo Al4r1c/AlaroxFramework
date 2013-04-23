@@ -2,6 +2,9 @@
 namespace Tests\Config;
 
 use AlaroxFramework\cfg\configs\TemplateConfig;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\vfsStreamWrapper;
 
 class TemplateConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -77,8 +80,20 @@ class TemplateConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testTemplateDirectory()
     {
-        $this->_templateConfig->setTemplateDirectory('/path/templates');
+        vfsStreamWrapper::register();
+        vfsStreamWrapper::setRoot(new vfsStreamDirectory('basePath'));
+        mkdir(vfsStream::url('basePath') . '/templateFolder');
 
-        $this->assertEquals('/path/templates', $this->_templateConfig->getTemplateDirectory());
+        $this->_templateConfig->setTemplateDirectory(vfsStream::url('basePath/templateFolder'));
+
+        $this->assertEquals(vfsStream::url('basePath/templateFolder'), $this->_templateConfig->getTemplateDirectory());
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testTemplateDirectoryDoesNotExist()
+    {
+        $this->_templateConfig->setTemplateDirectory('/path/to/fake');
     }
 }

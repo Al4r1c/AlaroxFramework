@@ -2,6 +2,9 @@
 namespace Tests\Config;
 
 use AlaroxFramework\cfg\i18n\Internationalization;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\vfsStreamWrapper;
 
 class InternationalizationTest extends \PHPUnit_Framework_TestCase
 {
@@ -89,8 +92,20 @@ class InternationalizationTest extends \PHPUnit_Framework_TestCase
 
     public function testDossier()
     {
-        $this->_i18nConfig->setDossierLocales('/path');
+        vfsStreamWrapper::register();
+        vfsStreamWrapper::setRoot(new vfsStreamDirectory('basePath'));
+        mkdir(vfsStream::url('basePath') . '/localesFolder');
 
-        $this->assertEquals('/path', $this->_i18nConfig->getDossierLocales());
+        $this->_i18nConfig->setDossierLocales(vfsStream::url('basePath/localesFolder'));
+
+        $this->assertEquals(vfsStream::url('basePath/localesFolder'), $this->_i18nConfig->getDossierLocales());
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testDossierDoesNotExist()
+    {
+        $this->_i18nConfig->setDossierLocales('/path/to/inexistant');
     }
 }

@@ -85,9 +85,16 @@ class Internationalization
 
     /**
      * @param string $dossierLocales
+     * @throws \Exception
      */
     public function setDossierLocales($dossierLocales)
     {
+        if (!is_dir($dossierLocales)) {
+            throw new \Exception(sprintf(
+                'Defined locales directory "%s" does not exist.', realpath($dossierLocales)
+            ));
+        }
+
         $this->_dossierLocales = $dossierLocales;
     }
 
