@@ -11,18 +11,18 @@ class ControllerFactory
     private $_listControllers = array();
 
     /**
-     * @param string $nomMethode
+     * @param string $nomControleur
      * @param array $arguments
      * @return GenericController
      * @throws \Exception
      */
-    public function __call($nomMethode, $arguments)
+    public function __call($nomControleur, $arguments)
     {
-        if (array_key_exists($nomMethode = strtolower($nomMethode), $this->_listControllers)) {
-            return call_user_func_array($this->_listControllers[$nomMethode], $arguments);
+        if (array_key_exists($nomControleur = strtolower($nomControleur), $this->_listControllers)) {
+            return call_user_func_array($this->_listControllers[$nomControleur], $arguments);
         }
 
-        throw new \Exception('controller not found in controller directory');
+        throw new \Exception('Controller not found in controller directory.');
     }
 
     /**
@@ -35,9 +35,9 @@ class ControllerFactory
             throw new \InvalidArgumentException('Expected array for parameter 1 listControllers.');
         }
 
-        foreach (array_map('strtolower', $plainListControllers) as $unControllerTrouve) {
+        foreach ($plainListControllers as $unControllerTrouve) {
             $tempNamespacesSepares = explode('\\', $unControllerTrouve);
-            $this->_listControllers[end($tempNamespacesSepares)] =
+            $this->_listControllers[strtolower(end($tempNamespacesSepares))] =
                 function ($restClient, $tabVariables) use ($unControllerTrouve) {
                     /** @var GenericController $controller */
                     $controller = new $unControllerTrouve();
