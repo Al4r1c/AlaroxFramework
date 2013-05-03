@@ -24,7 +24,8 @@
 		{
 			"type": "vcs",
 			"url": "https://github.com/Al4r1c/AlaroxXMLParser"
-		},		{
+		},
+		{
 			"type": "vcs",
 			"url": "https://github.com/Al4r1c/Twig_I18n"
 		}
@@ -40,6 +41,7 @@
 	"autoload": {
 		"psr-0": {
 			"AlaroxFramework": "src/"
-		}
+		},
+		"files": ["functions/functions.php"]
 	}
 }

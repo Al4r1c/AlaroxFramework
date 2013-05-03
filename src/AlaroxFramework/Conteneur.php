@@ -204,7 +204,6 @@ class Conteneur
     /**
      * @param TemplateConfig $templateConfig
      * @param Internationalization $i18nConfig
-     * @param string $templateDirectory
      * @return TemplateManager
      */
     private function getTemplateManager($templateConfig, $i18nConfig)
