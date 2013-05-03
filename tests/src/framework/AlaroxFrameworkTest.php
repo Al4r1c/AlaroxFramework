@@ -54,17 +54,31 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
     public function testSetConfigDepuisChemin()
     {
-        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getConfig'));
+        $arrayCfg = array(
+            'configFile' => '/path/to/fichier',
+            'routeFile' => '/path/to/routemap',
+            'controllersPath' => '/path/to/controllers',
+            'templatesPath' => '/path/to/templates/',
+            'localesPath' => '/path/to/locale/'
+        );
+
+        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('dispatchConfig'));
         $conteneur->expects($this->once())
-            ->method('getConfig')
-            ->with('/path/to/fichier', '/path/to/routemap', '/path/to/controllers')
+            ->method('dispatchConfig')
+            ->with($arrayCfg)
             ->will($this->returnValue($this->getMock('\\AlaroxFramework\\cfg\\Config')));
 
         $this->_framework->setConteneur($conteneur);
 
-        $this->_framework->genererConfigDepuisFichiers(
-            '/path/to/fichier', '/path/to/routemap', '/path/to/controllers', '/path/to/templates', '/path/to/locales'
-        );
+        $this->_framework->genererConfig($arrayCfg);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetConfigDepuisCheminMissingKey()
+    {
+        $this->_framework->genererConfig(array());
     }
 
     public function testProcess()
@@ -72,7 +86,8 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher', 'getResponseManager'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
         $reponseManager = $this->getMock('\\AlaroxFramework\\reponse\ReponseManager', array('getHtmlResponse'));
-        $htmlReponse = $this->getMock('\\AlaroxFramework\\utils\\HtmlReponse', array('getCorpsReponse', 'getStatusHttp'));
+        $htmlReponse =
+            $this->getMock('\\AlaroxFramework\\utils\\HtmlReponse', array('getCorpsReponse', 'getStatusHttp'));
         $config = $this->getMock('\\AlaroxFramework\\cfg\\Config');
 
 
@@ -81,7 +96,9 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $dispatcher->expects($this->once())->method('executerActionRequise')->will($this->returnValue('resultat'));
 
-        $reponseManager->expects($this->once())->method('getHtmlResponse')->with('resultat')->will($this->returnValue($htmlReponse));
+        $reponseManager->expects($this->once())->method('getHtmlResponse')->with('resultat')->will(
+            $this->returnValue($htmlReponse)
+        );
 
         $conteneur->expects($this->once())
             ->method('getDispatcher')

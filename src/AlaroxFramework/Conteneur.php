@@ -42,29 +42,20 @@ class Conteneur
     }
 
     /**
-     * @param string $cheminVersFichierConfig
-     * @param string $cheminVersRouteMap
-     * @param string $repertoireControlleurs
-     * @param string $repertoireTemplates
-     * @param string $repertoireLocales
+     * @param array $arrayConfiguration
      * @return Config
      */
-    public function getConfig($cheminVersFichierConfig,
-        $cheminVersRouteMap,
-        $repertoireControlleurs,
-        $repertoireTemplates,
-        $repertoireLocales)
+    public function dispatchConfig($arrayConfiguration)
     {
         $config = new Config();
         $config->recupererConfigDepuisFichier(
-            $this->getFile($cheminVersFichierConfig), $repertoireTemplates, $repertoireLocales
+            $this->getFile($arrayConfiguration['configFile']),
+            $arrayConfiguration['templatesPath'],
+            $arrayConfiguration['localesPath']
         );
         $config->setServer($this->getServer());
-        $config->setCtrlFactory($this->getControllerFactory($repertoireControlleurs));
-
-        if (!empty($cheminVersRouteMap)) {
-            $config->setRouteMap($this->getRoute($cheminVersRouteMap));
-        }
+        $config->setCtrlFactory($this->getControllerFactory($arrayConfiguration['controllersPath']));
+        $config->setRouteMap($this->getRoute($arrayConfiguration['routeFile']));
 
         return $config;
     }

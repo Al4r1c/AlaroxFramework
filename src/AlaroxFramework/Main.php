@@ -11,24 +11,13 @@ class Main
     private $_alaroxFramework;
 
     /**
-     * @param string $pathToConfigFile
-     * @param string $pathToRouteMapFile
-     * @param string $controllersRepertory
-     * @param string $templatesRepertory
-     * @param string $localesRepertory
+     * @param array $arrayConfiguration
      */
-    public function __construct(
-        $pathToConfigFile,
-        $pathToRouteMapFile,
-        $controllersRepertory,
-        $templatesRepertory,
-        $localesRepertory = '')
+    public function __construct($arrayConfiguration)
     {
         $this->_alaroxFramework = new AlaroxFramework();
         $this->_alaroxFramework->setConteneur(new Conteneur());
-        $this->_alaroxFramework->genererConfigDepuisFichiers(
-            $pathToConfigFile, $pathToRouteMapFile, $controllersRepertory, $templatesRepertory, $localesRepertory
-        );
+        $this->_alaroxFramework->genererConfig($arrayConfiguration);
     }
 
     /**

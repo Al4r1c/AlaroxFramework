@@ -16,6 +16,8 @@ class AlaroxFramework
      */
     private $_config;
 
+    private static $_clefMinimalesConfig = array('configFile', 'routeFile', 'controllersPath', 'templatesPath');
+
     /**
      * @param Conteneur $conteneur
      * @throws \InvalidArgumentException
@@ -47,25 +49,20 @@ class AlaroxFramework
     }
 
     /**
-     * @param string $cheminVersFichierConfig
-     * @param string $cheminVersFichierRouteMap
-     * @param string $repertoireControlleurs
-     * @param string $repertoireTemplates
-     * @param string $repertoireLocales
+     * @param array $configurationArray
+     * @throws \InvalidArgumentException
      */
-    public function genererConfigDepuisFichiers(
-        $cheminVersFichierConfig,
-        $cheminVersFichierRouteMap,
-        $repertoireControlleurs,
-        $repertoireTemplates,
-        $repertoireLocales)
+    public function genererConfig($configurationArray)
     {
-        $this->setConfig(
-            $this->_conteneur->getConfig(
-                $cheminVersFichierConfig, $cheminVersFichierRouteMap, $repertoireControlleurs, $repertoireTemplates,
-                $repertoireLocales
-            )
-        );
+        foreach (self::$_clefMinimalesConfig as $uneClefObligatoire) {
+            if (!array_key_exists($uneClefObligatoire, $configurationArray)) {
+                throw new \InvalidArgumentException(sprintf('Missing configuration key %s', $uneClefObligatoire));
+            }
+        }
+
+        $configurationArray = $configurationArray + array('localesPath' => '');
+
+        $this->setConfig($this->_conteneur->dispatchConfig($configurationArray));
     }
 
     /**
