@@ -1,4 +1,14 @@
 {
+	"name": "alarox-framework/AlaroxFramework",
+	"description": "Framework to communicate with REST servers.",
+	"type": "library",
+	"homepage": "https://github.com/Al4r1c/AlaroxFramework",
+	"authors": [
+		{
+			"name": "KURDIJAKA Y.",
+			"email": "yann.kurdijaka@wanadoo.fr"
+		}
+	],
 	"config": {
 		"vendor-dir": "libraries"
 	},
@@ -20,6 +30,7 @@
 		}
 	],
 	"require": {
+		"php": ">=5.4.0",
 		"alarox/AlaroxClassLoader": "v1.0",
 		"alarox/AlaroxFileManager": "v0.2",
 		"twig/twigi18n": "v1.1",
