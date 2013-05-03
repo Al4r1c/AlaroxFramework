@@ -43,6 +43,11 @@ class AlaroxFramework
 
         if ($config->isProdVersion() === true) {
             $this->_conteneur->getErreurHandler()->setHandler();
+            error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+            ini_set('display_errors', 'off');
+        } else {
+            error_reporting(E_ALL);
+            ini_set('display_errors', 'on');
         }
 
         $this->_config = $config;
