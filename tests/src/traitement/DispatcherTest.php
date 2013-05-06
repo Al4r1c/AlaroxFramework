@@ -27,7 +27,6 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     private function setFakeInfos($uri, $routeMap, $tabVariablesAttendus = array(), $i18n = false)
     {
         $restClient = $this->getMock('\AlaroxFramework\traitement\restclient\RestClient');
-        $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos');
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory', array('__call'));
 
         $ctrlFactory->expects($this->once())
@@ -49,7 +48,6 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(new TestCtrl()));
 
         $this->_dispatcher->setUriDemandee($uri);
-        $this->_dispatcher->setRestInfos($restInfos);
         $this->_dispatcher->setRouteMap($routeMap);
         $this->_dispatcher->setControllerFactory($ctrlFactory);
         $this->_dispatcher->setI18nActif($i18n);
@@ -64,11 +62,9 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     private function setFakeInfosForException($uri, $routeMap)
     {
         $restClient = $this->getMock('\AlaroxFramework\traitement\restclient\RestClient');
-        $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos');
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory');
 
         $this->_dispatcher->setUriDemandee($uri);
-        $this->_dispatcher->setRestInfos($restInfos);
         $this->_dispatcher->setRouteMap($routeMap);
         $this->_dispatcher->setControllerFactory($ctrlFactory);
         $this->_dispatcher->setI18nActif(false);
@@ -106,21 +102,6 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->_dispatcher->setRouteMap('exception');
     }
 
-    public function testSetRestInfos()
-    {
-        $this->_dispatcher->setRestInfos($restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos'));
-
-        $this->assertSame($restInfos, $this->_dispatcher->getRestInfos());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testSetRestInfosErrone()
-    {
-        $this->_dispatcher->setRestInfos('exception');
-    }
-
     public function testSetControllerFactory()
     {
         $this->_dispatcher->setControllerFactory(
@@ -133,10 +114,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     public function testSetRestClient()
     {
         $this->_dispatcher->setRestClient(
-            $restInfos = $this->getMock('\AlaroxFramework\traitement\restclient\RestClient')
+            $restClient = $this->getMock('\AlaroxFramework\traitement\restclient\RestClient')
         );
 
-        $this->assertAttributeSame($restInfos, '_restClient', $this->_dispatcher);
+        $this->assertAttributeSame($restClient, '_restClient', $this->_dispatcher);
     }
 
     /**
@@ -217,7 +198,6 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     public function testControllerFactoryException()
     {
         $restClient = $this->getMock('\AlaroxFramework\traitement\restclient\RestClient');
-        $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos');
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory', array('__call'));
         $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getDefaultAction'));
         $routeMap =
@@ -249,7 +229,6 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             ->will($this->throwException(new \Exception()));
 
         $this->_dispatcher->setUriDemandee('/');
-        $this->_dispatcher->setRestInfos($restInfos);
         $this->_dispatcher->setRouteMap($routeMap);
         $this->_dispatcher->setControllerFactory($ctrlFactory);
         $this->_dispatcher->setI18nActif(false);

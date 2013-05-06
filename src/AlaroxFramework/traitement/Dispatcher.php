@@ -26,11 +26,6 @@ class Dispatcher
     private $_controllerFactory;
 
     /**
-     * @var RestInfos
-     */
-    private $_restInfos;
-
-    /**
      * @var RouteMap
      */
     private $_routeMap;
@@ -39,14 +34,6 @@ class Dispatcher
      * @var RestClient
      */
     private $_restClient;
-
-    /**
-     * @return RestInfos
-     */
-    public function getRestInfos()
-    {
-        return $this->_restInfos;
-    }
 
     /**
      * @param string $uriDemandee
@@ -98,19 +85,6 @@ class Dispatcher
         }
 
         $this->_restClient = $restClient;
-    }
-
-    /**
-     * @param RestInfos $restInfos
-     * @throws \InvalidArgumentException
-     */
-    public function setRestInfos($restInfos)
-    {
-        if (!$restInfos instanceof RestInfos) {
-            throw new \InvalidArgumentException('Expected parameter 1 restInfos to be RestInfos.');
-        }
-
-        $this->_restInfos = $restInfos;
     }
 
     /**
