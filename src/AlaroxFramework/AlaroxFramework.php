@@ -79,14 +79,24 @@ class AlaroxFramework
         try {
             $reponse = $this->_conteneur->getDispatcher($this->_config)->executerActionRequise();
 
-            $htmlReponse = $this->_conteneur->getResponseManager($this->_config)->getHtmlResponse($reponse);
+            try {
+                $htmlReponse = $this->_conteneur->getResponseManager($this->_config)->getHtmlResponse($reponse);
+            } catch (\Exception $exception) {
+                if ($this->_config->isProdVersion() === true) {
+                    $htmlReponse = new HtmlReponse(500);
+                } else {
+                    throw $exception;
+                }
+            }
+
         } catch (\Exception $exception) {
             if ($this->_config->isProdVersion() === true) {
-                $htmlReponse = new HtmlReponse(500);
+                $htmlReponse = new HtmlReponse(404);
             } else {
                 throw $exception;
             }
         }
+
 
         return $htmlReponse;
     }
