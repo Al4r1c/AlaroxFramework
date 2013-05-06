@@ -8,9 +8,23 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
     /** @var AlaroxFramework */
     private $_framework;
 
+    /**
+     * @var array
+     */
+    private $_initialConfig = array();
+
     public function setUp()
     {
         $this->_framework = new AlaroxFramework();
+
+        $this->_initialConfig['errorRepoting'] = error_reporting();
+        $this->_initialConfig['displayError'] = ini_get('display_errors');
+    }
+
+    public function tearDown()
+    {
+        error_reporting($this->_initialConfig['errorRepoting']);
+        ini_set('display_errors', $this->_initialConfig['displayError']);
     }
 
     public function testFirst()
