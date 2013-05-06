@@ -2,6 +2,7 @@
 namespace Tests\Framework;
 
 use AlaroxFramework\AlaroxFramework;
+use AlaroxFramework\utils\HtmlReponse;
 
 class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 {
@@ -137,35 +138,39 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testErreurWebsiteDev()
+    public function testErreurWebsiteDevDispatcher()
     {
-        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher'));
-        $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
-        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
-
-
-        $dispatcher
-            ->expects($this->once())
-            ->method('executerActionRequise')
-            ->will($this->throwException(new \Exception()));
-
-        $conteneur->expects($this->once())
-            ->method('getDispatcher')
-            ->with($config)
-            ->will($this->returnValue($dispatcher));
-
-        $config->expects($this->atLeastOnce())
-            ->method('isProdVersion')
-            ->will($this->returnValue(false));
-
-
-        $this->_framework->setConteneur($conteneur);
-        $this->_framework->setConfig($config);
-
-        $this->_framework->process();
+        $this->erreurDispatcher(false);
     }
 
-    public function testErreurWebsiteProd()
+    public function testErreurWebsiteProdDispatcher()
+    {
+        $this->assertInstanceOf('\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->erreurDispatcher(true));
+        $this->assertEquals(404, $htmlReponse->getStatusHttp());
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testErreurWebsiteDevResponseManager()
+    {
+        $this->erreurReponseManager(false);
+    }
+
+    public function testErreurWebsiteProdResponseManager()
+    {
+        $this->assertInstanceOf(
+            '\\AlaroxFramework\\utils\\HtmlReponse',
+            $htmlReponse = $this->erreurReponseManager(true)
+        );
+        $this->assertEquals(500, $htmlReponse->getStatusHttp());
+    }
+
+    /**
+     * @param boolean $prodVersion
+     * @return HtmlReponse
+     */
+    private function erreurDispatcher($prodVersion)
     {
         $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
@@ -184,14 +189,50 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $config->expects($this->atLeastOnce())
             ->method('isProdVersion')
-            ->will($this->returnValue(true));
+            ->will($this->returnValue($prodVersion));
 
 
         $this->_framework->setConteneur($conteneur);
         $this->_framework->setConfig($config);
 
+        return $this->_framework->process();
+    }
 
-        $this->assertInstanceOf('\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->_framework->process());
-        $this->assertEquals(500, $htmlReponse->getStatusHttp());
+    /**
+     * @param boolean $prodVersion
+     * @return HtmlReponse
+     */
+    private function erreurReponseManager($prodVersion)
+    {
+        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher', 'getResponseManager'));
+        $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher');
+        $responseManager = $this->getMock('\\AlaroxFramework\\reponse\\ReponseManager', array('getHtmlResponse'));
+        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
+
+
+        $responseManager
+            ->expects($this->once())
+            ->method('getHtmlResponse')
+            ->will($this->throwException(new \Exception()));
+
+        $conteneur->expects($this->once())
+            ->method('getDispatcher')
+            ->with($config)
+            ->will($this->returnValue($dispatcher));
+
+        $conteneur->expects($this->once())
+            ->method('getResponseManager')
+            ->with($config)
+            ->will($this->returnValue($responseManager));
+
+        $config->expects($this->atLeastOnce())
+            ->method('isProdVersion')
+            ->will($this->returnValue($prodVersion));
+
+
+        $this->_framework->setConteneur($conteneur);
+        $this->_framework->setConfig($config);
+
+        return $this->_framework->process();
     }
 }
