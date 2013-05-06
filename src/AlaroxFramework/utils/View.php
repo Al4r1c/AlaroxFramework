@@ -88,16 +88,17 @@ class View
 
     /**
      * @param ObjetReponse $objetReponse
+     * @param string $clef
      * @throws \InvalidArgumentException
      * @return $this
      */
-    public function withResponseObject($objetReponse)
+    public function withResponseObject($objetReponse, $clef = 'responseObject')
     {
         if (!$objetReponse instanceof ObjetReponse) {
             throw new \InvalidArgumentException('Expected parameter 1 objetReponse to be instance of ObjetReponse.');
         }
 
-        $this->with('responseObject', $objetReponse->toArray());
+        $this->with($clef, $objetReponse->toArray());
 
         return $this;
     }
