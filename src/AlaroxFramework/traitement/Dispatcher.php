@@ -129,7 +129,10 @@ class Dispatcher
     private function dispatchAvecControlleur()
     {
         if (strcmp($this->_uriDemandee, '/') == 0) {
-            list($nomClasseController, $actionAEffectuer) = $this->dispatchDefaultUri();
+            $controllerParDefaut =  $this->_routeMap->getRouteParDefaut();
+
+            $nomClasseController = $controllerParDefaut->getController();
+            $actionAEffectuer = $controllerParDefaut->getDefaultAction();
             $tabVariablesRequete = array();
         } else {
             list($nomClasseController, $actionAEffectuer, $tabVariablesRequete) = $this->dispatchUri();
@@ -291,29 +294,5 @@ class Dispatcher
         }
 
         return $tabVariables;
-    }
-
-    /**
-     * @return array
-     * @throws \Exception
-     */
-    private function dispatchDefaultUri()
-    {
-        $nomClasseController = $this->_routeMap->getControlerParDefaut();
-
-        if (!is_null($route = $this->_routeMap->getUneRouteByController($nomClasseController))) {
-            if (!is_null($actionDefaut = $route->getDefaultAction())) {
-                $actionAEffectuer = $actionDefaut;
-
-                return array($nomClasseController, $actionAEffectuer);
-            } else {
-                throw new \Exception(sprintf(
-                    'No default action found for default uri "%s".',
-                    $route->getUri()
-                ));
-            }
-        } else {
-            throw new \Exception(sprintf('No route with controller "%s" found.', $nomClasseController));
-        }
     }
 }

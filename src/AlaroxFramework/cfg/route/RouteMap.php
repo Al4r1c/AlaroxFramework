@@ -6,9 +6,9 @@ use AlaroxFileManager\FileManager\File;
 class RouteMap
 {
     /**
-     * @var string
+     * @var Route
      */
-    private $_controlerParDefaut;
+    private $_routeParDefaut;
 
     /**
      * @var Route[]
@@ -23,14 +23,14 @@ class RouteMap
     /**
      * @var array
      */
-    private static $valeursMinimales = array('Default_controller', 'RouteMap', 'Static');
+    private static $valeursMinimales = array('Default.controller','Default.action', 'RouteMap', 'Static');
 
     /**
-     * @return string
+     * @return Route
      */
-    public function getControlerParDefaut()
+    public function getRouteParDefaut()
     {
-        return $this->_controlerParDefaut;
+        return $this->_routeParDefaut;
     }
 
     /**
@@ -42,21 +42,6 @@ class RouteMap
     }
 
     /**
-     * @param string $ctrlRecherche
-     * @return Route|null
-     */
-    public function getUneRouteByController($ctrlRecherche)
-    {
-        foreach ($this->_routes as $uneRoute) {
-            if (strcmp(strtolower($ctrlRecherche), $uneRoute->getController()) == 0) {
-                return $uneRoute;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * @return array
      */
     public function getStaticAliases()
@@ -65,11 +50,16 @@ class RouteMap
     }
 
     /**
-     * @param string $controleurParDefaut
+     * @param Route $routeControleurParDefaut
+     * @throws \InvalidArgumentException
      */
-    public function setControlerParDefaut($controleurParDefaut)
+    public function setRouteParDefaut($routeControleurParDefaut)
     {
-        $this->_controlerParDefaut = $controleurParDefaut;
+        if (!$routeControleurParDefaut instanceof Route) {
+            throw new \InvalidArgumentException('Expected parameter 1 routeControleurParDefaut to be Route.');
+        }
+
+        $this->_routeParDefaut = $routeControleurParDefaut;
     }
 
     /**
@@ -126,12 +116,15 @@ class RouteMap
         $routeMap = $fichierRouteMap->loadFile();
 
         foreach (self::$valeursMinimales as $uneValeurMinimale) {
-            if (!array_key_exists($uneValeurMinimale, $routeMap)) {
+            if (is_null(array_multisearch($uneValeurMinimale, $routeMap, true))) {
                 throw new \Exception(sprintf('Missing route map key "%s".', $uneValeurMinimale));
             }
         }
 
-        foreach ($routeMap['RouteMap'] as $uri => $uneRoute) {
+
+        $routeMap = array_change_key_case_recursive($routeMap, CASE_LOWER);
+
+        foreach ($routeMap['routemap'] as $uri => $uneRoute) {
             if (!is_string($uri)) {
                 throw new \Exception('RouteMap parse error: no uri set or invalid uri.');
             }
@@ -140,7 +133,7 @@ class RouteMap
                 throw new \Exception(sprintf('RouteMap parse error: key controller is missing for uri %s.', $uri));
             }
 
-            if (!isset($uneRoute['defaultAction']) && !isset($uneRoute['mapping'])) {
+            if (!isset($uneRoute['defaultaction']) && !isset($uneRoute['mapping'])) {
                 throw new \Exception(sprintf(
                     'RouteMap parse error: no action attached for uri %s: key defaultAction OR mapping must be set.',
                     $uri
@@ -155,8 +148,8 @@ class RouteMap
                 $route->setPattern($uneRoute['pattern']);
             }
 
-            if (isset($uneRoute['defaultAction'])) {
-                $route->setDefaultAction($uneRoute['defaultAction']);
+            if (isset($uneRoute['defaultaction'])) {
+                $route->setDefaultAction($uneRoute['defaultaction']);
             }
 
             if (isset($uneRoute['mapping'])) {
@@ -166,7 +159,13 @@ class RouteMap
             $this->ajouterRoute($route);
         }
 
-        $this->setControlerParDefaut($routeMap['Default_controller']);
-        $this->setStaticAliases($routeMap['Static']);
+
+        $routeControllerDefaut = new Route();
+        $routeControllerDefaut->setController($routeMap['default']['controller']);
+        $routeControllerDefaut->setDefaultAction($routeMap['default']['action']);
+        $this->setRouteParDefaut($routeControllerDefaut);
+
+
+        $this->setStaticAliases($routeMap['static']);
     }
 }

@@ -60,11 +60,19 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
         $this->_routeMap->setStaticAliases('exception');
     }
 
-    public function testSetControleurDefaut()
+    public function testSetRouteDefaut()
     {
-        $this->_routeMap->setControlerParDefaut('controlleurNom');
+        $this->_routeMap->setRouteParDefaut($route = $this->getMock('\AlaroxFramework\cfg\route\Route'));
 
-        $this->assertEquals('controlleurNom', $this->_routeMap->getControlerParDefaut());
+        $this->assertSame($route, $this->_routeMap->getRouteParDefaut());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetRouteDefautType()
+    {
+        $this->_routeMap->setRouteParDefaut(50);
     }
 
     public function testSetRouteMapDepuisFichier()
@@ -78,7 +86,11 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
             ->method('loadFile')
             ->will(
                 $this->returnValue(
-                    array('Default_controller' => 'defCtrl',
+                    array(
+                        'Default' => array(
+                            'controller' => 'defCtrl',
+                            'action' => 'defAct'
+                        ),
                         'RouteMap' => array(
                             '/routeTo' => array(
                                 'controller' => 'ctrl',
@@ -94,7 +106,7 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(1, $this->_routeMap->getRoutes());
         $this->assertContainsOnlyInstancesOf('\AlaroxFramework\cfg\route\Route', $this->_routeMap->getRoutes());
-        $this->assertEquals('defCtrl', $this->_routeMap->getControlerParDefaut());
+        $this->assertEquals('defctrl', $this->_routeMap->getRouteParDefaut()->getController());
         $this->assertEquals(array('/statik'), $this->_routeMap->getStaticAliases());
     }
 
@@ -142,7 +154,10 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
             ->method('loadFile')
             ->will(
                 $this->returnValue(
-                    array('Default_controller' => '',
+                    array('Default' => array(
+                        'controller' => 'defCtrl',
+                        'action' => 'defAct'
+                    ),
                         'RouteMap' => array(array()),
                         'Static' => '')
                 )
@@ -165,7 +180,10 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
             ->method('loadFile')
             ->will(
                 $this->returnValue(
-                    array('Default_controller' => '',
+                    array('Default' => array(
+                        'controller' => 'defCtrl',
+                        'action' => 'defAct'
+                    ),
                         'RouteMap' => array('/hello' => array()),
                         'Static' => '',)
                 )
@@ -188,7 +206,10 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
             ->method('loadFile')
             ->will(
                 $this->returnValue(
-                    array('Default_controller' => '',
+                    array('Default' => array(
+                        'controller' => 'defCtrl',
+                        'action' => 'defAct'
+                    ),
                         'RouteMap' => array('/hello' => array(
                             'controller' => 'ctrl'
                         )),
@@ -205,23 +226,5 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
     public function testSetRouteMapTypeErrone()
     {
         $this->_routeMap->setRouteMapDepuisFichier(array());
-    }
-
-    public function testGetUneRouteByCtrl()
-    {
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getController'));
-
-        $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('ctrlcontroll'));
-
-        $this->_routeMap->ajouterRoute($route);
-
-        $this->assertSame($route, $this->_routeMap->getUneRouteByController('ctrlcontroll'));
-    }
-
-    public function testGetUneRouteByCtrlNonTrouvee()
-    {
-        $this->assertNull($this->_routeMap->getUneRouteByController('monuri'));
     }
 }

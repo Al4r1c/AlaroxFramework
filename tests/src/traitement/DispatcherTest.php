@@ -65,6 +65,38 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->_dispatcher->setI18nActif(false);
     }
 
+    /**
+     * @param string $nomMethode
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getDefaultRouteMap($nomMethode = 'indexAction')
+    {
+        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getController', 'getDefaultAction'));
+        $routeMap =
+            $this->getMock(
+                '\AlaroxFramework\cfg\route\RouteMap',
+                array('getStaticAliases', 'getRouteParDefaut')
+            );
+
+        $route->expects($this->once())
+            ->method('getController')
+            ->will($this->returnValue('testctrl'));
+
+        $route->expects($this->once())
+            ->method('getDefaultAction')
+            ->will($this->returnValue($nomMethode));
+
+        $routeMap->expects($this->once())
+            ->method('getRouteParDefaut')
+            ->will($this->returnValue($route));
+
+        $routeMap->expects($this->once())
+            ->method('getStaticAliases')
+            ->will($this->returnValue(array()));
+
+        return $routeMap;
+    }
+
     public function testSetUri()
     {
         $this->_dispatcher->setUriDemandee('/mon/uri/');
@@ -137,33 +169,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
     public function testExecuterUriVideGoDefaultCtrl()
     {
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getDefaultAction'));
-        $routeMap =
-            $this->getMock(
-                '\AlaroxFramework\cfg\route\RouteMap',
-                array('getStaticAliases', 'getControlerParDefaut', 'getUneRouteByController')
-            );
-
-
-        $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue('indexAction'));
-
-        $routeMap->expects($this->once())
-            ->method('getControlerParDefaut')
-            ->will($this->returnValue('testctrl'));
-
-        $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
-
-        $routeMap->expects($this->once())
-            ->method('getUneRouteByController')
-            ->with('testctrl')
-            ->will($this->returnValue($route));
-
-
-        $this->setFakeInfos('/', $routeMap);
+        $this->setFakeInfos('/', $this->getDefaultRouteMap());
 
         $this->assertEquals('THIS IS INDEX ACTION', $this->_dispatcher->executerActionRequise());
     }
@@ -174,37 +180,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     public function testControllerFactoryException()
     {
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory', array('__call'));
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getDefaultAction'));
-        $routeMap =
-            $this->getMock(
-                '\AlaroxFramework\cfg\route\RouteMap',
-                array('getStaticAliases', 'getControlerParDefaut', 'getUneRouteByController')
-            );
-
-
-        $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue('indexAction'));
-
-        $routeMap->expects($this->once())
-            ->method('getControlerParDefaut')
-            ->will($this->returnValue('testctrl'));
-
-        $routeMap->expects($this->once())
-            ->method('getUneRouteByController')
-            ->with('testctrl')
-            ->will($this->returnValue($route));
-
-        $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
-
         $ctrlFactory->expects($this->once())
             ->method('__call')
             ->will($this->throwException(new \Exception()));
 
         $this->_dispatcher->setUriDemandee('/');
-        $this->_dispatcher->setRouteMap($routeMap);
+        $this->_dispatcher->setRouteMap($this->getDefaultRouteMap());
         $this->_dispatcher->setControllerFactory($ctrlFactory);
         $this->_dispatcher->setI18nActif(false);
 
@@ -216,100 +197,9 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuterUriVideRouteNonTrouvee()
     {
-        $routeMap =
-            $this->getMock(
-                '\AlaroxFramework\cfg\route\RouteMap',
-                array('getStaticAliases', 'getControlerParDefaut', 'getUneRouteByController')
-            );
-
-        $routeMap->expects($this->once())
-            ->method('getControlerParDefaut')
-            ->will($this->returnValue('testctrl'));
-
-        $routeMap->expects($this->once())
-            ->method('getUneRouteByController')
-            ->with('testctrl')
-            ->will($this->returnValue(null));
-
-        $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
-
-
-        $this->setFakeInfosForException('/', $routeMap);
+        $this->setFakeInfosForException('/', $this->getDefaultRouteMap());
 
         $this->assertEquals('THIS IS INDEX ACTION', $this->_dispatcher->executerActionRequise());
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExecuterUriVideActionDefautNonSet()
-    {
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getDefaultAction'));
-        $routeMap =
-            $this->getMock(
-                '\AlaroxFramework\cfg\route\RouteMap',
-                array('getStaticAliases', 'getControlerParDefaut', 'getUneRouteByController')
-            );
-
-        $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue(null));
-
-        $routeMap->expects($this->once())
-            ->method('getControlerParDefaut')
-            ->will($this->returnValue('testctrl'));
-
-        $routeMap->expects($this->once())
-            ->method('getUneRouteByController')
-            ->with('testctrl')
-            ->will($this->returnValue($route));
-
-        $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
-
-
-        $this->setFakeInfosForException('/', $routeMap);
-
-        $this->assertEquals('THIS IS INDEX ACTION', $this->_dispatcher->executerActionRequise());
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testExecuterActionMaisActionNexistePas()
-    {
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getDefaultAction'));
-        $routeMap =
-            $this->getMock(
-                '\AlaroxFramework\cfg\route\RouteMap',
-                array('getStaticAliases', 'getControlerParDefaut', 'getUneRouteByController')
-            );
-
-
-        $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue('unknownAction'));
-
-        $routeMap->expects($this->once())
-            ->method('getControlerParDefaut')
-            ->will($this->returnValue('testctrl'));
-
-        $routeMap->expects($this->once())
-            ->method('getUneRouteByController')
-            ->with('testctrl')
-            ->will($this->returnValue($route));
-
-        $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
-
-
-        $this->setFakeInfos('/', $routeMap);
-
-        $this->_dispatcher->executerActionRequise();
     }
 
     /**
@@ -317,33 +207,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuterActionMaisActionMethodePrivee()
     {
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getDefaultAction'));
-        $routeMap =
-            $this->getMock(
-                '\AlaroxFramework\cfg\route\RouteMap',
-                array('getStaticAliases', 'getControlerParDefaut', 'getUneRouteByController')
-            );
-
-
-        $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue('privatemethod'));
-
-        $routeMap->expects($this->once())
-            ->method('getControlerParDefaut')
-            ->will($this->returnValue('testctrl'));
-
-        $routeMap->expects($this->once())
-            ->method('getUneRouteByController')
-            ->with('testctrl')
-            ->will($this->returnValue($route));
-
-        $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
-
-
-        $this->setFakeInfos('/', $routeMap);
+        $this->setFakeInfos('/', $this->getDefaultRouteMap('privatemethod'));
 
         $this->_dispatcher->executerActionRequise();
     }
@@ -928,30 +792,28 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
     public function testExecuterI18nActifUriVideGoDefaultCtrl()
     {
-        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getDefaultAction'));
+        $route = $this->getMock('\AlaroxFramework\cfg\route\Route', array('getController', 'getDefaultAction'));
         $routeMap =
             $this->getMock(
                 '\AlaroxFramework\cfg\route\RouteMap',
-                array('getStaticAliases', 'getControlerParDefaut', 'getUneRouteByController')
+                array('getStaticAliases', 'getRouteParDefaut')
             );
 
+        $route->expects($this->once())
+            ->method('getController')
+            ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
             ->method('getDefaultAction')
             ->will($this->returnValue('indexAction'));
 
         $routeMap->expects($this->once())
-            ->method('getControlerParDefaut')
-            ->will($this->returnValue('testctrl'));
+            ->method('getRouteParDefaut')
+            ->will($this->returnValue($route));
 
         $routeMap->expects($this->once())
             ->method('getStaticAliases')
             ->will($this->returnValue(array()));
-
-        $routeMap->expects($this->once())
-            ->method('getUneRouteByController')
-            ->with('testctrl')
-            ->will($this->returnValue($route));
 
 
         $this->setFakeInfos('/fr/', $routeMap, array(), true);
