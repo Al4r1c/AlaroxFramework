@@ -36,17 +36,6 @@ class RestInfos
     private $_formatEnvoi;
 
     /**
-     * @var array
-     */
-    private static $valeursMinimales = array('Url',
-        'Format',
-        'Authentification',
-        'Authentification.Enabled',
-        'Authentification.Method',
-        'Authentification.Username',
-        'Authentification.PassKey');
-
-    /**
      * @return string
      */
     public function getFormatEnvoi()
@@ -170,32 +159,5 @@ class RestInfos
         }
 
         $this->_username = $username;
-    }
-
-    /**
-     * @param array $tabRestInfos
-     * @throws \InvalidArgumentException
-     * @throws \Exception
-     */
-    public function parseRestInfos($tabRestInfos)
-    {
-        if (!is_array($tabRestInfos)) {
-            throw new \InvalidArgumentException('Expected parameter 1 tabRestInfos to be array.');
-        }
-
-        foreach (self::$valeursMinimales as $uneValeurMinimale) {
-            if (is_null(array_multisearch($uneValeurMinimale, $tabRestInfos))) {
-                throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
-            }
-        }
-
-        $tabRestInfos = array_change_key_case_recursive($tabRestInfos, CASE_LOWER);
-
-        $this->setUrl($tabRestInfos['url']);
-        $this->setFormatEnvoi($tabRestInfos['format']);
-        $this->setAuthentifEnabled($tabRestInfos['authentification']['enabled']);
-        $this->setAuthentifMethode($tabRestInfos['authentification']['method']);
-        $this->setUsername($tabRestInfos['authentification']['username']);
-        $this->setPrivateKey($tabRestInfos['authentification']['passkey']);
     }
 }

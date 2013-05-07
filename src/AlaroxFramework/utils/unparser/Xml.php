@@ -27,8 +27,8 @@ class Xml extends AbstractUnparser
             if ($unXmlElement->hasChildren()) {
                 $result[$unXmlElement->getName()] = $this->xmlDataToArray($unXmlElement->getChildren());
             } else {
-                if(isset($result[$unXmlElement->getName()])) {
-                    if(!is_array($result[$unXmlElement->getName()])) {
+                if (isset($result[$unXmlElement->getName()])) {
+                    if (!is_array($result[$unXmlElement->getName()])) {
                         $result[$unXmlElement->getName()] = array($result[$unXmlElement->getName()]);
                     }
 

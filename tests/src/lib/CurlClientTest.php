@@ -1,7 +1,7 @@
 <?php
-namespace Tests\traitement;
+namespace Tests\lib;
 
-use AlaroxFramework\traitement\restclient\CurlClient;
+use AlaroxFramework\utils\restclient\CurlClient;
 
 class CurlClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,12 +17,12 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
 
     public function testInstance()
     {
-        $this->assertInstanceOf('\AlaroxFramework\traitement\restclient\CurlClient', $this->_curlClient);
+        $this->assertInstanceOf('\\AlaroxFramework\\utils\\restclient\\CurlClient', $this->_curlClient);
     }
 
     public function testSetCurl()
     {
-        $this->_curlClient->setCurl($curl = $this->getMock('\AlaroxFramework\utils\Curl'));
+        $this->_curlClient->setCurl($curl = $this->getMock('\\AlaroxFramework\\utils\restclient\\Curl'));
 
         $this->assertAttributeSame($curl, '_curl', $this->_curlClient);
     }
@@ -37,7 +37,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
 
     public function testSetParser()
     {
-        $this->_curlClient->setParser($parser = $this->getMock('\AlaroxFramework\utils\parser\Parser'));
+        $this->_curlClient->setParser($parser = $this->getMock('\\AlaroxFramework\\utils\\parser\\Parser'));
 
         $this->assertAttributeSame($parser, '_parser', $this->_curlClient);
     }
@@ -87,7 +87,8 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
     public function testExecuterCurlNotSet()
     {
         $this->_curlClient->executer(
-            $this->getMock('\AlaroxFramework\cfg\configs\RestInfos'), $this->getMock('\AlaroxFramework\utils\ObjetRequete')
+            $this->getMock('\AlaroxFramework\cfg\configs\RestInfos'),
+            $this->getMock('\AlaroxFramework\utils\ObjetRequete')
         );
     }
 
@@ -100,7 +101,11 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $this->setUp();
 
         $parser = $this->getMock('\AlaroxFramework\utils\parser\Parser', array('parse'));
-        $curl = $this->getMock('\AlaroxFramework\utils\Curl', array('executer', 'ajouterOption', 'ajouterHeaders'));
+        $curl =
+            $this->getMock(
+                '\AlaroxFramework\utils\restclient\Curl',
+                array('executer', 'ajouterOption', 'ajouterHeaders')
+            );
         $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos', array('isAuthEnabled', 'getFormatEnvoi'));
         $objetRequete =
             $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp', 'getBody'));
@@ -149,7 +154,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuterNoAuthInvalidMethod()
     {
-        $curl = $this->getMock('\AlaroxFramework\utils\Curl');
+        $curl = $this->getMock('\AlaroxFramework\utils\restclient\Curl');
         $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos');
         $objetRequete = $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp'));
 
@@ -172,7 +177,8 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $parser = $this->getMock('\AlaroxFramework\utils\parser\Parser', array('parse'));
         $curl =
             $this->getMock(
-                '\AlaroxFramework\utils\Curl', array('executer', 'ajouterOption', 'ajouterHeaders', 'ajouterUnHeader')
+                '\AlaroxFramework\utils\restclient\Curl',
+                array('executer', 'ajouterOption', 'ajouterHeaders', 'ajouterUnHeader')
             );
         $restInfos =
             $this->getMock(
@@ -194,7 +200,8 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $objetRequete->expects($this->once())->method('getBody')->will($this->returnValue(array('param' => 'value')));
 
         $curl->expects($this->atLeastOnce())->method('ajouterUnHeader')->with(
-            'Authorization', 'Basic username:/1xdD2ZiYV6hrBMOQBWtNDH6mDi+BfsdjAMTMwzmaq0='
+            'Authorization',
+            'Basic username:/1xdD2ZiYV6hrBMOQBWtNDH6mDi+BfsdjAMTMwzmaq0='
         );
         $curl->expects($this->atLeastOnce())->method('ajouterOption');
         $curl->expects($this->atLeastOnce())->method('ajouterHeaders');

@@ -1,6 +1,7 @@
 <?php
 namespace AlaroxFramework\reponse;
 
+use AlaroxFramework\cfg\globals\GlobalVars;
 use AlaroxFramework\utils\View;
 
 class TemplateManager
@@ -11,7 +12,7 @@ class TemplateManager
     private $_twigEnv;
 
     /**
-     * @var array
+     * @var GlobalVars
      */
     private $_globalVar = array();
 
@@ -29,16 +30,11 @@ class TemplateManager
     }
 
     /**
-     * @param array $generalVar
-     * @throws \InvalidArgumentException
+     * @param GlobalVars $globalVars
      */
-    public function setGlobalVar($generalVar)
+    public function setGlobalVar($globalVars)
     {
-        if (!is_array($generalVar)) {
-            throw new \InvalidArgumentException('Expected parameter 1 generalVar to be array.');
-        }
-
-        $this->_globalVar = $generalVar;
+        $this->_globalVar = $globalVars;
     }
 
     /**
@@ -52,7 +48,7 @@ class TemplateManager
             throw new \InvalidArgumentException('Expected parameter 1 extension to be instance of Twig_ExtensionInterface.');
         }
 
-        if(is_null($this->_twigEnv)) {
+        if (is_null($this->_twigEnv)) {
             throw new \Exception('Twig is not instantiated.');
         }
 
@@ -67,6 +63,7 @@ class TemplateManager
      */
     public function render($view)
     {
+
         if (!$view instanceof View) {
             throw new \InvalidArgumentException('Expected parameter 1 view to be instance of View.');
         }
@@ -77,6 +74,8 @@ class TemplateManager
 
         $template = $this->_twigEnv->loadTemplate($view->getViewName());
 
-        return $template->render($view->getVariables() + $this->_globalVar);
+        return $template->render(
+            $view->getVariables() + $this->_globalVar->getStaticVars() + $this->_globalVar->getRemoteVarsExecutees()
+        );
     }
 }

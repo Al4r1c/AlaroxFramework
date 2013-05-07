@@ -42,23 +42,6 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($conteneur, '_conteneur', $this->_framework);
     }
 
-    public function testSetConfig()
-    {
-        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config');
-
-        $this->_framework->setConfig($config);
-
-        $this->assertAttributeEquals($config, '_config', $this->_framework);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testSetConfigDepuisCheminTypeErrone()
-    {
-        $this->_framework->setConfig(array());
-    }
-
     /**
      * @expectedException \InvalidArgumentException
      */
@@ -77,9 +60,9 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
             'localesPath' => '/path/to/locale/'
         );
 
-        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('dispatchConfig'));
+        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('createConfiguration'));
         $conteneur->expects($this->once())
-            ->method('dispatchConfig')
+            ->method('createConfiguration')
             ->with($arrayCfg)
             ->will($this->returnValue($this->getMock('\\AlaroxFramework\\cfg\\Config')));
 
@@ -103,7 +86,6 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $reponseManager = $this->getMock('\\AlaroxFramework\\reponse\ReponseManager', array('getHtmlResponse'));
         $htmlReponse =
             $this->getMock('\\AlaroxFramework\\utils\\HtmlReponse', array('getCorpsReponse', 'getStatusHttp'));
-        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config');
 
 
         $htmlReponse->expects($this->any())->method('getCorpsReponse')->will($this->returnValue('resultat'));
@@ -117,17 +99,14 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $conteneur->expects($this->once())
             ->method('getDispatcher')
-            ->with($config)
             ->will($this->returnValue($dispatcher));
 
         $conteneur->expects($this->once())
             ->method('getResponseManager')
-            ->with($config)
             ->will($this->returnValue($reponseManager));
 
 
         $this->_framework->setConteneur($conteneur);
-        $this->_framework->setConfig($config);
 
 
         $this->assertInstanceOf('\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->_framework->process());
@@ -172,7 +151,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
      */
     private function erreurDispatcher($prodVersion)
     {
-        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher'));
+        $conteneur = $this->getFakeConteneur(array('getConfig', 'getDispatcher'), $prodVersion);
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
         $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
 
@@ -184,16 +163,10 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $conteneur->expects($this->once())
             ->method('getDispatcher')
-            ->with($config)
             ->will($this->returnValue($dispatcher));
-
-        $config->expects($this->atLeastOnce())
-            ->method('isProdVersion')
-            ->will($this->returnValue($prodVersion));
 
 
         $this->_framework->setConteneur($conteneur);
-        $this->_framework->setConfig($config);
 
         return $this->_framework->process();
     }
@@ -204,11 +177,9 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
      */
     private function erreurReponseManager($prodVersion)
     {
-        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('getDispatcher', 'getResponseManager'));
+        $conteneur = $this->getFakeConteneur(array('getConfig', 'getDispatcher', 'getResponseManager'), $prodVersion);
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher');
         $responseManager = $this->getMock('\\AlaroxFramework\\reponse\\ReponseManager', array('getHtmlResponse'));
-        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
-
 
         $responseManager
             ->expects($this->once())
@@ -217,22 +188,32 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $conteneur->expects($this->once())
             ->method('getDispatcher')
-            ->with($config)
             ->will($this->returnValue($dispatcher));
 
         $conteneur->expects($this->once())
             ->method('getResponseManager')
-            ->with($config)
             ->will($this->returnValue($responseManager));
+
+        $this->_framework->setConteneur($conteneur);
+
+        return $this->_framework->process();
+    }
+
+    private function getFakeConteneur($tabMethodes, $prodVersion)
+    {
+        $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', $tabMethodes);
+
+        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
+
+        $conteneur
+            ->expects($this->atLeastOnce())
+            ->method('getConfig')
+            ->will($this->returnValue($config));
 
         $config->expects($this->atLeastOnce())
             ->method('isProdVersion')
             ->will($this->returnValue($prodVersion));
 
-
-        $this->_framework->setConteneur($conteneur);
-        $this->_framework->setConfig($config);
-
-        return $this->_framework->process();
+        return $conteneur;
     }
 }

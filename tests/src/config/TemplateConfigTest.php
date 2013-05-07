@@ -16,23 +16,6 @@ class TemplateConfigTest extends \PHPUnit_Framework_TestCase
         $this->_templateConfig = new TemplateConfig();
     }
 
-    public function testSetGlobals()
-    {
-        $globals = array('varone' => 'valeurone');
-
-        $this->_templateConfig->setGlobalVariables($globals);
-
-        $this->assertSame($globals, $this->_templateConfig->getGlobalVariables());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testSetGlobalsArray()
-    {
-        $this->_templateConfig->setGlobalVariables('exception');
-    }
-
     public function testSetCache()
     {
         $this->_templateConfig->setCache(true);
@@ -95,5 +78,22 @@ class TemplateConfigTest extends \PHPUnit_Framework_TestCase
     public function testTemplateDirectoryDoesNotExist()
     {
         $this->_templateConfig->setTemplateDirectory('/path/to/fake');
+    }
+
+    public function testGlobalVar()
+    {
+        $this->_templateConfig->setGlobalVariables(
+            $globalVar = $this->getMock('\\AlaroxFramework\\cfg\\globals\\GlobalVars')
+        );
+
+        $this->assertSame($globalVar, $this->_templateConfig->getGlobalVariables());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testGlobalVarType()
+    {
+        $this->_templateConfig->setGlobalVariables('exception');
     }
 }

@@ -1,6 +1,8 @@
 <?php
 namespace AlaroxFramework\cfg\configs;
 
+use AlaroxFramework\cfg\globals\GlobalVars;
+
 class TemplateConfig
 {
     /**
@@ -14,7 +16,7 @@ class TemplateConfig
     private $_charset;
 
     /**
-     * @var array
+     * @var GlobalVars
      */
     private $_globalVariables;
 
@@ -40,19 +42,19 @@ class TemplateConfig
     }
 
     /**
-     * @return array
-     */
-    public function getGlobalVariables()
-    {
-        return $this->_globalVariables;
-    }
-
-    /**
      * @return string
      */
     public function getTemplateDirectory()
     {
         return $this->_templateDirectory;
+    }
+
+    /**
+     * @return GlobalVars
+     */
+    public function getGlobalVariables()
+    {
+        return $this->_globalVariables;
     }
 
     /**
@@ -87,14 +89,15 @@ class TemplateConfig
     }
 
     /**
-     * @param array $globalVariables
+     * @param GlobalVars $globalVariables
      * @throws \InvalidArgumentException
      */
     public function setGlobalVariables($globalVariables)
     {
-        if (!is_array($globalVariables)) {
-            throw new \InvalidArgumentException('Expected parameter 1 globalVariables to be array.');
+        if (!$globalVariables instanceof GlobalVars) {
+            throw new \InvalidArgumentException('Expected parameter 1 globalVariables to be instance of GlobarVars.');
         }
+
         $this->_globalVariables = $globalVariables;
     }
 
@@ -106,7 +109,8 @@ class TemplateConfig
     {
         if (!is_dir($repertoireTemplates)) {
             throw new \Exception(sprintf(
-                'Defined template directory "%s" does not exist.', realpath($repertoireTemplates)
+                'Defined template directory "%s" does not exist.',
+                realpath($repertoireTemplates)
             ));
         }
 

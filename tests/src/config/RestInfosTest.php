@@ -75,40 +75,6 @@ class RestInfosTest extends \PHPUnit_Framework_TestCase
         $this->_restInfos->setUsername(3);
     }
 
-    public function testRestInfosDepuisFichier()
-    {
-        $this->_restInfos->parseRestInfos(
-            array(
-                'Url' => 'http://Server.com',
-                'Format' => 'json',
-                'Authentification' => array(
-                    'Enabled' => true,
-                    'Method' => 'method',
-                    'Username' => 'username',
-                    'PassKey' => 'password'
-                )
-            )
-        );
-
-        $this->assertEquals('http://Server.com', $this->_restInfos->getUrl());
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testRestInfosDepuisFichierMissingKey()
-    {
-        $this->_restInfos->parseRestInfos(array());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testSetRouteMapTypeErrone()
-    {
-        $this->_restInfos->parseRestInfos(5);
-    }
-
     public function testAuthentifEnabled()
     {
         $this->_restInfos->setAuthentifEnabled(true);

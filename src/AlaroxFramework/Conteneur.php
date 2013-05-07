@@ -8,20 +8,37 @@ use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\configs\Server;
 use AlaroxFramework\cfg\configs\TemplateConfig;
+use AlaroxFramework\cfg\globals\GlobalVars;
+use AlaroxFramework\cfg\globals\RemoteVars;
 use AlaroxFramework\cfg\i18n\Internationalization;
+use AlaroxFramework\cfg\i18n\Langue;
 use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\exceptions\ErreurHandler;
 use AlaroxFramework\reponse\ReponseManager;
 use AlaroxFramework\reponse\TemplateManager;
 use AlaroxFramework\traitement\Dispatcher;
-use AlaroxFramework\traitement\restclient\CurlClient;
-use AlaroxFramework\traitement\restclient\RestClient;
-use AlaroxFramework\utils\Curl;
+use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\parser\Parser;
 use AlaroxFramework\utils\parser\ParserFactory;
+use AlaroxFramework\utils\restclient\Curl;
+use AlaroxFramework\utils\restclient\CurlClient;
+use AlaroxFramework\utils\restclient\RestClient;
 
 class Conteneur
 {
+    /**
+     * @var Config
+     */
+    private $_config;
+
+    /**
+     * @return Config
+     */
+    public function getConfig()
+    {
+        return $this->_config;
+    }
+
     /**
      * @param $cheminVersFichier
      * @return File
@@ -43,22 +60,204 @@ class Conteneur
 
     /**
      * @param array $arrayConfiguration
-     * @return Config
      */
-    public function dispatchConfig($arrayConfiguration)
+    public function createConfiguration($arrayConfiguration)
     {
-        $config = new Config();
-        $config->recupererConfigDepuisFichier(
-            $this->getFile($arrayConfiguration['configFile']),
-            $arrayConfiguration['templatesPath'],
-            $arrayConfiguration['localesPath']
-        );
-        $config->setServer($this->getServer());
-        $config->setCtrlFactory($this->getControllerFactory($arrayConfiguration['controllersPath']));
-        $config->setRouteMap($this->getRoute($arrayConfiguration['routeFile']));
+        $this->_config = new Config();
 
-        return $config;
+        $tabCfg =
+            array_change_key_case(
+                $this->_config->validerEtChargerFichier($this->getFile($arrayConfiguration['configFile'])),
+                CASE_LOWER
+            );
+
+        $this->_config->setVersion($tabCfg['website_version']);
+
+        if ($this->_config->isProdVersion() === true) {
+            $this->getErreurHandler()->setHandler();
+            error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+            ini_set('display_errors', 'off');
+        } else {
+            error_reporting(E_ALL);
+            ini_set('display_errors', 'on');
+        }
+
+        $this->_config->setRestClient($this->getRestClient($this->getRestInfos($tabCfg['restserver'])));
+
+        $this->_config->setTemplateConfig(
+            $this->getTemplateConfig(
+                $tabCfg['templateconfig'],
+                $arrayConfiguration['templatesPath']
+            )
+        );
+
+        $this->_config->setI18nConfig(
+            $this->getI18nConfig(
+                $tabCfg['internationalizationconfig'],
+                $arrayConfiguration['localesPath']
+            )
+        );
+
+        $this->_config->setServer($this->getServer());
+
+        $this->_config->setCtrlFactory(
+            $this->getControllerFactory($arrayConfiguration['controllersPath'])
+        );
+
+        $this->_config->setRouteMap($this->getRoute($arrayConfiguration['routeFile']));
     }
+
+    /**
+     * @param array $tabTemplateConfig
+     * @param string $repertoireTemplates
+     * @return TemplateConfig
+     */
+    private function getTemplateConfig($tabTemplateConfig, $repertoireTemplates)
+    {
+        $tabTemplateConfig = array_change_key_case($tabTemplateConfig, CASE_LOWER);
+
+        $templateConfig = new TemplateConfig();
+        $templateConfig->setCache($tabTemplateConfig['cache']);
+        $templateConfig->setCharset($tabTemplateConfig['charset']);
+        $templateConfig->setGlobalVariables(
+            $this->getGlobalVars($tabTemplateConfig['variables'])
+        );
+        $templateConfig->setTemplateDirectory($repertoireTemplates);
+
+        return $templateConfig;
+    }
+
+    /**
+     * @param array $tabI18nConfig
+     * @param string $repertoireLocales
+     * @return Internationalization
+     * @throws \Exception
+     */
+    private function getI18nConfig($tabI18nConfig, $repertoireLocales)
+    {
+        $tabI18nConfig = array_change_key_case($tabI18nConfig, CASE_LOWER);
+
+        $i18n = new Internationalization();
+        if (($langueActif = $tabI18nConfig['enabled']) === true) {
+            $defaultLanguageId = $tabI18nConfig['default_language'];
+
+            $i18n->setActif(true);
+            $i18n->setDossierLocales($repertoireLocales);
+            foreach ($tabI18nConfig['available'] as $clef => $langueDispo) {
+                $langueDispoObj = new Langue();
+                $langueDispoObj->setIdentifiant($clef);
+                $langueDispoObj->setAlias($langueDispo['alias']);
+                $langueDispoObj->setNomFichier($langueDispo['filename']);
+                $i18n->addLanguesDispo($langueDispoObj);
+
+                if (strcmp($defaultLanguageId, $langueDispoObj->getIdentifiant()) == 0) {
+                    $langueDefaut = $langueDispoObj;
+                }
+            }
+
+            if (!isset($langueDefaut)) {
+                throw new \Exception(sprintf(
+                    'Default language "%s" not found in available language list.',
+                    $defaultLanguageId
+                ));
+            }
+
+            $i18n->setLangueDefaut($langueDefaut);
+        }
+
+        return $i18n;
+    }
+
+    /**
+     * @param array $tabRestInfos
+     * @throws \Exception
+     * @return RestInfos
+     */
+    private function getRestInfos($tabRestInfos)
+    {
+        $valeursMinimales = array('Url',
+            'Format',
+            'Authentification',
+            'Authentification.Enabled',
+            'Authentification.Method',
+            'Authentification.Username',
+            'Authentification.PassKey');
+
+        $restInfos = new RestInfos();
+
+        foreach ($valeursMinimales as $uneValeurMinimale) {
+            if (is_null(array_multisearch($uneValeurMinimale, $tabRestInfos))) {
+                throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
+            }
+        }
+
+        $tabRestInfos = array_change_key_case_recursive($tabRestInfos, CASE_LOWER);
+
+        $restInfos->setUrl($tabRestInfos['url']);
+        $restInfos->setFormatEnvoi($tabRestInfos['format']);
+        $restInfos->setAuthentifEnabled($tabRestInfos['authentification']['enabled']);
+        $restInfos->setAuthentifMethode($tabRestInfos['authentification']['method']);
+        $restInfos->setUsername($tabRestInfos['authentification']['username']);
+        $restInfos->setPrivateKey($tabRestInfos['authentification']['passkey']);
+
+        return $restInfos;
+    }
+
+    /**
+     * @param $arrayVariables
+     * @return GlobalVars
+     */
+    private function getGlobalVars($arrayVariables)
+    {
+        $globalVars = new GlobalVars();
+
+        $arrayVariables = array_change_key_case($arrayVariables, CASE_LOWER);
+
+        if (!empty($arrayVariables['static'])) {
+            foreach ($arrayVariables['static'] as $clef => $uneVarStatic) {
+                $globalVars->addStaticVar($clef, $uneVarStatic);
+            }
+        }
+
+        $globalVars->setRemoteVars($this->getRemoteVars($arrayVariables['remote']));
+
+        return $globalVars;
+    }
+
+    /**
+     * @param $arrayRemote
+     * @throws \InvalidArgumentException
+     * @return RemoteVars
+     */
+    private function getRemoteVars($arrayRemote)
+    {
+        $remoteVars = new RemoteVars();
+
+        $remoteVars->setRestClient($this->_config->getRestClient());
+
+        if (!empty($arrayRemote)) {
+            if (!is_array($arrayRemote)) {
+                throw new \InvalidArgumentException('Malformed configuration TemplateConfig.Remote.');
+            }
+
+            foreach ($arrayRemote as $clef => $uneVarRemote) {
+                foreach (array('uri', 'method') as $uneClefObligatoire) {
+                    if (!array_key_exists($uneClefObligatoire, $uneVarRemote)) {
+                        throw new \InvalidArgumentException(sprintf(
+                            'Missing key "%s" in Remote section for "%s".',
+                            $uneClefObligatoire,
+                            $clef
+                        ));
+                    }
+                }
+
+                $remoteVars->addRemoteVar($clef, new ObjetRequete($uneVarRemote['uri'], $uneVarRemote['method']));
+            }
+        }
+
+        return $remoteVars;
+    }
+
 
     /**
      * @param $cheminVersRouteMap
@@ -79,6 +278,7 @@ class Conteneur
     private function getControllerFactory($repertoireControlleurs)
     {
         $ctrlFactory = new ControllerFactory();
+        $ctrlFactory->setRestClient($this->_config->getRestClient());
 
         $controllers = array();
         $scanDir = scandir($repertoireControlleurs);
@@ -129,22 +329,17 @@ class Conteneur
     }
 
     /**
-     * @param Config $config
      * @throws \InvalidArgumentException
      * @return Dispatcher
      */
-    public function getDispatcher($config)
+    public function getDispatcher()
     {
-        if (!$config instanceof Config) {
-            throw new \InvalidArgumentException('Expected parameter 1 config to be instance of Config.');
-        }
-
         $dispatcher = new Dispatcher();
-        $dispatcher->setUriDemandee($config->getServer()->getUneVariableServeur('REQUEST_URI_NODIR'));
-        $dispatcher->setI18nActif($config->getI18nConfig()->isActivated());
-        $dispatcher->setRouteMap($config->getRouteMap());
-        $dispatcher->setControllerFactory($config->getCtrlFactory());
-        $dispatcher->setRestClient($this->getRestClient($config->getRestInfos()));
+
+        $dispatcher->setUriDemandee($this->_config->getServer()->getUneVariableServeur('REQUEST_URI_NODIR'));
+        $dispatcher->setI18nActif($this->_config->getI18nConfig()->isActivated());
+        $dispatcher->setRouteMap($this->_config->getRouteMap());
+        $dispatcher->setControllerFactory($this->_config->getCtrlFactory());
 
         return $dispatcher;
     }
@@ -156,6 +351,7 @@ class Conteneur
     private function getRestClient($restInfos)
     {
         $restClient = new RestClient();
+
         $restClient->setRestInfos($restInfos);
         $restClient->setCurlClient($this->getCurlClient());
 
@@ -168,6 +364,7 @@ class Conteneur
     private function getCurlClient()
     {
         $curlClient = new CurlClient();
+
         $curlClient->setCurl(new Curl());
         $curlClient->setParser($this->getParser());
         $curlClient->setTime(time());
@@ -181,47 +378,45 @@ class Conteneur
     private function getParser()
     {
         $parser = new Parser();
+
         $parser->setParserFactory(new ParserFactory());
 
         return $parser;
     }
 
     /**
-     * @param Config $config
      * @return ReponseManager
      */
-    public function getResponseManager($config)
+    public function getResponseManager()
     {
         $responseManager = new ReponseManager();
-        $responseManager->setTemplateManager(
-            $this->getTemplateManager($config->getTemplateConfig(), $config->getI18nConfig())
-        );
+
+        $responseManager->setTemplateManager($this->getTemplateManager());
 
         return $responseManager;
     }
 
     /**
-     * @param TemplateConfig $templateConfig
-     * @param Internationalization $i18nConfig
      * @return TemplateManager
      */
-    private function getTemplateManager($templateConfig, $i18nConfig)
+    private function getTemplateManager()
     {
         $templateManager = new TemplateManager();
-        $templateManager->setGlobalVar($templateConfig->getGlobalVariables());
-        $templateManager->setTwigEnv($this->initTwig($templateConfig));
 
-        if ($i18nConfig->isActivated() === true) {
+        $templateManager->setGlobalVar($this->_config->getTemplateConfig()->getGlobalVariables());
+        $templateManager->setTwigEnv($this->initTwig($this->_config->getTemplateConfig()));
+
+        if ($this->_config->getI18nConfig()->isActivated() === true) {
             $arrayLanguages = array();
 
-            foreach ($i18nConfig->getLanguesDispo() as $uneLangueDispo) {
+            foreach ($this->_config->getI18nConfig()->getLanguesDispo() as $uneLangueDispo) {
                 $arrayLanguages[$uneLangueDispo->getIdentifiant()] = $uneLangueDispo->getNomFichier();
             }
 
             $templateManager->addExtension(
                 new \Twig_I18nExtension_Extension_I18n(
-                    $i18nConfig->getLangueDefaut()->getAlias(),
-                    $i18nConfig->getDossierLocales(),
+                    $this->_config->getI18nConfig()->getLangueDefaut()->getAlias(),
+                    $this->_config->getI18nConfig()->getDossierLocales(),
                     $arrayLanguages
                 )
             );

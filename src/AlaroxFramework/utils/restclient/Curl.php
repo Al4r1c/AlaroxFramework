@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\utils;
+namespace AlaroxFramework\utils\restclient;
 
 class Curl
 {

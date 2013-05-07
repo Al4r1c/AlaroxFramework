@@ -31,15 +31,31 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_ctrlFactory->setListControllers(9);
     }
 
+    public function testRestClient()
+    {
+        $restClient = $this->getMock('AlaroxFramework\utils\restclient\RestClient');
+
+        $this->_ctrlFactory->setRestClient($restClient);
+
+        $this->assertAttributeSame($restClient, '_restClient', $this->_ctrlFactory);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testRestClientErrone()
+    {
+        $this->_ctrlFactory->setRestClient(9);
+    }
+
     public function testCall()
     {
         $this->_ctrlFactory->setListControllers(array('\\Tests\\fakecontrollers\\TestCtrl'));
+        $this->_ctrlFactory->setRestClient($this->getMock('AlaroxFramework\utils\restclient\RestClient'));
 
         $this->assertInstanceOf(
             '\\Tests\\fakecontrollers\\TestCtrl',
-            $this->_ctrlFactory->{'testctrl'}(
-                $this->getMock('AlaroxFramework\traitement\restclient\RestClient'), array()
-            )
+            $this->_ctrlFactory->{'testctrl'}(array())
         );
     }
 

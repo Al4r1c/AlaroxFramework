@@ -1,7 +1,7 @@
 <?php
 namespace AlaroxFramework\traitement\controller;
 
-use AlaroxFramework\traitement\restclient\RestClient;
+use AlaroxFramework\utils\restclient\RestClient;
 
 abstract class GenericController
 {
@@ -46,14 +46,9 @@ abstract class GenericController
 
     /**
      * @param RestClient $restClient
-     * @throws \InvalidArgumentException
      */
     public function setRestClient($restClient)
     {
-        if (!$restClient instanceof RestClient) {
-            throw new \InvalidArgumentException('Expected parameter 1 restClient to be RestClient.');
-        }
-
         $this->_restClient = $restClient;
     }
 

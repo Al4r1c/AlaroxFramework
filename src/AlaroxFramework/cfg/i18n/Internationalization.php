@@ -91,7 +91,8 @@ class Internationalization
     {
         if (!is_dir($dossierLocales)) {
             throw new \Exception(sprintf(
-                'Defined locales directory "%s" does not exist.', realpath($dossierLocales)
+                'Defined locales directory "%s" does not exist.',
+                realpath($dossierLocales)
             ));
         }
 

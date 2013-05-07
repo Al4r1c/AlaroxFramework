@@ -57,7 +57,8 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     public function testWithValueInterdite()
     {
         $this->_view->with(
-            'key', function () {
+            'key',
+            function () {
             }
         );
     }

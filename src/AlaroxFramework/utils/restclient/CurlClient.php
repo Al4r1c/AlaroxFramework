@@ -1,8 +1,7 @@
 <?php
-namespace AlaroxFramework\traitement\restclient;
+namespace AlaroxFramework\utils\restclient;
 
 use AlaroxFramework\cfg\configs\RestInfos;
-use AlaroxFramework\utils\Curl;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\Tools;
@@ -193,9 +192,11 @@ class CurlClient
         $encode =
             base64_encode(
                 hash_hmac(
-                    'sha256', $donnees,
+                    'sha256',
+                    $donnees,
                     $restInfos->getPrivateKey() . $methode . Tools::getMimePourFormat($restInfos->getFormatEnvoi()) .
-                        $timestamp, true
+                        $timestamp,
+                    true
                 )
             );
 

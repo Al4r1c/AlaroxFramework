@@ -22,7 +22,7 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testRestClient()
     {
-        $restClient = $this->getMock('AlaroxFramework\traitement\restclient\RestClient');
+        $restClient = $this->getMock('AlaroxFramework\utils\restclient\RestClient');
 
         $this->_genericCtrl->setRestClient($restClient);
 
@@ -31,14 +31,6 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
 
         $this->assertSame($restClient, $method->invoke($this->_genericCtrl));
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testRestClientErrone()
-    {
-        $this->_genericCtrl->setRestClient(9);
     }
 
     public function testTabVariables()

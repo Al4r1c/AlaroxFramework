@@ -1,7 +1,7 @@
 <?php
-namespace Tests\traitement;
+namespace Tests\lib;
 
-use AlaroxFramework\traitement\restclient\RestClient;
+use AlaroxFramework\utils\restclient\RestClient;
 
 class RestClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,7 +34,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
 
     public function testSetCurlClient()
     {
-        $curlClient = $this->getMock('AlaroxFramework\traitement\restclient\CurlClient');
+        $curlClient = $this->getMock('AlaroxFramework\\utils\\restclient\\CurlClient');
 
         $this->_restClient->setCurlClient($curlClient);
 
@@ -51,7 +51,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
 
     public function testExecute()
     {
-        $curlClient = $this->getMock('AlaroxFramework\traitement\restclient\CurlClient', array('executer'));
+        $curlClient = $this->getMock('AlaroxFramework\utils\restclient\CurlClient', array('executer'));
         $restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
         $objetRequete = $this->getMock('AlaroxFramework\Utils\ObjetRequete');
         $objetReponse = $this->getMock('AlaroxFramework\Utils\ObjetReponse');
@@ -88,7 +88,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuteRestInfosMissing()
     {
-        $curlClient = $this->getMock('AlaroxFramework\traitement\restclient\CurlClient');
+        $curlClient = $this->getMock('AlaroxFramework\utils\restclient\CurlClient');
         $this->_restClient->setCurlClient($curlClient);
 
         $this->_restClient->executerRequete($this->getMock('AlaroxFramework\Utils\ObjetRequete'));

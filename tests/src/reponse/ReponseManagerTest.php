@@ -52,7 +52,8 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
         $this->_reponseManager->setTemplateManager($templateManager);
 
         $this->assertInstanceOf(
-            '\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->_reponseManager->getHtmlResponse($view)
+            '\\AlaroxFramework\\utils\\HtmlReponse',
+            $htmlReponse = $this->_reponseManager->getHtmlResponse($view)
         );
         $this->assertEquals("<html></html>", $htmlReponse->getCorpsReponse());
         $this->assertEquals(200, $htmlReponse->getStatusHttp());
@@ -71,7 +72,8 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
     public function testGetHtmlResponseWithString()
     {
         $this->assertInstanceOf(
-            '\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->_reponseManager->getHtmlResponse('myString')
+            '\\AlaroxFramework\\utils\\HtmlReponse',
+            $htmlReponse = $this->_reponseManager->getHtmlResponse('myString')
         );
         $this->assertEquals("myString", $htmlReponse->getCorpsReponse());
         $this->assertEquals(200, $htmlReponse->getStatusHttp());

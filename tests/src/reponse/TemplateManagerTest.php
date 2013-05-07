@@ -1,6 +1,7 @@
 <?php
 namespace Tests\reponse;
 
+use AlaroxFramework\AlaroxFramework;
 use AlaroxFramework\reponse\TemplateManager;
 
 class TemplateManagerTest extends \PHPUnit_Framework_TestCase
@@ -13,6 +14,56 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_templateManager = new TemplateManager();
+    }
+
+    public function goTestRender($tabVars = array(), $globalVars = array(), $remoteVars = array())
+    {
+        $viewName = 'monTpl.twig';
+
+        $view = $this->getMock('\\AlaroxFramework\\utils\\View', array('getViewName', 'getVariables'));
+        $twigEnv = $this->getMock('\\Twig_Environment', array('loadTemplate'));
+        $twigTemplate = $this->getMockForAbstractClass('\\Twig_TemplateInterface');
+
+        $view->expects($this->once())->method('getViewName')->will($this->returnValue($viewName));
+        $view->expects($this->once())->method('getVariables')->will(
+            $this->returnValue($tabVars)
+        );
+
+        $twigEnv->expects($this->once())->method('loadTemplate')->with($viewName)->will(
+            $this->returnValue($twigTemplate)
+        );
+
+        $twigTemplate->expects($this->once())->method('render')->with($tabVars + $globalVars + $remoteVars)->will(
+            $this->returnValue('My template as string')
+        );
+
+        $this->setVars($globalVars, $remoteVars);
+        $this->_templateManager->setTwigEnv($twigEnv);
+
+        $this->assertEquals('My template as string', $this->_templateManager->render($view));
+    }
+
+    /**
+     * @param array $staticVars
+     * @param array $remoteVars
+     */
+    public function setVars($staticVars, $remoteVars)
+    {
+        $globalVar =
+            $this->getMock(
+                '\\AlaroxFramework\\cfg\\configs\\GlobalVars',
+                array('getStaticVars', 'getRemoteVarsExecutees')
+            );
+
+        $globalVar->expects($this->once())
+            ->method('getStaticVars')
+            ->will($this->returnValue($staticVars));
+
+        $globalVar->expects($this->once())
+            ->method('getRemoteVarsExecutees')
+            ->will($this->returnValue($remoteVars));
+
+        $this->_templateManager->setGlobalVar($globalVar);
     }
 
     public function testInstance()
@@ -37,71 +88,21 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGlobalVar()
     {
-        $this->_templateManager->setGlobalVar($globalVar = array('title' => 'mon titre'));
+        $this->_templateManager->setGlobalVar(
+            $globalVar = $this->getMock('\\AlaroxFramework\\cfg\\globals\\GlobalVars')
+        );
 
         $this->assertAttributeSame($globalVar, '_globalVar', $this->_templateManager);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testGlobalVarType()
-    {
-        $this->_templateManager->setGlobalVar('exception');
-    }
-
-    public function testRender()
-    {
-        $viewName = 'monTpl.twig';
-        $tabVar = array('id' => array('attr' => 'valeur'));
-
-        $view = $this->getMock('\\AlaroxFramework\\utils\\View', array('getViewName', 'getVariables'));
-        $twigEnv = $this->getMock('\\Twig_Environment', array('loadTemplate'));
-        $twigTemplate = $this->getMockForAbstractClass('\\Twig_TemplateInterface');
-
-        $view->expects($this->once())->method('getViewName')->will($this->returnValue($viewName));
-        $view->expects($this->once())->method('getVariables')->will(
-            $this->returnValue($tabVar)
-        );
-
-        $twigEnv->expects($this->once())->method('loadTemplate')->with($viewName)->will(
-            $this->returnValue($twigTemplate)
-        );
-
-        $twigTemplate->expects($this->once())->method('render')->with($tabVar)->will(
-            $this->returnValue('My template as string')
-        );
-
-        $this->_templateManager->setTwigEnv($twigEnv);
-        $this->assertEquals('My template as string', $this->_templateManager->render($view));
-    }
-
     public function testRenderAvecGlobalVar()
     {
-        $viewName = 'monTpl.twig';
         $tabVar = array('id' => array('attr' => 'valeur'));
         $globalVar = array('title' => 'mon titre');
+        $remoteVars = array('title' => 'mon titre effacé');
 
-        $view = $this->getMock('\\AlaroxFramework\\utils\\View', array('getViewName', 'getVariables'));
-        $twigEnv = $this->getMock('\\Twig_Environment', array('loadTemplate'));
-        $twigTemplate = $this->getMockForAbstractClass('\\Twig_TemplateInterface');
-
-        $view->expects($this->once())->method('getViewName')->will($this->returnValue($viewName));
-        $view->expects($this->once())->method('getVariables')->will(
-            $this->returnValue($tabVar)
-        );
-
-        $twigEnv->expects($this->once())->method('loadTemplate')->with($viewName)->will(
-            $this->returnValue($twigTemplate)
-        );
-
-        $twigTemplate->expects($this->once())->method('render')->with($globalVar + $tabVar)->will(
-            $this->returnValue('My other template')
-        );
-
-        $this->_templateManager->setTwigEnv($twigEnv);
-        $this->_templateManager->setGlobalVar($globalVar);
-        $this->assertEquals('My other template', $this->_templateManager->render($view));
+        $this->goTestRender();
+        $this->goTestRender($tabVar, $globalVar, $remoteVars);
     }
 
     /**
@@ -134,14 +135,16 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testAddExtensionType() {
+    public function testAddExtensionType()
+    {
         $this->_templateManager->addExtension('letsbug');
     }
 
     /**
      * @expectedException \Exception
      */
-    public function testAddExtensionTwigEnvNotSet() {
+    public function testAddExtensionTwigEnvNotSet()
+    {
         $this->_templateManager->addExtension($this->getMock('\Twig_ExtensionInterface'));
     }
 }

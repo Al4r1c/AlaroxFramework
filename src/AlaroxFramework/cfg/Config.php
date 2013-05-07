@@ -3,12 +3,11 @@ namespace AlaroxFramework\cfg;
 
 use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\cfg\configs\ControllerFactory;
-use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\configs\Server;
 use AlaroxFramework\cfg\configs\TemplateConfig;
 use AlaroxFramework\cfg\i18n\Internationalization;
-use AlaroxFramework\cfg\i18n\Langue;
 use AlaroxFramework\cfg\route\RouteMap;
+use AlaroxFramework\utils\restclient\RestClient;
 
 class Config
 {
@@ -28,9 +27,9 @@ class Config
     private $_ctrlFactory;
 
     /**
-     * @var RestInfos
+     * @var RestClient
      */
-    private $_restInfos;
+    private $_restClient;
 
     /**
      * @var Internationalization
@@ -66,7 +65,9 @@ class Config
         'InternationalizationConfig.Available',
         'TemplateConfig.Cache',
         'TemplateConfig.Charset',
-        'TemplateConfig.Variables'
+        'TemplateConfig.Variables',
+        'TemplateConfig.Variables.Static',
+        'TemplateConfig.Variables.Remote'
     );
 
     /**
@@ -86,11 +87,11 @@ class Config
     }
 
     /**
-     * @return RestInfos
+     * @return RestClient
      */
-    public function getRestInfos()
+    public function getRestClient()
     {
-        return $this->_restInfos;
+        return $this->_restClient;
     }
 
     /**
@@ -165,16 +166,16 @@ class Config
     }
 
     /**
-     * @param RestInfos $restInfos
+     * @param RestClient $restClient
      * @throws \InvalidArgumentException
      */
-    public function setRestInfos($restInfos)
+    public function setRestClient($restClient)
     {
-        if (!$restInfos instanceof RestInfos) {
-            throw new \InvalidArgumentException('Expected parameter 1 restInfos to be instance of RestInfos.');
+        if (!$restClient instanceof RestClient) {
+            throw new \InvalidArgumentException('Expected parameter 1 restClient to be instance of RestClient.');
         }
 
-        $this->_restInfos = $restInfos;
+        $this->_restClient = $restClient;
     }
 
     /**
@@ -213,11 +214,10 @@ class Config
 
     /**
      * @param File $fichier
-     * @param string $repertoireTemplates
-     * @param string $repertoireLocales
+     * @return array
      * @throws \Exception
      */
-    public function recupererConfigDepuisFichier($fichier, $repertoireTemplates, $repertoireLocales)
+    public function validerEtChargerFichier($fichier)
     {
         if ($fichier->fileExist() === true) {
             $tabCfg = $fichier->loadFile();
@@ -231,76 +231,6 @@ class Config
             }
         }
 
-        $this->setVersion(array_multisearch('Website_version', $tabCfg, true));
-        $this->createTemplateConfig(array_multisearch('TemplateConfig', $tabCfg, true), $repertoireTemplates);
-        $this->createI18nConfig(array_multisearch('InternationalizationConfig', $tabCfg, true), $repertoireLocales);
-        $this->createRestInfos(array_multisearch('RestServer', $tabCfg, true));
-    }
-
-    /**
-     * @param array $tabTemplateConfig
-     * @param string $repertoireTemplates
-     */
-    private function createTemplateConfig($tabTemplateConfig, $repertoireTemplates)
-    {
-        $tabTemplateConfig = array_change_key_case($tabTemplateConfig, CASE_LOWER);
-
-        $templateConfig = new TemplateConfig();
-        $templateConfig->setCache($tabTemplateConfig['cache']);
-        $templateConfig->setCharset($tabTemplateConfig['charset']);
-        $templateConfig->setGlobalVariables($tabTemplateConfig['variables']);
-        $templateConfig->setTemplateDirectory($repertoireTemplates);
-
-        $this->setTemplateConfig($templateConfig);
-    }
-
-    /**
-     * @param array $tabI18nConfig
-     * @param string $repertoireLocales
-     * @throws \Exception
-     */
-    private function createI18nConfig($tabI18nConfig, $repertoireLocales)
-    {
-        $tabI18nConfig = array_change_key_case($tabI18nConfig, CASE_LOWER);
-
-        $i18n = new Internationalization();
-        if (($langueActif = $tabI18nConfig['enabled']) === true) {
-            $defaultLanguageId = $tabI18nConfig['default_language'];
-
-            $i18n->setActif(true);
-            $i18n->setDossierLocales($repertoireLocales);
-            foreach ($tabI18nConfig['available'] as $clef => $langueDispo) {
-                $langueDispoObj = new Langue();
-                $langueDispoObj->setIdentifiant($clef);
-                $langueDispoObj->setAlias($langueDispo['alias']);
-                $langueDispoObj->setNomFichier($langueDispo['filename']);
-                $i18n->addLanguesDispo($langueDispoObj);
-
-                if (strcmp($defaultLanguageId, $langueDispoObj->getIdentifiant()) == 0) {
-                    $langueDefaut = $langueDispoObj;
-                }
-            }
-
-            if (!isset($langueDefaut)) {
-                throw new \Exception(sprintf(
-                    'Default language "%s" not found in available language list.', $defaultLanguageId
-                ));
-            }
-
-            $i18n->setLangueDefaut($langueDefaut);
-        }
-
-        $this->setI18nConfig($i18n);
-    }
-
-    /**
-     * @param array $tabRestServerInfos
-     */
-    private function createRestInfos($tabRestServerInfos)
-    {
-        $restInfos = new RestInfos();
-        $restInfos->parseRestInfos($tabRestServerInfos);
-
-        $this->setRestInfos($restInfos);
+        return $tabCfg;
     }
 }

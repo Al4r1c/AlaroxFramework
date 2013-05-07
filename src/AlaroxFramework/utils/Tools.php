@@ -24,7 +24,8 @@ class Tools
     public static function isValideFormat($format)
     {
         return array_key_exists(
-            strtolower($format), array_change_key_case(include(__DIR__ . '/const/mimes.php'), CASE_LOWER)
+            strtolower($format),
+            array_change_key_case(include(__DIR__ . '/const/mimes.php'), CASE_LOWER)
         );
     }
 

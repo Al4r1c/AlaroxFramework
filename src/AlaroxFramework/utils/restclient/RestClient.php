@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\traitement\restclient;
+namespace AlaroxFramework\utils\restclient;
 
 use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\utils\ObjetReponse;

@@ -2,9 +2,6 @@
 namespace Tests\Config;
 
 use AlaroxFramework\cfg\Config;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
-use org\bovigo\vfs\vfsStreamWrapper;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,8 +14,15 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'Cache' => true,
             'Charset' => 'utf-8',
             'Variables' => array(
-                'Name' => 'WebName',
-                'Media_url' => 'http://media.addr.com'
+                'Static' => array(
+                    'Name' => 'WebName',
+                    'Media_url' => 'http://media.addr.com'
+                ),
+                'Remote' => array(
+                    'liste' => array(
+                        'uri' => '/uri',
+                        'method' => 'GET')
+                )
             ),
         ),
         'RestServer' => array(
@@ -52,15 +56,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->_config = new Config();
     }
 
-    private function setFakeFolders($templates, $locales)
+    public function testInstance()
     {
-        vfsStreamWrapper::register();
-        vfsStreamWrapper::setRoot(new vfsStreamDirectory('basePath'));
-        mkdir(vfsStream::url('basePath') . '/' . $templates);
-        mkdir(vfsStream::url('basePath') . '/' . $locales);
+        $this->assertInstanceOf('\AlaroxFramework\cfg\Config', $this->_config);
     }
 
-    public function setFakeCfg($tabRenvoyee, $folderTemplates, $folderLocales)
+    public function testFichierConfigExisteConfigValide()
     {
         $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
         $fichier->expects($this->once())
@@ -69,27 +70,29 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $fichier->expects($this->once())
             ->method('loadFile')
-            ->will($this->returnValue($tabRenvoyee));
+            ->will($this->returnValue(self::$cfgTest));
 
-        $this->_config->recupererConfigDepuisFichier($fichier, $folderTemplates, $folderLocales);
+        $this->assertInternalType('array', $this->_config->validerEtChargerFichier($fichier));
     }
 
-    public function testInstance()
+    /**
+     * @expectedException \Exception
+     */
+    public function testFichierConfigExisteConfigInvalide()
     {
-        $this->assertInstanceOf('\AlaroxFramework\cfg\Config', $this->_config);
-    }
+        $cfg = self::$cfgTest;
+        unset($cfg['Website_version']);
 
-    public function testSetCfg()
-    {
-        $this->setFakeFolders('templatesFolder', 'localesFolder');
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier->expects($this->once())
+            ->method('fileExist')
+            ->will($this->returnValue(true));
 
-        $this->setFakeCfg(
-            self::$cfgTest, vfsStream::url('basePath/templatesFolder'), vfsStream::url('basePath/localesFolder')
-        );
+        $fichier->expects($this->once())
+            ->method('loadFile')
+            ->will($this->returnValue($cfg));
 
-        $this->assertFalse($this->_config->isProdVersion());
-        $this->assertInstanceOf('\\AlaroxFramework\\cfg\\i18n\\Internationalization', $this->_config->getI18nConfig());
-        $this->assertInstanceOf('\\AlaroxFramework\\cfg\\configs\\RestInfos', $this->_config->getRestInfos());
+        $this->assertInternalType('array', $this->_config->validerEtChargerFichier($fichier));
     }
 
     /**
@@ -97,36 +100,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testFichierConfigNexistePas()
     {
-        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist', 'loadFile'));
+        $fichier = $this->getMock('AlaroxFileManager\FileManager\File', array('fileExist'));
         $fichier->expects($this->once())
             ->method('fileExist')
             ->will($this->returnValue(false));
 
-        $this->_config->recupererConfigDepuisFichier($fichier, '', '');
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testLangueNonAvailable()
-    {
-        $this->setFakeFolders('templatesFolder', 'localesFolder');
-        $tabCfg = self::$cfgTest;
-        unset($tabCfg['InternationalizationConfig']['Available']['English']);
-
-        $this->setFakeCfg(
-            $tabCfg, vfsStream::url('basePath/templatesFolder'), vfsStream::url('basePath/localesFolder')
-        );
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testValeursMinimales()
-    {
-        $tableauConfigTest = self::$cfgTest;
-        unset($tableauConfigTest['TemplateConfig']);
-        $this->setFakeCfg($tableauConfigTest, '', '');
+        $this->_config->validerEtChargerFichier($fichier);
     }
 
     public function testSetRouteMap()
@@ -159,19 +138,19 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->_config->setServer(5);
     }
 
-    public function testSetRestInfos()
+    public function testSetRestClient()
     {
-        $this->_config->setRestInfos($restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos'));
+        $this->_config->setRestClient($restClient = $this->getMock('\\AlaroxFramework\\utils\\restclient\\RestClient'));
 
-        $this->assertSame($restInfos, $this->_config->getRestInfos());
+        $this->assertSame($restClient, $this->_config->getRestClient());
     }
 
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testSetRestInfosTypeErrone()
+    public function testSetRestClientTypeErrone()
     {
-        $this->_config->setRestInfos(5);
+        $this->_config->setRestClient(5);
     }
 
     public function testSetControllerFactory()

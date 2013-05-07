@@ -38,7 +38,8 @@ class UnparserFactoryTest extends \PHPUnit_Framework_TestCase
         $json = $this->_unparserFactory->getClass('json');
 
         $this->assertEquals(
-            array('id1' => array('parametre1' => 'variable1')), $json->toArray('{"id1":{"parametre1":"variable1"}}')
+            array('id1' => array('parametre1' => 'variable1')),
+            $json->toArray('{"id1":{"parametre1":"variable1"}}')
         );
     }
 
@@ -48,7 +49,9 @@ class UnparserFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             array('id1' => array('parametre1' => 'variable1', 'param2' => array('hello', 'secondhello'))),
-            $xml->toArray('<root><id1><parametre1>variable1</parametre1><param2>hello</param2><param2>secondhello</param2></id1></root>')
+            $xml->toArray(
+                '<root><id1><parametre1>variable1</parametre1><param2>hello</param2><param2>secondhello</param2></id1></root>'
+            )
         );
     }
 }

@@ -16,10 +16,8 @@ class TraitementTests
     {
         $suite = new \PHPUnit_Framework_TestSuite('TestSuite');
 
-        $suite->addTestSuite('\Tests\traitement\CurlClientTest');
         $suite->addTestSuite('\Tests\traitement\DispatcherTest');
         $suite->addTestSuite('\Tests\traitement\GenericControllerTest');
-        $suite->addTestSuite('\Tests\traitement\RestClientTest');
 
         return $suite;
     }

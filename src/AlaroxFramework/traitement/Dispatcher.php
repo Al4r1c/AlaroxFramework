@@ -2,10 +2,8 @@
 namespace AlaroxFramework\traitement;
 
 use AlaroxFramework\cfg\configs\ControllerFactory;
-use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\route\Route;
 use AlaroxFramework\cfg\route\RouteMap;
-use AlaroxFramework\traitement\restclient\RestClient;
 use AlaroxFramework\utils\View;
 
 class Dispatcher
@@ -29,11 +27,6 @@ class Dispatcher
      * @var RouteMap
      */
     private $_routeMap;
-
-    /**
-     * @var RestClient
-     */
-    private $_restClient;
 
     /**
      * @param string $uriDemandee
@@ -72,19 +65,6 @@ class Dispatcher
         }
 
         $this->_controllerFactory = $controllerFactory;
-    }
-
-    /**
-     * @param RestClient $restClient
-     * @throws \InvalidArgumentException
-     */
-    public function setRestClient($restClient)
-    {
-        if (!$restClient instanceof RestClient) {
-            throw new \InvalidArgumentException('Expected parameter 1 restClient to be RestClient.');
-        }
-
-        $this->_restClient = $restClient;
     }
 
     /**
@@ -157,10 +137,12 @@ class Dispatcher
 
         try {
             $controlleur =
-                $this->_controllerFactory->{$nomClasseController}($this->_restClient, $tabVariablesRequete);
+                $this->_controllerFactory->{$nomClasseController}($tabVariablesRequete);
         } catch (\Exception $uneException) {
             throw new \Exception(sprintf(
-                'Can\'t load controller "%s" for uri "%s": %s.', $nomClasseController, $this->_uriDemandee,
+                'Can\'t load controller "%s" for uri "%s": %s.',
+                $nomClasseController,
+                $this->_uriDemandee,
                 $uneException->getMessage()
             ));
         }
@@ -171,12 +153,16 @@ class Dispatcher
                 return $controlleur->{$actionAEffectuer}();
             } else {
                 throw new \Exception(sprintf(
-                    'Action "%s" not reachable in controller "%s".', $actionAEffectuer, $nomClasseController
+                    'Action "%s" not reachable in controller "%s".',
+                    $actionAEffectuer,
+                    $nomClasseController
                 ));
             }
         } else {
             throw new \Exception(sprintf(
-                'Action "%s" not found in controller "%s".', $actionAEffectuer, $nomClasseController
+                'Action "%s" not found in controller "%s".',
+                $actionAEffectuer,
+                $nomClasseController
             ));
         }
     }
@@ -203,7 +189,8 @@ class Dispatcher
             if (!is_null($actionAEffectuer)) {
                 if (!is_null($pattern = $route->getPattern())) {
                     $tabVariablesRequete = $this->recupererVariablesDepuisPattern(
-                        $pattern, array_filter(explode('/', $uriSansBaseDuMapping), 'strlen')
+                        $pattern,
+                        array_filter(explode('/', $uriSansBaseDuMapping), 'strlen')
                     );
 
                     foreach ($tabVariablesRequete as $pattern => $variable) {
@@ -321,7 +308,8 @@ class Dispatcher
                 return array($nomClasseController, $actionAEffectuer);
             } else {
                 throw new \Exception(sprintf(
-                    'No default action found for default uri "%s".', $route->getUri()
+                    'No default action found for default uri "%s".',
+                    $route->getUri()
                 ));
             }
         } else {

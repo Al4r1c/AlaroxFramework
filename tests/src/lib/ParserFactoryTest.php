@@ -43,7 +43,8 @@ class ParserFactoryTest extends \PHPUnit_Framework_TestCase
         $json = $this->_unparserFactory->getClass('json');
 
         $this->assertEquals(
-            '{"id1":{"parametre1":"variable1"}}', $json->parse(array('id1' => array('parametre1' => 'variable1')))
+            '{"id1":{"parametre1":"variable1"}}',
+            $json->parse(array('id1' => array('parametre1' => 'variable1')))
         );
     }
 
