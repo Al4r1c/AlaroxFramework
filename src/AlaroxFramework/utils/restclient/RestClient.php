@@ -1,16 +1,16 @@
 <?php
 namespace AlaroxFramework\utils\restclient;
 
-use AlaroxFramework\cfg\rest\RestServer;
+use AlaroxFramework\cfg\rest\RestServerManager;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 
 class RestClient
 {
     /**
-     * @var RestServer
+     * @var RestServerManager
      */
-    private $_restServer;
+    private $_restServerManager;
 
     /**
      * @var CurlClient
@@ -18,16 +18,16 @@ class RestClient
     private $_curlClient;
 
     /**
-     * @param RestServer $restServer
+     * @param RestServerManager $restServerManager
      * @throws \InvalidArgumentException
      */
-    public function setRestServer($restServer)
+    public function setRestServerManager($restServerManager)
     {
-        if (!$restServer instanceof RestServer) {
-            throw new \InvalidArgumentException('Expected parameter 1 to be RestServer.');
+        if (!$restServerManager instanceof RestServerManager) {
+            throw new \InvalidArgumentException('Expected parameter 1 to be RestServerManager.');
         }
 
-        $this->_restServer = $restServer;
+        $this->_restServerManager = $restServerManager;
     }
 
     /**
@@ -44,12 +44,13 @@ class RestClient
     }
 
     /**
+     * @param string $restServerKey
      * @param ObjetRequete $objetRequete
      * @throws \InvalidArgumentException
      * @throws \Exception
      * @return ObjetReponse
      */
-    public function executerRequete($objetRequete)
+    public function executerRequete($restServerKey, $objetRequete)
     {
         if (!$objetRequete instanceof ObjetRequete) {
             throw new \InvalidArgumentException('Expected parameter 1 to be ObjetRequete.');
@@ -59,10 +60,14 @@ class RestClient
             throw new \Exception('CurlClient is not set.');
         }
 
-        if (!isset($this->_restServer)) {
-            throw new \Exception('ResInfos is not set.');
+        if (!isset($this->_restServerManager)) {
+            throw new \Exception('RestServerManager is not set.');
         }
 
-        return $this->_curlClient->executer($this->_restServer, $objetRequete);
+        if (is_null($restServer = $this->_restServerManager->getRestServer($restServerKey))) {
+            throw new \Exception(sprintf('RestServer with key "%s" not found.', $restServerKey));
+        }
+
+        return $this->_curlClient->executer($restServer, $objetRequete);
     }
 }

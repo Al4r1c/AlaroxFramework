@@ -63,13 +63,15 @@ class Tools
     public static function getFormatPourMime($formatMimeRecherchee)
     {
         if (self::isValidMime($formatMimeRecherchee)) {
+            $found = false;
+
             foreach (include(__DIR__ . '/const/mimes.php') as $type => $formatsMime) {
                 if (in_array($formatMimeRecherchee, $formatsMime)) {
-                    return $type;
+                    $found = $type;
                 }
             }
 
-            return false;
+            return $found;
         } else {
             return null;
         }

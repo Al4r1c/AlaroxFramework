@@ -21,6 +21,11 @@ class RestServer
     private $_formatEnvoi;
 
     /**
+     * @var array
+     */
+    private $_parametresUri = array();
+
+    /**
      * @return string
      */
     public function getFormatEnvoi()
@@ -42,6 +47,14 @@ class RestServer
     public function getAuth()
     {
         return $this->_auth;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParametresUri()
+    {
+        return $this->_parametresUri;
     }
 
     /**
@@ -89,5 +102,14 @@ class RestServer
         }
 
         $this->_url = $url;
+    }
+
+    /**
+     * @param string $clef
+     * @param string $parametre
+     */
+    public function addParametreUri($clef, $parametre)
+    {
+        $this->_parametresUri[$clef] = $parametre;
     }
 }

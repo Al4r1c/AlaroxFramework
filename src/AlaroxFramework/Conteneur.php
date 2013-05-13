@@ -13,6 +13,7 @@ use AlaroxFramework\cfg\i18n\Internationalization;
 use AlaroxFramework\cfg\i18n\Langue;
 use AlaroxFramework\cfg\rest\Auth;
 use AlaroxFramework\cfg\rest\RestServer;
+use AlaroxFramework\cfg\rest\RestServerManager;
 use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\exceptions\ErreurHandler;
 use AlaroxFramework\reponse\ReponseManager;
@@ -83,7 +84,7 @@ class Conteneur
             ini_set('display_errors', 'on');
         }
 
-        $this->_config->setRestClient($this->getRestClient($this->getRestServer($tabCfg['restserver'])));
+        $this->_config->setRestClient($this->getRestClient($this->getRestServerManager($tabCfg['restserver'])));
 
         $this->_config->setTemplateConfig(
             $this->getTemplateConfig(
@@ -171,37 +172,52 @@ class Conteneur
 
     /**
      * @param array $tabRestServer
+     * @return RestServer
+     */
+    private function getRestServerManager($tabRestServer)
+    {
+        $restServerManager = new RestServerManager();
+
+        foreach ($tabRestServer as $clefServer => $unRestServer) {
+            $restServerManager->addRestServer($clefServer, $this->getRestServer($unRestServer));
+        }
+
+        return $restServerManager;
+    }
+
+    /**
+     * @param array $unRestServer
      * @throws \Exception
      * @return RestServer
      */
-    private function getRestServer($tabRestServer)
+    private function getRestServer($unRestServer)
     {
-        $valeursMinimales = array('Url',
-            'Format',
-            'Authentification',
-            'Authentification.Enabled',
-            'Authentification.Method',
-            'Authentification.Username',
-            'Authentification.PassKey');
+        $valeursMinimales = array('Url', 'Format');
 
         foreach ($valeursMinimales as $uneValeurMinimale) {
-            if (is_null(array_multisearch($uneValeurMinimale, $tabRestServer))) {
+            if (is_null(array_multisearch($uneValeurMinimale, $unRestServer))) {
                 throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
             }
         }
 
         $restServer = new RestServer();
 
-        $tabRestServer = array_change_key_case_recursive($tabRestServer, CASE_LOWER);
+        $unRestServer = array_change_key_case_recursive($unRestServer, CASE_LOWER);
 
-        $restServer->setUrl($tabRestServer['url']);
-        $restServer->setFormatEnvoi($tabRestServer['format']);
+        $restServer->setUrl($unRestServer['url']);
+        $restServer->setFormatEnvoi($unRestServer['format']);
         if (
-            isset($tabRestServer['authentification'])
-            && is_array($tabRestServer['authentification'])
-            && $tabRestServer['authentification']['enabled'] === true
+            isset($unRestServer['authentification'])
+            && is_array($unRestServer['authentification'])
+            && $unRestServer['authentification']['enabled'] === true
         ) {
-            $restServer->setAuth($this->getAuth($tabRestServer['authentification']));
+            $restServer->setAuth($this->getAuth($unRestServer['authentification']));
+        }
+
+        if (isset($unRestServer['parameters']) && is_array($unRestServer['parameters'])) {
+            foreach ($unRestServer['parameters'] as $clefParam => $unParametre) {
+                $restServer->addParametreUri($clefParam, $unParametre);
+            }
         }
 
         return $restServer;
@@ -209,10 +225,10 @@ class Conteneur
 
     private function getAuth($tabAuth)
     {
-        $valeursMinimales = array('Method', 'Username', 'PassKey');
+        $valeursMinimales = array('method', 'username', 'passkey');
 
         foreach ($valeursMinimales as $uneValeurMinimale) {
-            if (is_null(array_multisearch($uneValeurMinimale, $tabAuth))) {
+            if (!array_key_exists($uneValeurMinimale, $tabAuth)) {
                 throw new \Exception(sprintf('Missing Authentification key "%s".', $uneValeurMinimale));
             }
         }
@@ -264,7 +280,7 @@ class Conteneur
             }
 
             foreach ($arrayRemote as $clef => $uneVarRemote) {
-                foreach (array('uri', 'method') as $uneClefObligatoire) {
+                foreach (array('server', 'uri', 'method') as $uneClefObligatoire) {
                     if (!array_key_exists($uneClefObligatoire, $uneVarRemote)) {
                         throw new \InvalidArgumentException(sprintf(
                             'Missing key "%s" in Remote section for "%s".',
@@ -274,7 +290,11 @@ class Conteneur
                     }
                 }
 
-                $remoteVars->addRemoteVar($clef, new ObjetRequete($uneVarRemote['uri'], $uneVarRemote['method']));
+                $remoteVars->addRemoteVar(
+                    $uneVarRemote['server'],
+                    $clef,
+                    new ObjetRequete($uneVarRemote['uri'], $uneVarRemote['method'])
+                );
             }
         }
 
@@ -368,14 +388,14 @@ class Conteneur
     }
 
     /**
-     * @param RestServer $restServer
+     * @param RestServer $restServerManager
      * @return RestClient
      */
-    private function getRestClient($restServer)
+    private function getRestClient($restServerManager)
     {
         $restClient = new RestClient();
 
-        $restClient->setRestServer($restServer);
+        $restClient->setRestServerManager($restServerManager);
         $restClient->setCurlClient($this->getCurlClient());
 
         return $restClient;

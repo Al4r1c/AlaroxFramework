@@ -17,9 +17,11 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRestServer()
     {
-        $this->_restClient->setRestServer($restServer = $this->getMock('AlaroxFramework\cfg\rest\RestServer'));
+        $this->_restClient->setRestServerManager(
+            $restServerManager = $this->getMock('AlaroxFramework\\cfg\\rest\\RestServerManager')
+        );
 
-        $this->assertAttributeEquals($restServer, '_restServer', $this->_restClient);
+        $this->assertAttributeEquals($restServerManager, '_restServerManager', $this->_restClient);
     }
 
     /**
@@ -27,7 +29,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetRestServerErrone()
     {
-        $this->_restClient->setRestServer(array());
+        $this->_restClient->setRestServerManager(array());
     }
 
     public function testSetCurlClient()
@@ -51,6 +53,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     {
         $curlClient = $this->getMock('AlaroxFramework\utils\restclient\CurlClient', array('executer'));
         $restServer = $this->getMock('AlaroxFramework\cfg\rest\RestServer');
+        $restServerManager = $this->getMock('AlaroxFramework\cfg\rest\RestServerManager', array('getRestServer'));
         $objetRequete = $this->getMock('AlaroxFramework\Utils\ObjetRequete');
         $objetReponse = $this->getMock('AlaroxFramework\Utils\ObjetReponse');
 
@@ -59,10 +62,15 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
             ->with($restServer, $objetRequete)
             ->will($this->returnValue($objetReponse));
 
-        $this->_restClient->setCurlClient($curlClient);
-        $this->_restClient->setRestServer($restServer);
+        $restServerManager->expects($this->once())
+            ->method('getRestServer')
+            ->with('restServerKey')
+            ->will($this->returnValue($restServer));
 
-        $this->assertEquals($objetReponse, $this->_restClient->executerRequete($objetRequete));
+        $this->_restClient->setCurlClient($curlClient);
+        $this->_restClient->setRestServerManager($restServerManager);
+
+        $this->assertEquals($objetReponse, $this->_restClient->executerRequete('restServerKey', $objetRequete));
     }
 
     /**
@@ -70,7 +78,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuteObjetRequeteErrone()
     {
-        $this->_restClient->executerRequete(array());
+        $this->_restClient->executerRequete('key', array());
     }
 
     /**
@@ -78,7 +86,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuteCurlClientMissing()
     {
-        $this->_restClient->executerRequete($this->getMock('AlaroxFramework\Utils\ObjetRequete'));
+        $this->_restClient->executerRequete('key', $this->getMock('AlaroxFramework\Utils\ObjetRequete'));
     }
 
     /**
@@ -89,6 +97,26 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $curlClient = $this->getMock('AlaroxFramework\utils\restclient\CurlClient');
         $this->_restClient->setCurlClient($curlClient);
 
-        $this->_restClient->executerRequete($this->getMock('AlaroxFramework\Utils\ObjetRequete'));
+        $this->_restClient->executerRequete('key', $this->getMock('AlaroxFramework\Utils\ObjetRequete'));
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testExecuteRestServerNotFound()
+    {
+        $restServerManager = $this->getMock('AlaroxFramework\cfg\rest\RestServerManager', array('getRestServer'));
+
+        $restServerManager->expects($this->once())
+            ->method('getRestServer')
+            ->with('restServerKey')
+            ->will($this->returnValue(null));
+
+        $this->_restClient->setCurlClient(
+            $this->getMock('AlaroxFramework\utils\restclient\CurlClient', array('executer'))
+        );
+        $this->_restClient->setRestServerManager($restServerManager);
+
+        $this->_restClient->executerRequete('restServerKey', $this->getMock('AlaroxFramework\Utils\ObjetRequete'));
     }
 }

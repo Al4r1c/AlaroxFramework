@@ -23,8 +23,10 @@ class RemoteVars
     {
         $tabResult = array();
 
-        foreach ($this->_listeRemoteVars as $clef => $uneAction) {
-            $tabResult[$clef] = $this->_restClient->executerRequete($uneAction)->toArray();
+        foreach ($this->_listeRemoteVars as $serverKey => $temp) {
+            foreach ($temp as $clef => $uneAction) {
+                $tabResult[$clef] = $this->_restClient->executerRequete($serverKey, $uneAction)->toArray();
+            }
         }
 
         return $tabResult;
@@ -39,11 +41,12 @@ class RemoteVars
     }
 
     /**
+     * @param string $serverKey
      * @param string $clef
      * @param ObjetRequete $uneRequete
      */
-    public function addRemoteVar($clef, $uneRequete)
+    public function addRemoteVar($serverKey, $clef, $uneRequete)
     {
-        $this->_listeRemoteVars[$clef] = $uneRequete;
+        $this->_listeRemoteVars[$serverKey][$clef] = $uneRequete;
     }
 }

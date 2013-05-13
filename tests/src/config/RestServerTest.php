@@ -62,5 +62,12 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
     {
         $this->_restServer->setAuth('exception');
     }
+
+    public function testParameter() {
+        $this->_restServer->addParametreUri('clef', 'valeur');
+
+        $this->assertArrayHasKey('clef', $this->_restServer->getParametresUri());
+        $this->assertEquals('valeur', $this->_restServer->getParametresUri()['clef']);
+    }
 }
 

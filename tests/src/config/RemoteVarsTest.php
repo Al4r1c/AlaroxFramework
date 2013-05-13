@@ -33,14 +33,11 @@ class RemoteVarsTest extends \PHPUnit_Framework_TestCase
     {
         $objetRequete = $this->getMock('AlaroxFramework\utils\ObjetRequete');
 
-        $this->_remoteVars->addRemoteVar('clef', $objetRequete);
+        $this->_remoteVars->addRemoteVar('server', 'clef', $objetRequete);
+        $this->_remoteVars->addRemoteVar('server', 'clef2', $objetRequete);
+        $this->_remoteVars->addRemoteVar('server2', 'clef', $objetRequete);
 
-        $this->assertAttributeCount(1, '_listeRemoteVars', $this->_remoteVars);
-        $this->assertAttributeContainsOnly(
-            'AlaroxFramework\utils\ObjetRequete',
-            '_listeRemoteVars',
-            $this->_remoteVars
-        );
+        $this->assertAttributeCount(2, '_listeRemoteVars', $this->_remoteVars);
     }
 
     public function testGetRemoteVarsExecutees()
@@ -53,7 +50,7 @@ class RemoteVarsTest extends \PHPUnit_Framework_TestCase
 
         $restClient->expects($this->once())
             ->method('executerRequete')
-            ->with($objetRequete)
+            ->with('server', $objetRequete)
             ->will($this->returnValue($objetReponse));
 
         $objetReponse->expects($this->once())
@@ -61,7 +58,7 @@ class RemoteVarsTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(array('value')));
 
 
-        $this->_remoteVars->addRemoteVar('clef', $objetRequete);
+        $this->_remoteVars->addRemoteVar('server', 'clef', $objetRequete);
         $this->_remoteVars->setRestClient($restClient);
 
         $this->assertEquals(array('clef' => array('value')), $this->_remoteVars->getRemoteVarsExecutees());

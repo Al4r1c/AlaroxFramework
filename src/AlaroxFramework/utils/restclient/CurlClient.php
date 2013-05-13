@@ -134,7 +134,7 @@ class CurlClient
         }
 
         list($responseCurl, $reponseInfo) =
-            $this->curlExec($restServer->getUrl(), $uri, $restServer->getFormatEnvoi(), $dateRequeteGmt);
+            $this->curlExec($restServer->getUrl(), $restServer->getParametresUri(), $uri, $restServer->getFormatEnvoi(), $dateRequeteGmt);
 
         if (($pos = strpos($contentType = $reponseInfo['content_type'], ';')) !== false) {
             $contentType = substr($reponseInfo['content_type'], 0, $pos);
@@ -149,14 +149,25 @@ class CurlClient
 
     /**
      * @param string $url
+     * @param array $paramUri
      * @param string $uri
      * @param string $format
      * @param string $date
      * @return array
      */
-    private function curlExec($url, $uri, $format, $date)
+    private function curlExec($url, $paramUri, $uri, $format, $date)
     {
         $formatMime = Tools::getMimePourFormat($format);
+
+        if (count($paramUri) > 0) {
+            $donneesUri = $this->buildPostBody($paramUri, 'txt');
+
+            if(strpos('?', $uri) === false) {
+                $uri .= '?';
+            }
+
+            $uri .= $donneesUri;
+        }
 
         $this->_curl->ajouterOption(CURLOPT_URL, $url . $uri);
         $this->_curl->ajouterHeaders(

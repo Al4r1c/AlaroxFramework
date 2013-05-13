@@ -92,7 +92,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function methodSwitch($method, $format = null)
+    public function methodSwitch($method, $format = null, $tabParam = array())
     {
         if (is_null($format)) {
             $format = 'json';
@@ -106,19 +106,28 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
                 '\AlaroxFramework\utils\restclient\Curl',
                 array('executer', 'ajouterOption', 'ajouterHeaders')
             );
-        $restServer = $this->getMock('\AlaroxFramework\cfg\rest\RestServer', array('isAuthEnabled', 'getFormatEnvoi'));
+        $restServer = $this->getMock('\AlaroxFramework\cfg\rest\RestServer', array('isAuthEnabled', 'getUrl', 'getFormatEnvoi', 'getParametresUri'));
         $objetRequete =
             $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp', 'getBody'));
 
 
         $restServer->expects($this->once())->method('isAuthEnabled')->will($this->returnValue(false));
+        $restServer->expects($this->once())->method('getUrl')->will($this->returnValue('http://server.url.com/'));
         $restServer->expects($this->atLeastOnce())->method('getFormatEnvoi')->will($this->returnValue('json'));
 
         $objetRequete->expects($this->once())->method('getUri')->will($this->returnValue('/mon/uri'));
         $objetRequete->expects($this->once())->method('getMethodeHttp')->will($this->returnValue($method));
         $objetRequete->expects($this->any())->method('getBody')->will($this->returnValue(array('param' => 'value')));
 
+        if(!empty($tabParam)) {
+            $restServer->expects($this->once())->method('getParametresUri')->will($this->returnValue($tabParam));
+        }
+
+
+        //$curl->expects($this->at(2))->method('ajouterOption')->with(CURLOPT_URL, 'http://server.url.com/mon/uri');
         $curl->expects($this->atLeastOnce())->method('ajouterOption');
+
+
         $curl->expects($this->atLeastOnce())->method('ajouterHeaders');
         $curl->expects($this->once())->method('executer')->will(
             $this->returnValue(
@@ -147,6 +156,11 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $this->methodSwitch('PUT');
         $this->methodSwitch('POST');
         $this->methodSwitch('DELETE');
+    }
+
+    public function testExecuterNoAuthAllMethodWithUriParam()
+    {
+        $this->methodSwitch('GET', 'txt', array('param' => 'value'));
     }
 
     /**
