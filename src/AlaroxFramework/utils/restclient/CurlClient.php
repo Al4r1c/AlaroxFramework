@@ -1,7 +1,7 @@
 <?php
 namespace AlaroxFramework\utils\restclient;
 
-use AlaroxFramework\cfg\configs\RestInfos;
+use AlaroxFramework\cfg\rest\RestServer;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\Tools;
@@ -67,16 +67,16 @@ class CurlClient
     }
 
     /**
-     * @param RestInfos $restInfos
+     * @param RestServer $restServer
      * @param ObjetRequete $objetRequete
      * @throws \InvalidArgumentException
      * @throws \Exception
      * @return ObjetReponse
      */
-    public function executer($restInfos, $objetRequete)
+    public function executer($restServer, $objetRequete)
     {
-        if (!$restInfos instanceof RestInfos) {
-            throw new \InvalidArgumentException('Expected parameter 1 restInfos to be RestInfos.');
+        if (!$restServer instanceof RestServer) {
+            throw new \InvalidArgumentException('Expected parameter 1 restServer to be RestServer.');
         }
 
         if (!$objetRequete instanceof ObjetRequete) {
@@ -102,7 +102,7 @@ class CurlClient
                 }
                 break;
             case 'POST':
-                $donneesAEnvoyer = $this->buildPostBody($objetRequete->getBody(), $restInfos->getFormatEnvoi());
+                $donneesAEnvoyer = $this->buildPostBody($objetRequete->getBody(), $restServer->getFormatEnvoi());
 
                 $this->_curl->ajouterOption(CURLOPT_POSTFIELDS, $donneesAEnvoyer);
                 $this->_curl->ajouterOption(CURLOPT_POST, true);
@@ -111,7 +111,7 @@ class CurlClient
                 $fichierTempEcriture = tmpFile();
                 fwrite(
                     $fichierTempEcriture,
-                    $donneesAEnvoyer = $this->buildPostBody($objetRequete->getBody(), $restInfos->getFormatEnvoi())
+                    $donneesAEnvoyer = $this->buildPostBody($objetRequete->getBody(), $restServer->getFormatEnvoi())
                 );
                 rewind($fichierTempEcriture);
 
@@ -126,15 +126,15 @@ class CurlClient
                 throw new \Exception('Unsupported HTTP verb "' . $methodeHttp . '".');
         }
 
-        if ($restInfos->isAuthEnabled() === true) {
+        if ($restServer->isAuthEnabled() === true) {
             $this->_curl->ajouterUnHeader(
                 'Authorization',
-                $this->getSignature($restInfos, $methodeHttp, $donneesAEnvoyer, strtotime($dateRequeteGmt))
+                $this->getSignature($restServer, $methodeHttp, $donneesAEnvoyer, strtotime($dateRequeteGmt))
             );
         }
 
         list($responseCurl, $reponseInfo) =
-            $this->curlExec($restInfos->getUrl(), $uri, $restInfos->getFormatEnvoi(), $dateRequeteGmt);
+            $this->curlExec($restServer->getUrl(), $uri, $restServer->getFormatEnvoi(), $dateRequeteGmt);
 
         if (($pos = strpos($contentType = $reponseInfo['content_type'], ';')) !== false) {
             $contentType = substr($reponseInfo['content_type'], 0, $pos);
@@ -181,25 +181,27 @@ class CurlClient
     }
 
     /**
-     * @param RestInfos $restInfos
+     * @param RestServer $restServer
      * @param string $methode
      * @param string $donnees
      * @param int $timestamp
      * @return string
      */
-    private function getSignature($restInfos, $methode, $donnees, $timestamp)
+    private function getSignature($restServer, $methode, $donnees, $timestamp)
     {
+        $auth = $restServer->getAuth();
+
         $encode =
             base64_encode(
                 hash_hmac(
                     'sha256',
                     $donnees,
-                    $restInfos->getPrivateKey() . $methode . Tools::getMimePourFormat($restInfos->getFormatEnvoi()) .
+                    $auth->getPrivateKey() . $methode . Tools::getMimePourFormat($restServer->getFormatEnvoi()) .
                         $timestamp,
                     true
                 )
             );
 
-        return $restInfos->getAuthentifMethode() . ' ' . $restInfos->getUsername() . ':' . $encode;
+        return $auth->getAuthentifMethode() . ' ' . $auth->getUsername() . ':' . $encode;
     }
 }

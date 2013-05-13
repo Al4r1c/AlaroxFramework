@@ -68,7 +68,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testExecuterRestInfosTest()
+    public function testExecuterRestServerTest()
     {
         $this->_curlClient->executer('exception', $this->getMock('\AlaroxFramework\utils\ObjetRequete'));
     }
@@ -78,7 +78,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuterObjetRequeteTest()
     {
-        $this->_curlClient->executer($this->getMock('\AlaroxFramework\cfg\configs\RestInfos'), 'exception');
+        $this->_curlClient->executer($this->getMock('\AlaroxFramework\cfg\rest\RestServer'), 'exception');
     }
 
     /**
@@ -87,7 +87,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
     public function testExecuterCurlNotSet()
     {
         $this->_curlClient->executer(
-            $this->getMock('\AlaroxFramework\cfg\configs\RestInfos'),
+            $this->getMock('\AlaroxFramework\cfg\rest\RestServer'),
             $this->getMock('\AlaroxFramework\utils\ObjetRequete')
         );
     }
@@ -106,13 +106,13 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
                 '\AlaroxFramework\utils\restclient\Curl',
                 array('executer', 'ajouterOption', 'ajouterHeaders')
             );
-        $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos', array('isAuthEnabled', 'getFormatEnvoi'));
+        $restServer = $this->getMock('\AlaroxFramework\cfg\rest\RestServer', array('isAuthEnabled', 'getFormatEnvoi'));
         $objetRequete =
             $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp', 'getBody'));
 
 
-        $restInfos->expects($this->once())->method('isAuthEnabled')->will($this->returnValue(false));
-        $restInfos->expects($this->atLeastOnce())->method('getFormatEnvoi')->will($this->returnValue('json'));
+        $restServer->expects($this->once())->method('isAuthEnabled')->will($this->returnValue(false));
+        $restServer->expects($this->atLeastOnce())->method('getFormatEnvoi')->will($this->returnValue('json'));
 
         $objetRequete->expects($this->once())->method('getUri')->will($this->returnValue('/mon/uri'));
         $objetRequete->expects($this->once())->method('getMethodeHttp')->will($this->returnValue($method));
@@ -134,7 +134,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $this->_curlClient->setCurl($curl);
         $this->_curlClient->setParser($parser);
         $this->_curlClient->setTime(1234567890);
-        $resultObjetReponse = $this->_curlClient->executer($restInfos, $objetRequete);
+        $resultObjetReponse = $this->_curlClient->executer($restServer, $objetRequete);
 
         $this->assertEquals(200, $resultObjetReponse->getStatusHttp());
         $this->assertEquals('application/json', $resultObjetReponse->getFormatMime());
@@ -155,7 +155,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
     public function testExecuterNoAuthInvalidMethod()
     {
         $curl = $this->getMock('\AlaroxFramework\utils\restclient\Curl');
-        $restInfos = $this->getMock('\AlaroxFramework\cfg\configs\RestInfos');
+        $restServer = $this->getMock('\AlaroxFramework\cfg\rest\RestServer');
         $objetRequete = $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp'));
 
         $objetRequete->expects($this->once())->method('getUri')->will($this->returnValue('/mon/uri'));
@@ -165,7 +165,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $this->_curlClient->setCurl($curl);
         $this->_curlClient->setTime(1234567890);
         $this->_curlClient->setParser($this->getMock('\AlaroxFramework\utils\parser\Parser'));
-        $resultObjetReponse = $this->_curlClient->executer($restInfos, $objetRequete);
+        $resultObjetReponse = $this->_curlClient->executer($restServer, $objetRequete);
 
         $this->assertEquals(200, $resultObjetReponse->getStatusHttp());
         $this->assertEquals('application/json', $resultObjetReponse->getFormatMime());
@@ -180,20 +180,28 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
                 '\AlaroxFramework\utils\restclient\Curl',
                 array('executer', 'ajouterOption', 'ajouterHeaders', 'ajouterUnHeader')
             );
-        $restInfos =
+
+        $auth =
             $this->getMock(
-                '\AlaroxFramework\cfg\configs\RestInfos',
-                array('isAuthEnabled', 'getFormatEnvoi', 'getPrivateKey', 'getUsername', 'getAuthentifMethode')
+                '\AlaroxFramework\cfg\rest\Auth',
+                array('getPrivateKey', 'getUsername', 'getAuthentifMethode')
+            );
+        $restServer =
+            $this->getMock(
+                '\AlaroxFramework\cfg\rest\RestServer',
+                array('isAuthEnabled', 'getFormatEnvoi', 'getAuth')
             );
         $objetRequete =
             $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp', 'getBody'));
 
 
-        $restInfos->expects($this->once())->method('isAuthEnabled')->will($this->returnValue(true));
-        $restInfos->expects($this->atLeastOnce())->method('getFormatEnvoi')->will($this->returnValue('json'));
-        $restInfos->expects($this->once())->method('getPrivateKey')->will($this->returnValue('KEY'));
-        $restInfos->expects($this->once())->method('getUsername')->will($this->returnValue('username'));
-        $restInfos->expects($this->once())->method('getAuthentifMethode')->will($this->returnValue('Basic'));
+        $restServer->expects($this->once())->method('isAuthEnabled')->will($this->returnValue(true));
+        $restServer->expects($this->once())->method('getAuth')->will($this->returnValue($auth));
+        $restServer->expects($this->atLeastOnce())->method('getFormatEnvoi')->will($this->returnValue('json'));
+
+        $auth->expects($this->once())->method('getPrivateKey')->will($this->returnValue('KEY'));
+        $auth->expects($this->once())->method('getUsername')->will($this->returnValue('username'));
+        $auth->expects($this->once())->method('getAuthentifMethode')->will($this->returnValue('Basic'));
 
         $objetRequete->expects($this->once())->method('getUri')->will($this->returnValue('/mon/uri'));
         $objetRequete->expects($this->once())->method('getMethodeHttp')->will($this->returnValue('GET'));
@@ -219,7 +227,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
 
         $this->_curlClient->setCurl($curl);
         $this->_curlClient->setParser($parser);
-        $resultObjetReponse = $this->_curlClient->executer($restInfos, $objetRequete);
+        $resultObjetReponse = $this->_curlClient->executer($restServer, $objetRequete);
 
         $this->assertEquals(200, $resultObjetReponse->getStatusHttp());
         $this->assertEquals('application/json', $resultObjetReponse->getFormatMime());

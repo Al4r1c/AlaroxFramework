@@ -1,16 +1,16 @@
 <?php
 namespace AlaroxFramework\utils\restclient;
 
-use AlaroxFramework\cfg\configs\RestInfos;
+use AlaroxFramework\cfg\rest\RestServer;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 
 class RestClient
 {
     /**
-     * @var RestInfos
+     * @var RestServer
      */
-    private $_restInfos;
+    private $_restServer;
 
     /**
      * @var CurlClient
@@ -18,16 +18,16 @@ class RestClient
     private $_curlClient;
 
     /**
-     * @param RestInfos $restInfos
+     * @param RestServer $restServer
      * @throws \InvalidArgumentException
      */
-    public function setRestInfos($restInfos)
+    public function setRestServer($restServer)
     {
-        if (!$restInfos instanceof RestInfos) {
-            throw new \InvalidArgumentException('Expected parameter 1 to be RestInfos.');
+        if (!$restServer instanceof RestServer) {
+            throw new \InvalidArgumentException('Expected parameter 1 to be RestServer.');
         }
 
-        $this->_restInfos = $restInfos;
+        $this->_restServer = $restServer;
     }
 
     /**
@@ -59,10 +59,10 @@ class RestClient
             throw new \Exception('CurlClient is not set.');
         }
 
-        if (!isset($this->_restInfos)) {
+        if (!isset($this->_restServer)) {
             throw new \Exception('ResInfos is not set.');
         }
 
-        return $this->_curlClient->executer($this->_restInfos, $objetRequete);
+        return $this->_curlClient->executer($this->_restServer, $objetRequete);
     }
 }

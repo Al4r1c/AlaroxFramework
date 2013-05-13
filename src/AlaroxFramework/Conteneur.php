@@ -5,13 +5,14 @@ use AlaroxFileManager\AlaroxFile;
 use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\cfg\Config;
 use AlaroxFramework\cfg\configs\ControllerFactory;
-use AlaroxFramework\cfg\configs\RestInfos;
 use AlaroxFramework\cfg\configs\Server;
 use AlaroxFramework\cfg\configs\TemplateConfig;
 use AlaroxFramework\cfg\globals\GlobalVars;
 use AlaroxFramework\cfg\globals\RemoteVars;
 use AlaroxFramework\cfg\i18n\Internationalization;
 use AlaroxFramework\cfg\i18n\Langue;
+use AlaroxFramework\cfg\rest\Auth;
+use AlaroxFramework\cfg\rest\RestServer;
 use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\exceptions\ErreurHandler;
 use AlaroxFramework\reponse\ReponseManager;
@@ -82,7 +83,7 @@ class Conteneur
             ini_set('display_errors', 'on');
         }
 
-        $this->_config->setRestClient($this->getRestClient($this->getRestInfos($tabCfg['restserver'])));
+        $this->_config->setRestClient($this->getRestClient($this->getRestServer($tabCfg['restserver'])));
 
         $this->_config->setTemplateConfig(
             $this->getTemplateConfig(
@@ -169,11 +170,11 @@ class Conteneur
     }
 
     /**
-     * @param array $tabRestInfos
+     * @param array $tabRestServer
      * @throws \Exception
-     * @return RestInfos
+     * @return RestServer
      */
-    private function getRestInfos($tabRestInfos)
+    private function getRestServer($tabRestServer)
     {
         $valeursMinimales = array('Url',
             'Format',
@@ -183,24 +184,46 @@ class Conteneur
             'Authentification.Username',
             'Authentification.PassKey');
 
-        $restInfos = new RestInfos();
-
         foreach ($valeursMinimales as $uneValeurMinimale) {
-            if (is_null(array_multisearch($uneValeurMinimale, $tabRestInfos))) {
+            if (is_null(array_multisearch($uneValeurMinimale, $tabRestServer))) {
                 throw new \Exception(sprintf('Missing config key "%s".', $uneValeurMinimale));
             }
         }
 
-        $tabRestInfos = array_change_key_case_recursive($tabRestInfos, CASE_LOWER);
+        $restServer = new RestServer();
 
-        $restInfos->setUrl($tabRestInfos['url']);
-        $restInfos->setFormatEnvoi($tabRestInfos['format']);
-        $restInfos->setAuthentifEnabled($tabRestInfos['authentification']['enabled']);
-        $restInfos->setAuthentifMethode($tabRestInfos['authentification']['method']);
-        $restInfos->setUsername($tabRestInfos['authentification']['username']);
-        $restInfos->setPrivateKey($tabRestInfos['authentification']['passkey']);
+        $tabRestServer = array_change_key_case_recursive($tabRestServer, CASE_LOWER);
 
-        return $restInfos;
+        $restServer->setUrl($tabRestServer['url']);
+        $restServer->setFormatEnvoi($tabRestServer['format']);
+        if (
+            isset($tabRestServer['authentification'])
+            && is_array($tabRestServer['authentification'])
+            && $tabRestServer['authentification']['enabled'] === true
+        ) {
+            $restServer->setAuth($this->getAuth($tabRestServer['authentification']));
+        }
+
+        return $restServer;
+    }
+
+    private function getAuth($tabAuth)
+    {
+        $valeursMinimales = array('Method', 'Username', 'PassKey');
+
+        foreach ($valeursMinimales as $uneValeurMinimale) {
+            if (is_null(array_multisearch($uneValeurMinimale, $tabAuth))) {
+                throw new \Exception(sprintf('Missing Authentification key "%s".', $uneValeurMinimale));
+            }
+        }
+
+        $auth = new Auth();
+
+        $auth->setAuthentifMethode($tabAuth['method']);
+        $auth->setUsername($tabAuth['username']);
+        $auth->setPrivateKey($tabAuth['passkey']);
+
+        return $auth;
     }
 
     /**
@@ -345,14 +368,14 @@ class Conteneur
     }
 
     /**
-     * @param RestInfos $restInfos
+     * @param RestServer $restServer
      * @return RestClient
      */
-    private function getRestClient($restInfos)
+    private function getRestClient($restServer)
     {
         $restClient = new RestClient();
 
-        $restClient->setRestInfos($restInfos);
+        $restClient->setRestServer($restServer);
         $restClient->setCurlClient($this->getCurlClient());
 
         return $restClient;

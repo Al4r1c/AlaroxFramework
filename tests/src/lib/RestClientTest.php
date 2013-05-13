@@ -15,21 +15,19 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
         $this->_restClient = new RestClient();
     }
 
-    public function testSetRestInfos()
+    public function testSetRestServer()
     {
-        $restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
+        $this->_restClient->setRestServer($restServer = $this->getMock('AlaroxFramework\cfg\rest\RestServer'));
 
-        $this->_restClient->setRestInfos($restInfos);
-
-        $this->assertAttributeEquals($restInfos, '_restInfos', $this->_restClient);
+        $this->assertAttributeEquals($restServer, '_restServer', $this->_restClient);
     }
 
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testSetRestInfosErrone()
+    public function testSetRestServerErrone()
     {
-        $this->_restClient->setRestInfos(array());
+        $this->_restClient->setRestServer(array());
     }
 
     public function testSetCurlClient()
@@ -52,17 +50,17 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     public function testExecute()
     {
         $curlClient = $this->getMock('AlaroxFramework\utils\restclient\CurlClient', array('executer'));
-        $restInfos = $this->getMock('AlaroxFramework\cfg\configs\RestInfos');
+        $restServer = $this->getMock('AlaroxFramework\cfg\rest\RestServer');
         $objetRequete = $this->getMock('AlaroxFramework\Utils\ObjetRequete');
         $objetReponse = $this->getMock('AlaroxFramework\Utils\ObjetReponse');
 
         $curlClient->expects($this->once())
             ->method('executer')
-            ->with($restInfos, $objetRequete)
+            ->with($restServer, $objetRequete)
             ->will($this->returnValue($objetReponse));
 
         $this->_restClient->setCurlClient($curlClient);
-        $this->_restClient->setRestInfos($restInfos);
+        $this->_restClient->setRestServer($restServer);
 
         $this->assertEquals($objetReponse, $this->_restClient->executerRequete($objetRequete));
     }
@@ -86,7 +84,7 @@ class RestClientTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testExecuteRestInfosMissing()
+    public function testExecuteRestServerMissing()
     {
         $curlClient = $this->getMock('AlaroxFramework\utils\restclient\CurlClient');
         $this->_restClient->setCurlClient($curlClient);
