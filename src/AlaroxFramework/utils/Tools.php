@@ -30,12 +30,18 @@ class Tools
     }
 
     /**
-     * @param string $mime
+     * @param string $formatMimeRecherchee
      * @return bool
      */
-    public static function isValidMime($mime)
+    public static function isValidMime($formatMimeRecherchee)
     {
-        return in_array(strtolower($mime), array_map('strtolower', include(__DIR__ . '/const/mimes.php')));
+        foreach (include(__DIR__ . '/const/mimes.php') as $formatsMime) {
+            if (in_array($formatMimeRecherchee, $formatsMime)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -48,18 +54,22 @@ class Tools
         if (self::isValideFormat($format)) {
             $tabFormats = include(__DIR__ . '/const/mimes.php');
 
-            return $tabFormats[$format];
+            return current($tabFormats[$format]);
         } else {
             return null;
         }
     }
 
-    public static function getFormatPourMime($formatMime)
+    public static function getFormatPourMime($formatMimeRecherchee)
     {
-        if (self::isValidMime($formatMime)) {
-            $tabFormats = include(__DIR__ . '/const/mimes.php');
+        if (self::isValidMime($formatMimeRecherchee)) {
+            foreach (include(__DIR__ . '/const/mimes.php') as $type => $formatsMime) {
+                if (in_array($formatMimeRecherchee, $formatsMime)) {
+                    return $type;
+                }
+            }
 
-            return array_search($formatMime, $tabFormats);
+            return false;
         } else {
             return null;
         }
