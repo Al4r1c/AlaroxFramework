@@ -35,7 +35,7 @@
 		"alarox/AlaroxClassLoader": "v1.0",
 		"alarox/AlaroxFileManager": "v0.2",
 		"twig/twigi18n": "v1.1",
-		"twig/twig": "v1.12.3",
+		"twig/twig": "v1.13.0",
 		"mikey179/vfsStream": "v1.2.0"
 	},
 	"autoload": {

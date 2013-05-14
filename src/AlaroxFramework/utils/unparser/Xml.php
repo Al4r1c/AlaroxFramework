@@ -25,7 +25,11 @@ class Xml extends AbstractUnparser
 
         foreach ($tabXmlElements as $unXmlElement) {
             if ($unXmlElement->hasChildren()) {
-                $result[$unXmlElement->getName()] = $this->xmlDataToArray($unXmlElement->getChildren());
+                if (count($data = $this->xmlDataToArray($unXmlElement->getChildren())) > 0) {
+                    $result[$unXmlElement->getName()][] = $data;
+                } else {
+                    $result[$unXmlElement->getName()] = array();
+                }
             } else {
                 if (isset($result[$unXmlElement->getName()])) {
                     if (!is_array($result[$unXmlElement->getName()])) {
