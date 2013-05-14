@@ -1,6 +1,9 @@
 <?php
 namespace AlaroxFramework\traitement\controller;
 
+use AlaroxFramework\utils\ObjetReponse;
+use AlaroxFramework\utils\ObjetRequete;
+use AlaroxFramework\utils\View;
 use AlaroxFramework\utils\restclient\RestClient;
 
 abstract class GenericController
@@ -14,14 +17,6 @@ abstract class GenericController
      * @var array
      */
     private $_variablesRequete;
-
-    /**
-     * @return RestClient
-     */
-    protected function getRestClient()
-    {
-        return $this->_restClient;
-    }
 
     /**
      * @return array
@@ -63,5 +58,26 @@ abstract class GenericController
         }
 
         $this->_variablesRequete = $tabVariables;
+    }
+
+    /**
+     * @param string $templateName
+     * @return View
+     */
+    protected function generateView($templateName)
+    {
+        $view = new View();
+
+        return $view->renderView($templateName);
+    }
+
+    /**
+     * @param string $serverName
+     * @param ObjetRequete $requestObject
+     * @return ObjetReponse
+     */
+    protected function executeRequest($serverName, $requestObject)
+    {
+        return $this->_restClient->executerRequete($serverName, $requestObject);
     }
 }

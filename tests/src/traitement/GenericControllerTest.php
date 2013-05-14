@@ -12,32 +12,29 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_genericCtrl = $this->getMockForAbstractClass('AlaroxFramework\traitement\controller\GenericController');
+        $this->_genericCtrl =
+            $this->getMockForAbstractClass('AlaroxFramework\\traitement\\controller\\GenericController');
     }
 
     public function testInstance()
     {
-        $this->assertInstanceOf('AlaroxFramework\traitement\controller\GenericController', $this->_genericCtrl);
+        $this->assertInstanceOf('AlaroxFramework\\traitement\\controller\\GenericController', $this->_genericCtrl);
     }
 
     public function testRestClient()
     {
-        $restClient = $this->getMock('AlaroxFramework\utils\restclient\RestClient');
+        $restClient = $this->getMock('AlaroxFramework\\utils\\restclient\\RestClient');
 
         $this->_genericCtrl->setRestClient($restClient);
 
-        $class = new \ReflectionClass('AlaroxFramework\traitement\controller\GenericController');
-        $method = $class->getMethod('getRestClient');
-        $method->setAccessible(true);
-
-        $this->assertSame($restClient, $method->invoke($this->_genericCtrl));
+        $this->assertAttributeSame($restClient, '_restClient', $this->_genericCtrl);
     }
 
     public function testTabVariables()
     {
         $this->_genericCtrl->setVariablesRequete(array('var1' => 'val1'));
 
-        $class = new \ReflectionClass('AlaroxFramework\traitement\controller\GenericController');
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
         $method = $class->getMethod('getVariablesRequete');
         $method->setAccessible(true);
 
@@ -56,11 +53,44 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
     {
         $this->_genericCtrl->setVariablesRequete(array('paramKey' => 'maVar'));
 
-        $class = new \ReflectionClass('AlaroxFramework\traitement\controller\GenericController');
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
         $method = $class->getMethod('getUneVariableRequete');
         $method->setAccessible(true);
 
         $this->assertEquals('maVar', $method->invokeArgs($this->_genericCtrl, array('paramKey')));
         $this->assertNull($method->invokeArgs($this->_genericCtrl, array('keyNotFound')));
+    }
+
+    public function testGenerateView()
+    {
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('generateView');
+        $method->setAccessible(true);
+
+        $this->assertInstanceOf(
+            'AlaroxFramework\\utils\\View',
+            $view = $method->invokeArgs($this->_genericCtrl, array('template.twig'))
+        );
+        $this->assertEquals('template.twig', $view->getViewName());
+    }
+
+    public function testExecuteRequest()
+    {
+        $objetRequete = $this->getMock('AlaroxFramework\\utils\\ObjetRequete');
+        $objetReponse = $this->getMock('AlaroxFramework\\utils\\ObjetReponse');
+        $restClient = $this->getMock('AlaroxFramework\\utils\restclient\\RestClient', array('executerRequete'));
+
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('executeRequest');
+        $method->setAccessible(true);
+
+        $restClient->expects($this->once())
+            ->method('executerRequete')
+            ->with('remote', $objetRequete)
+            ->will($this->returnValue($objetReponse));
+
+        $this->_genericCtrl->setRestClient($restClient);
+
+        $this->assertSame($objetReponse, $method->invokeArgs($this->_genericCtrl, array('remote', $objetRequete)));
     }
 }
