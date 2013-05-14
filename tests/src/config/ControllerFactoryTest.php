@@ -17,7 +17,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testSetCtrls()
     {
-        $this->_ctrlFactory->setListControllers(array('Controller', 'Controller2'));
+        $this->_ctrlFactory->setListControllers(array('Controller', 'Controller2'), array());
 
         $this->assertAttributeCount(2, '_listControllers', $this->_ctrlFactory);
         $this->assertAttributeContainsOnly('closure', '_listControllers', $this->_ctrlFactory);
@@ -28,7 +28,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetCtrlsArray()
     {
-        $this->_ctrlFactory->setListControllers(9);
+        $this->_ctrlFactory->setListControllers(9, array());
     }
 
     public function testRestClient()
@@ -50,13 +50,22 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCall()
     {
-        $this->_ctrlFactory->setListControllers(array('\\Tests\\fakecontrollers\\TestCtrl'));
+        $this->_ctrlFactory->setListControllers(array('\\Tests\\fakecontrollers\\TestCtrl'), array('postVar' => 'value'));
         $this->_ctrlFactory->setRestClient($this->getMock('AlaroxFramework\utils\restclient\RestClient'));
 
         $this->assertInstanceOf(
             '\\Tests\\fakecontrollers\\TestCtrl',
-            $this->_ctrlFactory->{'testctrl'}(array())
+            $testctrl = $this->_ctrlFactory->{'testctrl'}(array('some' => 'param'))
         );
+
+        $class = new \ReflectionClass('\\Tests\\fakecontrollers\\TestCtrl');
+        $methodVar = $class->getMethod('getVariablesRequete');
+        $methodVar->setAccessible(true);
+        $methodPost = $class->getMethod('getVariablesPost');
+        $methodPost->setAccessible(true);
+
+        $this->assertEquals(array('some' => 'param'), $methodVar->invoke($testctrl));
+        $this->assertEquals(array('postVar' => 'value'), $methodPost->invoke($testctrl));
     }
 
     /**

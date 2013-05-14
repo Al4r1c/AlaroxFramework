@@ -48,9 +48,10 @@ class ControllerFactory
 
     /**
      * @param array $plainListControllers
+     * @param array $postVars
      * @throws \InvalidArgumentException
      */
-    public function setListControllers($plainListControllers)
+    public function setListControllers($plainListControllers, $postVars)
     {
         if (!is_array($plainListControllers)) {
             throw new \InvalidArgumentException('Expected parameter 1 plainListControllers to be array.');
@@ -59,11 +60,12 @@ class ControllerFactory
         foreach ($plainListControllers as $unControllerTrouve) {
             $tempNamespacesSepares = explode('\\', $unControllerTrouve);
             $this->_listControllers[strtolower(end($tempNamespacesSepares))] =
-                function ($restClient, $tabVariables) use ($unControllerTrouve) {
+                function ($restClient, $tabVariables) use ($unControllerTrouve, $postVars) {
                     /** @var GenericController $controller */
                     $controller = new $unControllerTrouve();
                     $controller->setRestClient($restClient);
                     $controller->setVariablesRequete($tabVariables);
+                    $controller->setVariablesPost($postVars);
 
                     return $controller;
                 };

@@ -103,7 +103,7 @@ class Conteneur
         $this->_config->setServer($this->getServer());
 
         $this->_config->setCtrlFactory(
-            $this->getControllerFactory($arrayConfiguration['controllersPath'])
+            $this->getControllerFactory($arrayConfiguration['controllersPath'], $_POST)
         );
 
         $this->_config->setRouteMap($this->getRoute($arrayConfiguration['routeFile']));
@@ -316,9 +316,10 @@ class Conteneur
 
     /**
      * @param string $repertoireControlleurs
+     * @param array $postVars
      * @return ControllerFactory
      */
-    private function getControllerFactory($repertoireControlleurs)
+    private function getControllerFactory($repertoireControlleurs, $postVars)
     {
         $ctrlFactory = new ControllerFactory();
         $ctrlFactory->setRestClient($this->_config->getRestClient());
@@ -355,7 +356,7 @@ class Conteneur
             }
         }
 
-        $ctrlFactory->setListControllers($controllers);
+        $ctrlFactory->setListControllers($controllers, $postVars);
 
         return $ctrlFactory;
     }

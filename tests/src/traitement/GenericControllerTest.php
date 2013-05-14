@@ -93,4 +93,27 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($objetReponse, $method->invokeArgs($this->_genericCtrl, array('remote', $objetRequete)));
     }
+
+    public function testVariablesPost()
+    {
+        $this->_genericCtrl->setVariablesPost(array('lets' => 'go'));
+
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('getVariablesPost');
+        $method->setAccessible(true);
+
+        $this->assertEquals(array('lets' => 'go'), $method->invoke($this->_genericCtrl));
+    }
+
+    public function testGetUneVariablePost()
+    {
+        $this->_genericCtrl->setVariablesPost(array('aaa' => 'bbb'));
+
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('getUneVariablePost');
+        $method->setAccessible(true);
+
+        $this->assertEquals('bbb', $method->invokeArgs($this->_genericCtrl, array('aaa')));
+        $this->assertNull($method->invokeArgs($this->_genericCtrl, array('keyNotFound')));
+    }
 }

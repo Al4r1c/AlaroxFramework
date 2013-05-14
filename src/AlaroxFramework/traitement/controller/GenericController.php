@@ -19,6 +19,11 @@ abstract class GenericController
     private $_variablesRequete;
 
     /**
+     * @var array
+     */
+    private $_variablesPost;
+
+    /**
      * @return array
      */
     protected function getVariablesRequete()
@@ -34,6 +39,27 @@ abstract class GenericController
     {
         if (array_key_exists($clef, $this->_variablesRequete)) {
             return $this->_variablesRequete[$clef];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    protected function getVariablesPost()
+    {
+        return $this->_variablesPost;
+    }
+
+    /**
+     * @param string $clef
+     * @return string|null
+     */
+    protected function getUneVariablePost($clef)
+    {
+        if (array_key_exists($clef, $this->_variablesPost)) {
+            return $this->_variablesPost[$clef];
         } else {
             return null;
         }
@@ -58,6 +84,14 @@ abstract class GenericController
         }
 
         $this->_variablesRequete = $tabVariables;
+    }
+
+    /**
+     * @param array $tabPostVars
+     */
+    public function setVariablesPost($tabPostVars)
+    {
+        $this->_variablesPost = $tabPostVars;
     }
 
     /**
