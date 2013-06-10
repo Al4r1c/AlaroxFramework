@@ -103,7 +103,7 @@ class Conteneur
         $this->_config->setServer($this->getServer());
 
         $this->_config->setCtrlFactory(
-            $this->getControllerFactory($arrayConfiguration['controllersPath'], $_POST)
+            $this->getControllerFactory($arrayConfiguration['controllersPath'], $_POST, $_FILES)
         );
 
         $this->_config->setRouteMap($this->getRoute($arrayConfiguration['routeFile']));
@@ -317,9 +317,10 @@ class Conteneur
     /**
      * @param string $repertoireControlleurs
      * @param array $postVars
+     * @param array $filesVars
      * @return ControllerFactory
      */
-    private function getControllerFactory($repertoireControlleurs, $postVars)
+    private function getControllerFactory($repertoireControlleurs, $postVars, $filesVars)
     {
         $ctrlFactory = new ControllerFactory();
         $ctrlFactory->setRestClient($this->_config->getRestClient());
@@ -354,6 +355,10 @@ class Conteneur
                     }
                 }
             }
+        }
+
+        if (!empty($filesVars)) {
+            $postVars['uploadedFile'] = $filesVars;
         }
 
         $ctrlFactory->setListControllers($controllers, $postVars);
@@ -487,9 +492,9 @@ class Conteneur
 
         if ($templateConfig->isCacheEnabled() === true) {
             $options = array(
-                'cache' => $templateConfig->getTemplateDirectory() . '/cache/',
-                'auto_reload' => true
-            ) + $options;
+                    'cache' => $templateConfig->getTemplateDirectory() . '/cache/',
+                    'auto_reload' => true
+                ) + $options;
         }
 
         $twigEnv = new \Twig_Environment($loader, $options);
