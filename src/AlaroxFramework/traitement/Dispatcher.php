@@ -129,7 +129,7 @@ class Dispatcher
     private function dispatchAvecControlleur()
     {
         if (strcmp($this->_uriDemandee, '/') == 0) {
-            $controllerParDefaut =  $this->_routeMap->getRouteParDefaut();
+            $controllerParDefaut = $this->_routeMap->getRouteParDefaut();
 
             $nomClasseController = $controllerParDefaut->getController();
             $actionAEffectuer = $controllerParDefaut->getDefaultAction();
@@ -178,15 +178,18 @@ class Dispatcher
     {
         foreach ($this->_routeMap->getRoutes() as $uneRoute) {
             if (startsWith($this->_uriDemandee, ($uri = $uneRoute->getUri()))) {
-                $route = $uneRoute;
-                break;
+                $uriSansBaseDuMapping = rtrim(substr($this->_uriDemandee, strlen($uri)), '/');
+
+                if ($uriSansBaseDuMapping == '' || startsWith($uriSansBaseDuMapping, '/')) {
+                    $route = $uneRoute;
+                    break;
+                }
             }
         }
 
-        if (isset($route)) {
+        if (isset($route) && isset($uriSansBaseDuMapping)) {
             $nomClasseController = $route->getController();
 
-            $uriSansBaseDuMapping = rtrim(substr($this->_uriDemandee, strlen($uri)), '/');
             $actionAEffectuer = $this->recupererAction($uriSansBaseDuMapping, $route);
 
             if (!is_null($actionAEffectuer)) {
@@ -235,7 +238,7 @@ class Dispatcher
                     $actionTrouvee = true;
                 } elseif (strpos($patternUri, '*') !== false &&
                     count($tabPatternUri = array_filter(explode('/', $patternUri), 'strlen')) ==
-                        count($tabUriSansBaseDuMapping)
+                    count($tabUriSansBaseDuMapping)
                 ) {
                     $actionTrouvee = true;
 
@@ -244,10 +247,10 @@ class Dispatcher
                             if (
                                 (strcmp($unePartiePatternUri, $tabUriSansBaseDuMapping[$clef]) == 0) ||
                                 (strpos($unePartiePatternUri, '*') !== false &&
-                                preg_match(
-                                    '#^' . str_replace('*', '[a-zA-Z0-9]+', $unePartiePatternUri) . '$#',
-                                    $tabUriSansBaseDuMapping[$clef]
-                                ) == 1)
+                                    preg_match(
+                                        '#^' . str_replace('*', '[a-zA-Z0-9]+', $unePartiePatternUri) . '$#',
+                                        $tabUriSansBaseDuMapping[$clef]
+                                    ) == 1)
                             ) {
                                 continue;
                             }

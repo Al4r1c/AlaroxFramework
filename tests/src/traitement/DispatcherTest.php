@@ -306,6 +306,50 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->_dispatcher->executerActionRequise();
     }
 
+    public function testExecuterUriNonVideUriSansBaseVideNePasConfondreSiCommencePareil()
+    {
+        $route =
+            $this->getMock(
+                '\AlaroxFramework\cfg\route\Route',
+                array('getUri')
+            );
+        $route2 =
+            $this->getMock(
+                '\AlaroxFramework\cfg\route\Route',
+                array('getUri', 'getController', 'getDefaultAction')
+            );
+        $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
+
+        $route->expects($this->once())
+        ->method('getUri')
+        ->will($this->returnValue('/uri'));
+
+        $route2->expects($this->once())
+        ->method('getUri')
+        ->will($this->returnValue('/urilongue'));
+
+        $route2->expects($this->once())
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
+
+        $route2->expects($this->once())
+        ->method('getDefaultAction')
+        ->will($this->returnValue('indexAction'));
+
+        $routeMap->expects($this->once())
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route, $route2)));
+
+        $routeMap->expects($this->once())
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
+
+
+        $this->setFakeInfos('/urilongue', $routeMap);
+
+        $this->assertEquals('THIS IS INDEX ACTION', $this->_dispatcher->executerActionRequise());
+    }
+
     public function testExecuterUriNonVideUriSansBaseNonVideMappingStatiqueTrouve()
     {
         $route =
