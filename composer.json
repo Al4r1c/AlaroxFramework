@@ -33,7 +33,7 @@
 	"require": {
 		"php": ">=5.4.0",
 		"alarox/AlaroxClassLoader": "v1.0",
-		"alarox/AlaroxFileManager": "v0.3",
+		"alarox/AlaroxFileManager": "v0.4",
 		"twig/twigi18n": "v1.1",
 		"twig/twig": "v1.13.1",
 		"mikey179/vfsStream": "v1.2.0"
