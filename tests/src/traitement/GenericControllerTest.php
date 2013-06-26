@@ -19,6 +19,7 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
     public function testInstance()
     {
         $this->assertInstanceOf('AlaroxFramework\\traitement\\controller\\GenericController', $this->_genericCtrl);
+        $this->assertAttributeInstanceOf('AlaroxFileManager\\AlaroxFile', '_alaroxFile', $this->_genericCtrl);
     }
 
     public function testRestClient()
@@ -116,4 +117,14 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bbb', $method->invokeArgs($this->_genericCtrl, array('aaa')));
         $this->assertNull($method->invokeArgs($this->_genericCtrl, array('keyNotFound')));
     }
+
+    public function testGetFile()
+    {
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('getFile');
+        $method->setAccessible(true);
+
+        $this->assertInstanceOf('AlaroxFileManager\\FileManager\\File', $method->invokeArgs($this->_genericCtrl, array('myFile.txt')));
+    }
+
 }

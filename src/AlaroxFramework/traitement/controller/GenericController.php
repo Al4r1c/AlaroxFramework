@@ -1,10 +1,12 @@
 <?php
 namespace AlaroxFramework\traitement\controller;
 
+use AlaroxFileManager\AlaroxFile;
+use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
-use AlaroxFramework\utils\View;
 use AlaroxFramework\utils\restclient\RestClient;
+use AlaroxFramework\utils\View;
 
 abstract class GenericController
 {
@@ -22,6 +24,16 @@ abstract class GenericController
      * @var array
      */
     private $_variablesPost;
+
+    /**
+     * @var AlaroxFile
+     */
+    private $_alaroxFile;
+
+    public function __construct()
+    {
+        $this->_alaroxFile = new AlaroxFile();
+    }
 
     /**
      * @return array
@@ -63,6 +75,15 @@ abstract class GenericController
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param $filePath
+     * @return File
+     */
+    protected function getFile($filePath)
+    {
+        return $this->_alaroxFile->getFile($filePath);
     }
 
     /**
