@@ -188,25 +188,10 @@ class Dispatcher
         }
 
         if (isset($route) && isset($uriSansBaseDuMapping)) {
-            $nomClasseController = $route->getController();
+            if (!is_null($actionAEffectuerEtVariable = $this->recupererAction($uriSansBaseDuMapping, $route))) {
+                array_unshift($actionAEffectuerEtVariable, $route->getController());
 
-            $actionAEffectuer = $this->recupererAction($uriSansBaseDuMapping, $route);
-
-            if (!is_null($actionAEffectuer)) {
-                if (!is_null($pattern = $route->getPattern())) {
-                    $tabVariablesRequete = $this->recupererVariablesDepuisPattern(
-                        $pattern,
-                        array_filter(explode('/', $uriSansBaseDuMapping), 'strlen')
-                    );
-
-                    foreach ($tabVariablesRequete as $pattern => $variable) {
-                        $actionAEffectuer = str_replace('$' . $pattern . '?', $variable, $actionAEffectuer);
-                    }
-
-                    return array($nomClasseController, $actionAEffectuer, $tabVariablesRequete);
-                } else {
-                    return array($nomClasseController, $actionAEffectuer, array());
-                }
+                return $actionAEffectuerEtVariable;
             } else {
                 throw new \Exception(sprintf('No action found for uri "%s".', $this->_uriDemandee));
             }
@@ -226,18 +211,20 @@ class Dispatcher
 
         if (empty($uriSansBaseDuMapping)) {
             if (!is_null($actionDefaut = $route->getDefaultAction())) {
-                $actionAEffectuer = $actionDefaut;
+                $actionAEffectuer = array($actionDefaut, array());
             }
         } elseif (($mappingRouteTrouvee = $route->getMapping()) > 0) {
             $tabUriSansBaseDuMapping = array_filter(explode('/', $uriSansBaseDuMapping), 'strlen');
 
             foreach ($mappingRouteTrouvee as $patternUri => $actionPourPatternUri) {
+                $patternUriWithModifier = preg_replace('#\$[a-z0-9]+\?#', '*', $patternUri);
+
                 $actionTrouvee = false;
 
-                if (strcmp($patternUri, $uriSansBaseDuMapping) == 0) {
+                if (strcmp($patternUriWithModifier, $uriSansBaseDuMapping) == 0) {
                     $actionTrouvee = true;
-                } elseif (strpos($patternUri, '*') !== false &&
-                    count($tabPatternUri = array_filter(explode('/', $patternUri), 'strlen')) ==
+                } elseif (strpos($patternUriWithModifier, '*') !== false &&
+                    count($tabPatternUri = array_filter(explode('/', $patternUriWithModifier), 'strlen')) ==
                     count($tabUriSansBaseDuMapping)
                 ) {
                     $actionTrouvee = true;
@@ -261,7 +248,11 @@ class Dispatcher
                 }
 
                 if ($actionTrouvee === true) {
-                    $actionAEffectuer = $actionPourPatternUri;
+                    $actionAEffectuer = array($actionPourPatternUri,
+                        $this->recupererVariablesDepuisPattern(
+                            $patternUri,
+                            array_filter(explode('/', $uriSansBaseDuMapping), 'strlen')
+                        ));
                     break;
                 }
             }
@@ -281,10 +272,6 @@ class Dispatcher
         $tabPattern = explode('/', $pattern);
 
         foreach ($uriFractionneTableau as $clef => $unBoutUri) {
-            if (!array_key_exists($clef, $tabPattern)) {
-                break;
-            }
-
             if (preg_match_all('#\$([a-zA-Z0-9]+)\?#', $tabPattern[$clef], $tabAllVariablesPattern) > 0) {
                 $patternGeneriqueCorrespondant =
                     '#^' . preg_replace('#\$([a-zA-Z0-9]+)\?#', '([a-zA-Z0-9]+)', $tabPattern[$clef]) . '$#';

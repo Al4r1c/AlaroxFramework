@@ -28,13 +28,15 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory', array('__call'));
 
         $ctrlFactory->expects($this->once())
-            ->method('__call')
-            ->with(
+        ->method('__call')
+        ->with(
                 $this->equalTo('testctrl'),
                 $this->callback(
                     function ($o) use ($tabVariablesAttendus) {
-                        foreach ($tabVariablesAttendus as $uneVariableAttendu) {
-                            if (!array_key_exists($uneVariableAttendu, $o[0])) {
+                        foreach ($tabVariablesAttendus as $clefVariableAttendues => $uneVariableAttendue) {
+                            if (!array_key_exists($clefVariableAttendues, $o[0])) {
+                                return false;
+                            } elseif ($o[0][$clefVariableAttendues] != $uneVariableAttendue) {
                                 return false;
                             }
                         }
@@ -43,7 +45,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
                     }
                 )
             )
-            ->will($this->returnValue(new TestCtrl()));
+        ->will($this->returnValue(new TestCtrl()));
 
         $this->_dispatcher->setUriDemandee($uri);
         $this->_dispatcher->setRouteMap($routeMap);
@@ -79,20 +81,20 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             );
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue($nomMethode));
+        ->method('getDefaultAction')
+        ->will($this->returnValue($nomMethode));
 
         $routeMap->expects($this->once())
-            ->method('getRouteParDefaut')
-            ->will($this->returnValue($route));
+        ->method('getRouteParDefaut')
+        ->will($this->returnValue($route));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
         return $routeMap;
     }
@@ -181,8 +183,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     {
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory', array('__call'));
         $ctrlFactory->expects($this->once())
-            ->method('__call')
-            ->will($this->throwException(new \Exception()));
+        ->method('__call')
+        ->will($this->throwException(new \Exception()));
 
         $this->_dispatcher->setUriDemandee('/');
         $this->_dispatcher->setRouteMap($this->getDefaultRouteMap());
@@ -220,12 +222,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array()));
+        ->method('getRoutes')
+        ->will($this->returnValue(array()));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
         $this->setFakeInfosForException('/uridemandee', $routeMap);
 
@@ -243,24 +245,24 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $route->expects($this->once())
-            ->method('getUri')
-            ->will($this->returnValue('/uridemandee'));
+        ->method('getUri')
+        ->will($this->returnValue('/uridemandee'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue('indexAction'));
+        ->method('getDefaultAction')
+        ->will($this->returnValue('indexAction'));
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfos('/uridemandee', $routeMap);
@@ -276,29 +278,25 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $route =
             $this->getMock(
                 '\AlaroxFramework\cfg\route\Route',
-                array('getUri', 'getController', 'getDefaultAction')
+                array('getUri', 'getDefaultAction')
             );
         $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
 
         $route->expects($this->once())
-            ->method('getUri')
-            ->will($this->returnValue('/uridemandee'));
+        ->method('getUri')
+        ->will($this->returnValue('/uridemandee'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
-
-        $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue(null));
+        ->method('getDefaultAction')
+        ->will($this->returnValue(null));
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfosForException('/uridemandee', $routeMap);
@@ -361,16 +359,16 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
+        ->method('getMapping')
+        ->will(
                 $this->returnValue(
                     array(
                         '/unevariable' => 'myActionFirst'
@@ -380,12 +378,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfos('/monuri/unevariable', $routeMap);
@@ -404,16 +402,16 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
+        ->method('getMapping')
+        ->will(
                 $this->returnValue(
                     array(
                         '/*' => 'myActionSecond'
@@ -422,12 +420,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             );
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfos('/monuri/unevariable', $routeMap);
@@ -446,16 +444,16 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
+        ->method('getMapping')
+        ->will(
                 $this->returnValue(
                     array(
                         '/uri/*' => 'myActionSecond'
@@ -464,12 +462,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             );
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfos('/monuri/uri/everything', $routeMap);
@@ -485,22 +483,18 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $route =
             $this->getMock(
                 '\AlaroxFramework\cfg\route\Route',
-                array('getUri', 'getController', 'getMapping')
+                array('getUri', 'getMapping')
             );
         $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
 
 
         $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
-
-        $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
+        ->method('getMapping')
+        ->will(
                 $this->returnValue(
                     array(
                         '/uri/*' => 'myActionSecond'
@@ -509,12 +503,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             );
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
         $this->setFakeInfosForException('/monuri/notfound/everything', $routeMap);
 
@@ -529,22 +523,18 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $route =
             $this->getMock(
                 '\AlaroxFramework\cfg\route\Route',
-                array('getUri', 'getController', 'getMapping')
+                array('getUri', 'getMapping')
             );
         $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
 
 
         $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
-
-        $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
+        ->method('getMapping')
+        ->will(
                 $this->returnValue(
                     array(
                         '/foundway/*' => 'myActionSecond'
@@ -553,12 +543,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             );
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfosForException('/monuri/foundway/everything/toomuchthere', $routeMap);
@@ -566,125 +556,27 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->_dispatcher->executerActionRequise();
     }
 
-    public function testExecuterUriNonVideUriSansBaseNonVideMappingUtiliseVariable()
-    {
-        $route =
-            $this->getMock(
-                '\AlaroxFramework\cfg\route\Route',
-                array('getUri', 'getController', 'getPattern', 'getMapping')
-            );
-        $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
-
-
-        $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
-
-        $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
-
-        $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
-                $this->returnValue(
-                    array(
-                        '/*' => '$first?'
-                    )
-                )
-            );
-
-        $route->expects($this->once())
-            ->method('getPattern')
-            ->will($this->returnValue('/$first?/$second?/third'));
-
-
-        $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
-
-        $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
-
-
-        $this->setFakeInfos('/monuri/myActionFirst', $routeMap, array('first'));
-
-        $this->assertEquals('myFirst ACTION', $this->_dispatcher->executerActionRequise());
-    }
-
-    public function testExecuterUriNonVideUriSansBaseNonVideMappingUtiliseVariablePatternParticulier()
-    {
-        $route =
-            $this->getMock(
-                '\AlaroxFramework\cfg\route\Route',
-                array('getUri', 'getController', 'getPattern', 'getMapping')
-            );
-        $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
-
-
-        $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
-
-        $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
-
-        $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
-                $this->returnValue(
-                    array(
-                        '/*-*_*' => '$first?'
-                    )
-                )
-            );
-
-        $route->expects($this->once())
-            ->method('getPattern')
-            ->will($this->returnValue('/$index?-$first?_$second?'));
-
-
-        $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
-
-        $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
-
-
-        $this->setFakeInfos(
-            '/monuri/indexAction-myActionFirst_myActionSecond',
-            $routeMap,
-            array('index', 'first', 'second')
-        );
-
-        $this->assertEquals('myFirst ACTION', $this->_dispatcher->executerActionRequise());
-    }
-
     public function testExecuterUriNonVideUriSansBaseNonVideMappingPlusLongQuePattern()
     {
         $route =
             $this->getMock(
                 '\AlaroxFramework\cfg\route\Route',
-                array('getUri', 'getController', 'getPattern', 'getMapping')
+                array('getUri', 'getController', 'getMapping')
             );
         $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
 
 
         $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
+        ->method('getMapping')
+        ->will(
                 $this->returnValue(
                     array(
                         '/*/*/*' => 'myActionFirst'
@@ -692,21 +584,64 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
                 )
             );
 
+
+        $routeMap->expects($this->once())
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
+
+        $routeMap->expects($this->once())
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
+
+
+        $this->setFakeInfos('/monuri/seg1/seg2/seg3', $routeMap);
+
+        $this->assertEquals('myFirst ACTION', $this->_dispatcher->executerActionRequise());
+    }
+
+    public function testExecuterUriNonVideUriSansBaseNonVideRecupererVariableDepuisPatternDuMapping()
+    {
+        $route =
+            $this->getMock(
+                '\AlaroxFramework\cfg\route\Route',
+                array('getUri', 'getController', 'getMapping')
+            );
+        $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
+
+
+        $route->expects($this->any())
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
+
         $route->expects($this->once())
-            ->method('getPattern')
-            ->will($this->returnValue('/$first?'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
+
+        $route->expects($this->once())
+        ->method('getMapping')
+        ->will(
+                $this->returnValue(
+                    array(
+                        '/$first?/$second?/$third?' => 'myActionFirst'
+                    )
+                )
+            );
 
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
-        $this->setFakeInfos('/monuri/seg1/seg2/seg3', $routeMap, array('first'));
+        $this->setFakeInfos(
+            '/monuri/seg1/seg2/seg3',
+            $routeMap,
+            array('first' => 'seg1', 'second' => 'seg2', 'third' => 'seg3')
+        );
 
         $this->assertEquals('myFirst ACTION', $this->_dispatcher->executerActionRequise());
     }
@@ -720,22 +655,18 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $route =
             $this->getMock(
                 '\AlaroxFramework\cfg\route\Route',
-                array('getUri', 'getController', 'getMapping')
+                array('getUri', 'getMapping')
             );
         $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
 
 
         $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
-
-        $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
+        ->method('getMapping')
+        ->will(
                 $this->returnValue(
                     array(
                         '/urifirst' => 'myActionFirst'
@@ -744,12 +675,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             );
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfosForException('/monuri/nothing', $routeMap);
@@ -763,8 +694,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array('/pageStatique')));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array('/pageStatique')));
 
 
         $this->setFakeInfosForException('/pageStatique/nothing/file', $routeMap);
@@ -782,8 +713,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array('/pageStatique')));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array('/pageStatique')));
 
 
         $this->setFakeInfosForException('/pageStatique', $routeMap);
@@ -802,16 +733,16 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $route->expects($this->any())
-            ->method('getUri')
-            ->will($this->returnValue('/monuri'));
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
-            ->method('getMapping')
-            ->will(
+        ->method('getMapping')
+        ->will(
                 $this->returnValue(
                     array(
                         '/unevariable' => 'myActionFirst'
@@ -821,12 +752,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $routeMap->expects($this->once())
-            ->method('getRoutes')
-            ->will($this->returnValue(array($route)));
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfos('/fr/monuri/unevariable', $routeMap, array(), true);
@@ -844,20 +775,20 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             );
 
         $route->expects($this->once())
-            ->method('getController')
-            ->will($this->returnValue('testctrl'));
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
 
         $route->expects($this->once())
-            ->method('getDefaultAction')
-            ->will($this->returnValue('indexAction'));
+        ->method('getDefaultAction')
+        ->will($this->returnValue('indexAction'));
 
         $routeMap->expects($this->once())
-            ->method('getRouteParDefaut')
-            ->will($this->returnValue($route));
+        ->method('getRouteParDefaut')
+        ->will($this->returnValue($route));
 
         $routeMap->expects($this->once())
-            ->method('getStaticAliases')
-            ->will($this->returnValue(array()));
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
 
 
         $this->setFakeInfos('/fr/', $routeMap, array(), true);

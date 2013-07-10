@@ -144,10 +144,6 @@ class RouteMap
             $route->setUri($uri);
             $route->setController($uneRoute['controller']);
 
-            if (isset($uneRoute['pattern'])) {
-                $route->setPattern($uneRoute['pattern']);
-            }
-
             if (isset($uneRoute['defaultaction'])) {
                 $route->setDefaultAction($uneRoute['defaultaction']);
             }

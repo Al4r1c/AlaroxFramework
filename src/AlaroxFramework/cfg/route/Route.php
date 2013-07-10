@@ -16,11 +16,6 @@ class Route
     /**
      * @var string
      */
-    private $_pattern;
-
-    /**
-     * @var string
-     */
     private $_defaultAction;
 
     /**
@@ -50,14 +45,6 @@ class Route
     public function getMapping()
     {
         return $this->_mapping;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPattern()
-    {
-        return $this->_pattern;
     }
 
     /**
@@ -105,23 +92,6 @@ class Route
         }
 
         $this->_mapping = $mapping;
-    }
-
-    /**
-     * @param string $pattern
-     * @throws \InvalidArgumentException
-     */
-    public function setPattern($pattern)
-    {
-        if (!is_string($pattern)) {
-            throw new \InvalidArgumentException('Expected parameter 1 pattern to be string.');
-        }
-
-        if (!startsWith($pattern = preg_replace('#(\/)\1+#', '$1', $pattern), '/')) {
-            $pattern = '/' . $pattern;
-        }
-
-        $this->_pattern = $pattern;
     }
 
     /**

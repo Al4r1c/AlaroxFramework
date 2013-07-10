@@ -68,38 +68,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->_route->setController(array());
     }
 
-    public function testPattern()
-    {
-        $pattern = '/$action?';
-        $this->_route->setPattern($pattern);
-
-        $this->assertEquals('/$action?', $this->_route->getPattern());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testPatterString()
-    {
-        $this->_route->setPattern(array());
-    }
-
-    public function testPatternAjouterSlashSiNonPresent()
-    {
-        $pattern = 'pattern';
-        $this->_route->setPattern($pattern);
-
-        $this->assertEquals('/pattern', $this->_route->getPattern());
-    }
-
-    public function testPatternFormalise()
-    {
-        $pattern = '/$action?////slashed//$next?';
-        $this->_route->setPattern($pattern);
-
-        $this->assertEquals('/$action?/slashed/$next?', $this->_route->getPattern());
-    }
-
     public function testDefaultAction()
     {
         $actionDef = 'actionDef';

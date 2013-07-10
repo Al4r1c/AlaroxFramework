@@ -94,7 +94,6 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
                         'RouteMap' => array(
                             '/routeTo' => array(
                                 'controller' => 'ctrl',
-                                'pattern' => 'pattern',
                                 'defaultAction' => 'defAct',
                                 'mapping' => array())
                         ),
