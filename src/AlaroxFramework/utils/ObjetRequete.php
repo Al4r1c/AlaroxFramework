@@ -82,7 +82,7 @@ class ObjetRequete
             throw new \InvalidArgumentException('Expected string for uri.');
         }
 
-        if (!startsWith($uri = rtrim(preg_replace('#(\/)\1+#', '$1', $uri), '/'), '/')) {
+        if (!startsWith($uri = preg_replace('#(\/)\1+#', '$1', $uri), '/')) {
             $uri = '/' . $uri;
         }
 

@@ -54,7 +54,7 @@ class ObjetRequeteTest extends \PHPUnit_Framework_TestCase
     {
         $this->_objetRequete->setUri('mon/////uri//////');
 
-        $this->assertEquals('/mon/uri', $this->_objetRequete->getUri());
+        $this->assertEquals('/mon/uri/', $this->_objetRequete->getUri());
     }
 
     /**
