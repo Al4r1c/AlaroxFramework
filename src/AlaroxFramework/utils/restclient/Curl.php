@@ -16,6 +16,7 @@ class Curl
     public function __construct()
     {
         $this->_curl = curl_init();
+
         curl_setopt($this->_curl, CURLOPT_TIMEOUT, 6);
         curl_setopt($this->_curl, CURLOPT_RETURNTRANSFER, true);
     }
@@ -50,6 +51,8 @@ class Curl
 
     public function executer()
     {
+        $this->ajouterUnHeader('Expect', ' ');
+
         $this->ajouterOption(CURLOPT_HTTPHEADER, $this->_headersOptions);
 
         $resultat = curl_exec($this->_curl);
