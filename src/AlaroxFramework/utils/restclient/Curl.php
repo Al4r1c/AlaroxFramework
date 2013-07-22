@@ -62,6 +62,8 @@ class Curl
 
     public function __destruct()
     {
-        curl_close($this->_curl);
+        if(is_resource($this->_curl)) {
+            curl_close($this->_curl);
+        }
     }
 }
