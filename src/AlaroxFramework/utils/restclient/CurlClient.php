@@ -89,6 +89,8 @@ class CurlClient
             }
         }
 
+        $this->_curl->initialize();
+
         $donneesAEnvoyer = '';
         $uri = $objetRequete->getUri();
         $dateRequeteGmt = gmdate("D, d M Y H:i:s T", $this->_time);

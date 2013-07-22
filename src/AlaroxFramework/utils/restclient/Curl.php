@@ -13,7 +13,7 @@ class Curl
      */
     private $_headersOptions = array();
 
-    public function __construct()
+    public function initialize()
     {
         $this->_curl = curl_init();
 
