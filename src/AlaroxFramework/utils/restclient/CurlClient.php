@@ -35,8 +35,6 @@ class CurlClient
         }
 
         $this->_curl = $curl;
-        $this->_curl->ajouterOption(CURLOPT_TIMEOUT, 6);
-        $this->_curl->ajouterOption(CURLOPT_RETURNTRANSFER, true);
     }
 
     /**
