@@ -26,6 +26,11 @@ abstract class GenericController
     private $_variablesPost;
 
     /**
+     * @var array
+     */
+    private $_beforeGenerateView = array();
+
+    /**
      * @var AlaroxFile
      */
     private $_alaroxFile;
@@ -116,6 +121,15 @@ abstract class GenericController
     }
 
     /**
+     * @param string $clef
+     * @param mixed $value
+     */
+    public function addBeforeGenerateViewVariables($clef, $value)
+    {
+        $this->_beforeGenerateView[$clef] = $value;
+    }
+
+    /**
      * @param string $templateName
      * @return View
      */
@@ -123,7 +137,13 @@ abstract class GenericController
     {
         $view = new View();
 
-        return $view->renderView($templateName);
+        $view->renderView($templateName);
+
+        foreach ($this->_beforeGenerateView as $key => $uneVariable) {
+            $view->with($key, $uneVariable);
+        }
+
+        return $view;
     }
 
     /**

@@ -127,4 +127,12 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('AlaroxFileManager\\FileManager\\File', $method->invokeArgs($this->_genericCtrl, array('myFile.txt')));
     }
 
+    public function testAddPostViewVariable() {
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('addBeforeGenerateViewVariables');
+        $method->setAccessible(true);
+        $method->invokeArgs($this->_genericCtrl, array('var', 'value'));
+
+        $this->testGenerateView();
+    }
 }
