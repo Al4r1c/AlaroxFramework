@@ -141,6 +141,11 @@ class Dispatcher
         try {
             $controlleur =
                 $this->_controllerFactory->{$nomClasseController}($tabVariablesRequete);
+
+            if (method_exists($controlleur, 'beforeExecuteAction') === true) {
+                $controlleur->beforeExecuteAction();
+            }
+
         } catch (\Exception $uneException) {
             throw new \Exception(sprintf(
                 'Can\'t load controller "%s" for uri "%s": %s.',
