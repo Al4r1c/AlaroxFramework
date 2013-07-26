@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_NOTICE);
 
 include_once(__DIR__ . '/../libraries/autoload.php');
 

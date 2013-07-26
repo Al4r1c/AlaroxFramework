@@ -155,4 +155,14 @@ abstract class GenericController
     {
         return $this->_restClient->executerRequete($serverName, $requestObject);
     }
+
+    /**
+     * @param string $url
+     * @throws \RuntimeException
+     */
+    protected function redirectToUrl($url)
+    {
+        header('Location: ' . $url);
+        throw new \RuntimeException();
+    }
 }

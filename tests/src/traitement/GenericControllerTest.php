@@ -13,7 +13,7 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_genericCtrl =
-            $this->getMockForAbstractClass('AlaroxFramework\\traitement\\controller\\GenericController');
+            $this->getMockForAbstractClass('\\AlaroxFramework\\traitement\\controller\\GenericController');
     }
 
     public function testInstance()
@@ -134,5 +134,20 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $method->invokeArgs($this->_genericCtrl, array('var', 'value'));
 
         $this->testGenerateView();
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @expectedException \RuntimeException
+     */
+    public function testRedirectUrl() {
+        $class = new \ReflectionClass('\\AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('redirectToUrl');
+        $method->setAccessible(true);
+        $method->invokeArgs($this->_genericCtrl, array('http://google.fr/'));
+
+        $headersList = xdebug_get_headers();
+        $this->assertContains('Location: http://google.fr/', $headersList);
+        $this->assertCount(1, $headersList);
     }
 }
