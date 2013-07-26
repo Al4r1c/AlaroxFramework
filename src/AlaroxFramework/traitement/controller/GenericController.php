@@ -124,7 +124,7 @@ abstract class GenericController
      * @param string $clef
      * @param mixed $value
      */
-    public function addBeforeGenerateViewVariables($clef, $value)
+    protected function addBeforeGenerateViewVariables($clef, $value)
     {
         $this->_beforeGenerateView[$clef] = $value;
     }
