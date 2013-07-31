@@ -19,6 +19,8 @@ use AlaroxFramework\exceptions\ErreurHandler;
 use AlaroxFramework\reponse\ReponseManager;
 use AlaroxFramework\reponse\TemplateManager;
 use AlaroxFramework\traitement\Dispatcher;
+use AlaroxFramework\utils\compressor\Compressor;
+use AlaroxFramework\utils\compressor\CompressorFactory;
 use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\parser\Parser;
 use AlaroxFramework\utils\parser\ParserFactory;
@@ -172,7 +174,7 @@ class Conteneur
 
     /**
      * @param array $tabRestServer
-     * @return RestServerManager
+     * @return RestServer
      */
     private function getRestServerManager($tabRestServer)
     {
@@ -218,6 +220,10 @@ class Conteneur
             foreach ($unRestServer['parameters'] as $clefParam => $unParametre) {
                 $restServer->addParametreUri($clefParam, $unParametre);
             }
+        }
+
+        if(isset($unRestServer['compression'])) {
+            $restServer->setCompressor($unRestServer['compression']);
         }
 
         return $restServer;
@@ -416,6 +422,7 @@ class Conteneur
 
         $curlClient->setCurl(new Curl());
         $curlClient->setParser($this->getParser());
+        $curlClient->setCompressor($this->getCompressor());
         $curlClient->setTime(time());
 
         return $curlClient;
@@ -431,6 +438,18 @@ class Conteneur
         $parser->setParserFactory(new ParserFactory());
 
         return $parser;
+    }
+
+    /**
+     * @return Compressor
+     */
+    private function getCompressor()
+    {
+        $compressor = new Compressor();
+
+        $compressor->setCompressorFactory(new CompressorFactory());
+
+        return $compressor;
     }
 
     /**

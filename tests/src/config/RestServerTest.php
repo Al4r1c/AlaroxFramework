@@ -69,5 +69,10 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('clef', $this->_restServer->getParametresUri());
         $this->assertEquals('valeur', $this->_restServer->getParametresUri()['clef']);
     }
-}
 
+    public function testSetCompressor() {
+        $this->_restServer->setCompressor('gzip');
+
+        $this->assertEquals('gzip', $this->_restServer->getCompressor());
+    }
+}

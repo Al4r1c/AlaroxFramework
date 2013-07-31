@@ -1,6 +1,7 @@
 <?php
 namespace AlaroxFramework\cfg\rest;
 
+use AlaroxFramework\utils\compressor\AbstractCompressor;
 use AlaroxFramework\utils\Tools;
 
 class RestServer
@@ -24,6 +25,11 @@ class RestServer
      * @var array
      */
     private $_parametresUri = array();
+
+    /**
+     * @var string
+     */
+    private $_compressor;
 
     /**
      * @return string
@@ -66,6 +72,14 @@ class RestServer
     }
 
     /**
+     * @return string
+     */
+    public function getCompressor()
+    {
+        return $this->_compressor;
+    }
+
+    /**
      * @param string $formatEnvoi
      * @throws \InvalidArgumentException
      */
@@ -102,6 +116,14 @@ class RestServer
         }
 
         $this->_url = $url;
+    }
+
+    /**
+     * @param string $compressor
+     */
+    public function setCompressor($compressor)
+    {
+        $this->_compressor = $compressor;
     }
 
     /**

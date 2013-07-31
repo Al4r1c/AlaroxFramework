@@ -50,6 +50,21 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $this->_curlClient->setParser('exception');
     }
 
+    public function testSetCompressor()
+    {
+        $this->_curlClient->setCompressor($compressor = $this->getMock('\AlaroxFramework\utils\compressor\Compressor'));
+
+        $this->assertAttributeSame($compressor, '_compressor', $this->_curlClient);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetCompressorErrone()
+    {
+        $this->_curlClient->setCompressor('exception');
+    }
+
     public function testSetTime()
     {
         $this->_curlClient->setTime(1234567890);
@@ -92,7 +107,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function methodSwitch($method, $format = null, $tabParam = array())
+    public function methodSwitch($method, $format = null, $formatCompress = null, $tabParam = array())
     {
         if (is_null($format)) {
             $format = 'json';
@@ -101,12 +116,17 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $this->setUp();
 
         $parser = $this->getMock('\AlaroxFramework\utils\parser\Parser', array('parse'));
+        $compressor = $this->getMock('\AlaroxFramework\utils\compressor\Compressor', array('compress'));
         $curl =
             $this->getMock(
                 '\AlaroxFramework\utils\restclient\Curl',
                 array('executer', 'ajouterOption', 'ajouterHeaders')
             );
-        $restServer = $this->getMock('\AlaroxFramework\cfg\rest\RestServer', array('isAuthEnabled', 'getUrl', 'getFormatEnvoi', 'getParametresUri'));
+        $restServer =
+            $this->getMock(
+                '\AlaroxFramework\cfg\rest\RestServer',
+                array('isAuthEnabled', 'getUrl', 'getFormatEnvoi', 'getParametresUri', 'getCompressor')
+            );
         $objetRequete =
             $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp', 'getBody'));
 
@@ -119,19 +139,18 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $objetRequete->expects($this->once())->method('getMethodeHttp')->will($this->returnValue($method));
         $objetRequete->expects($this->any())->method('getBody')->will($this->returnValue(array('param' => 'value')));
 
-        if(!empty($tabParam)) {
+        if (!empty($tabParam)) {
             $restServer->expects($this->once())->method('getParametresUri')->will($this->returnValue($tabParam));
         }
 
 
-        //$curl->expects($this->at(2))->method('ajouterOption')->with(CURLOPT_URL, 'http://server.url.com/mon/uri');
         $curl->expects($this->atLeastOnce())->method('ajouterOption');
 
 
         $curl->expects($this->atLeastOnce())->method('ajouterHeaders');
         $curl->expects($this->once())->method('executer')->will(
             $this->returnValue(
-                array('{"id":"1"}', array('content_type' => 'application/json; charset=utf-8', 'http_code' => 200))
+                array('WORKINGDUDE', array('content_type' => 'application/json; charset=utf-8', 'http_code' => 200))
             )
         );
 
@@ -139,15 +158,25 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
             $this->returnValue('{"id":"1"}')
         );
 
+        if (!is_null($formatCompress)) {
+            $restServer->expects($this->once())->method('getCompressor')->will($this->returnValue($formatCompress));
+
+            $compressor->expects($this->any())->method('compress')->with('{"id":"1"}', $formatCompress)->will(
+                $this->returnValue('compressedData:{"id":"1"}')
+            );
+        }
+
 
         $this->_curlClient->setCurl($curl);
         $this->_curlClient->setParser($parser);
+        $this->_curlClient->setCompressor($compressor);
         $this->_curlClient->setTime(1234567890);
         $resultObjetReponse = $this->_curlClient->executer($restServer, $objetRequete);
 
         $this->assertEquals(200, $resultObjetReponse->getStatusHttp());
         $this->assertEquals('application/json', $resultObjetReponse->getFormatMime());
-        $this->assertEquals('{"id":"1"}', $resultObjetReponse->getDonneesReponse());
+
+        $this->assertEquals('WORKINGDUDE', $resultObjetReponse->getDonneesReponse());
     }
 
     public function testExecuterNoAuthAllMethod()
@@ -158,9 +187,14 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $this->methodSwitch('DELETE');
     }
 
+    public function testExecuterNoAuthCompressor()
+    {
+        $this->methodSwitch('POST', 'json', 'gzip');
+    }
+
     public function testExecuterNoAuthAllMethodWithUriParam()
     {
-        $this->methodSwitch('GET', 'txt', array('param' => 'value'));
+        $this->methodSwitch('GET', 'txt', null, array('param' => 'value'));
     }
 
     /**
@@ -171,12 +205,14 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $curl = $this->getMock('\AlaroxFramework\utils\restclient\Curl');
         $restServer = $this->getMock('\AlaroxFramework\cfg\rest\RestServer');
         $objetRequete = $this->getMock('\AlaroxFramework\utils\ObjetRequete', array('getUri', 'getMethodeHttp'));
+        $compressor = $this->getMock('\AlaroxFramework\utils\compressor\Compressor');
 
         $objetRequete->expects($this->once())->method('getUri')->will($this->returnValue('/mon/uri'));
         $objetRequete->expects($this->once())->method('getMethodeHttp')->will($this->returnValue('EXCPETIONMETHOD'));
 
 
         $this->_curlClient->setCurl($curl);
+        $this->_curlClient->setCompressor($compressor);
         $this->_curlClient->setTime(1234567890);
         $this->_curlClient->setParser($this->getMock('\AlaroxFramework\utils\parser\Parser'));
         $resultObjetReponse = $this->_curlClient->executer($restServer, $objetRequete);
@@ -189,6 +225,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
     public function testAuth()
     {
         $parser = $this->getMock('\AlaroxFramework\utils\parser\Parser', array('parse'));
+        $compressor = $this->getMock('\AlaroxFramework\utils\compressor\Compressor');
         $curl =
             $this->getMock(
                 '\AlaroxFramework\utils\restclient\Curl',
@@ -241,6 +278,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
 
         $this->_curlClient->setCurl($curl);
         $this->_curlClient->setParser($parser);
+        $this->_curlClient->setCompressor($compressor);
         $resultObjetReponse = $this->_curlClient->executer($restServer, $objetRequete);
 
         $this->assertEquals(200, $resultObjetReponse->getStatusHttp());

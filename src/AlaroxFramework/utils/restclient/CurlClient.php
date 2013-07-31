@@ -2,10 +2,11 @@
 namespace AlaroxFramework\utils\restclient;
 
 use AlaroxFramework\cfg\rest\RestServer;
+use AlaroxFramework\utils\compressor\Compressor;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
-use AlaroxFramework\utils\Tools;
 use AlaroxFramework\utils\parser\Parser;
+use AlaroxFramework\utils\Tools;
 
 class CurlClient
 {
@@ -18,6 +19,11 @@ class CurlClient
      * @var Parser
      */
     private $_parser;
+
+    /**
+     * @var Compressor
+     */
+    private $_compressor;
 
     /**
      * @var int
@@ -48,6 +54,19 @@ class CurlClient
         }
 
         $this->_parser = $parser;
+    }
+
+    /**
+     * @param Compressor $compressor
+     * @throws \InvalidArgumentException
+     */
+    public function setCompressor($compressor)
+    {
+        if (!$compressor instanceof Compressor) {
+            throw new \InvalidArgumentException('Expected parameter 1 compressor to be instance of Compressor.');
+        }
+
+        $this->_compressor = $compressor;
     }
 
     /**
@@ -83,15 +102,17 @@ class CurlClient
 
         foreach (get_object_vars($this) as $clef => $unAttribut) {
             if (empty($unAttribut)) {
-                throw new \Exception('Can\'t execute request: ' . $clef . 'is not set.');
+                throw new \Exception('Can\'t execute request: ' . $clef . ' is not set.');
             }
         }
+
 
         $this->_curl->initialize();
 
         $donneesAEnvoyer = '';
         $uri = $objetRequete->getUri();
         $dateRequeteGmt = gmdate("D, d M Y H:i:s T", $this->_time);
+
 
         switch ($methodeHttp = strtoupper($objetRequete->getMethodeHttp())) {
             case 'GET':
@@ -104,15 +125,17 @@ class CurlClient
             case 'POST':
                 $donneesAEnvoyer = $this->buildPostBody($objetRequete->getBody(), $restServer->getFormatEnvoi());
 
-                $this->_curl->ajouterOption(CURLOPT_POSTFIELDS, $donneesAEnvoyer);
+                $this->_curl->ajouterOption(
+                    CURLOPT_POSTFIELDS,
+                    $this->compressData($donneesAEnvoyer, $restServer->getCompressor())
+                );
                 $this->_curl->ajouterOption(CURLOPT_POST, true);
                 break;
             case 'PUT':
                 $fichierTempEcriture = tmpFile();
-                fwrite(
-                    $fichierTempEcriture,
-                    $donneesAEnvoyer = $this->buildPostBody($objetRequete->getBody(), $restServer->getFormatEnvoi())
-                );
+                $donneesAEnvoyer = $this->buildPostBody($objetRequete->getBody(), $restServer->getFormatEnvoi());
+
+                fwrite($fichierTempEcriture, $this->compressData($donneesAEnvoyer, $restServer->getCompressor()));
                 rewind($fichierTempEcriture);
 
                 $this->_curl->ajouterOption(CURLOPT_INFILE, $fichierTempEcriture);
@@ -134,7 +157,13 @@ class CurlClient
         }
 
         list($responseCurl, $reponseInfo) =
-            $this->curlExec($restServer->getUrl(), $restServer->getParametresUri(), $uri, $restServer->getFormatEnvoi(), $dateRequeteGmt);
+            $this->curlExec(
+                $restServer->getUrl(),
+                $restServer->getParametresUri(),
+                $uri,
+                $restServer->getFormatEnvoi(),
+                $dateRequeteGmt
+            );
 
         if (($pos = strpos($contentType = $reponseInfo['content_type'], ';')) !== false) {
             $contentType = substr($reponseInfo['content_type'], 0, $pos);
@@ -145,6 +174,17 @@ class CurlClient
         }
 
         return new ObjetReponse($reponseInfo['http_code'], $responseCurl, $contentType);
+    }
+
+    private function compressData($data, $compressorType)
+    {
+        if (!is_null($compressorType)) {
+            $this->_curl->ajouterUnHeader('Content-Encoding', $compressorType);
+
+            return $this->_compressor->compress($data, $compressorType);
+        } else {
+            return $data;
+        }
     }
 
     /**
@@ -162,7 +202,7 @@ class CurlClient
         if (count($paramUri) > 0) {
             $donneesUri = $this->buildPostBody($paramUri, 'txt');
 
-            if(strpos('?', $uri) === false) {
+            if (strpos('?', $uri) === false) {
                 $uri .= '?';
             }
 
@@ -208,7 +248,7 @@ class CurlClient
                     'sha256',
                     $donnees,
                     $auth->getPrivateKey() . $methode . Tools::getMimePourFormat($restServer->getFormatEnvoi()) .
-                        $timestamp,
+                    $timestamp,
                     true
                 )
             );

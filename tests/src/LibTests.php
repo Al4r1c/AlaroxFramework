@@ -27,6 +27,8 @@ class LibTests
         $suite->addTestSuite('\Tests\lib\UnparserTest');
         $suite->addTestSuite('\Tests\lib\UnparserFactoryTest');
         $suite->addTestSuite('\Tests\lib\ViewTest');
+        $suite->addTestSuite('\Tests\lib\compressor\CompressorTest');
+        $suite->addTestSuite('\Tests\lib\compressor\CompressorFactoryTest');
 
 
         return $suite;
