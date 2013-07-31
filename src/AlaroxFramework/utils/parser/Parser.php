@@ -31,7 +31,7 @@ class Parser
     public function parse($tabDonnees, $format)
     {
         if (!is_array($tabDonnees)) {
-            throw new \InvalidArgumentException('Parameter 1 $donnees must be a string.');
+            throw new \InvalidArgumentException('Parameter 1 $tabDonnees must be an array.');
         }
 
         if (!$this->_parserFactory instanceof ParserFactory) {
