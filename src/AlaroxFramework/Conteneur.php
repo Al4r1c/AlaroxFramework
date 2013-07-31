@@ -172,7 +172,7 @@ class Conteneur
 
     /**
      * @param array $tabRestServer
-     * @return RestServer
+     * @return RestServerManager
      */
     private function getRestServerManager($tabRestServer)
     {
