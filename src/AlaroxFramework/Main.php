@@ -30,7 +30,7 @@ class Main
 
         http_response_code($reponse->getStatusHttp());
 
-        if ($reponse->isException() === true) {
+        if ($reponse->isException() !== true) {
             return $reponse->getReponse();
         } else {
             throw $reponse->getReponse();
