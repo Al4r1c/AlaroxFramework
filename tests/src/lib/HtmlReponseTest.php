@@ -45,8 +45,17 @@ class HtmlReponseTest extends \PHPUnit_Framework_TestCase
 
     public function testSetHtml()
     {
-        $this->_htmlReponse->setCorpsReponse('<html></html>');
+        $this->_htmlReponse->setReponse('<html></html>');
 
-        $this->assertEquals('<html></html>', $this->_htmlReponse->getCorpsReponse());
+        $this->assertEquals('<html></html>', $this->_htmlReponse->getReponse());
+    }
+
+    public function testIsException()
+    {
+        $this->assertFalse($this->_htmlReponse->isException());
+
+        $this->_htmlReponse->setIsException(true);
+
+        $this->assertTrue($this->_htmlReponse->isException());
     }
 }

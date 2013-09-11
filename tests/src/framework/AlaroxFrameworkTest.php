@@ -85,10 +85,10 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
         $reponseManager = $this->getMock('\\AlaroxFramework\\reponse\ReponseManager', array('getHtmlResponse'));
         $htmlReponse =
-            $this->getMock('\\AlaroxFramework\\utils\\HtmlReponse', array('getCorpsReponse', 'getStatusHttp'));
+            $this->getMock('\\AlaroxFramework\\utils\\HtmlReponse', array('getReponse', 'getStatusHttp'));
 
 
-        $htmlReponse->expects($this->any())->method('getCorpsReponse')->will($this->returnValue('resultat'));
+        $htmlReponse->expects($this->any())->method('getReponse')->will($this->returnValue('resultat'));
         $htmlReponse->expects($this->any())->method('getStatusHttp')->will($this->returnValue(200));
 
         $dispatcher->expects($this->once())->method('executerActionRequise')->will($this->returnValue('resultat'));
@@ -110,30 +110,14 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
 
         $this->assertInstanceOf('\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->_framework->process());
-        $this->assertEquals('resultat', $htmlReponse->getCorpsReponse());
+        $this->assertEquals('resultat', $htmlReponse->getReponse());
         $this->assertEquals(200, $htmlReponse->getStatusHttp());
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testErreurWebsiteDevDispatcher()
-    {
-        $this->erreurDispatcher(false);
     }
 
     public function testErreurWebsiteProdDispatcher()
     {
         $this->assertInstanceOf('\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->erreurDispatcher(true));
         $this->assertEquals(404, $htmlReponse->getStatusHttp());
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testErreurWebsiteDevResponseManager()
-    {
-        $this->erreurReponseManager(false);
     }
 
     public function testErreurWebsiteProdResponseManager()
@@ -146,14 +130,12 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param boolean $prodVersion
      * @return HtmlReponse
      */
-    private function erreurDispatcher($prodVersion)
+    private function erreurDispatcher()
     {
-        $conteneur = $this->getFakeConteneur(array('getConfig', 'getDispatcher'), $prodVersion);
+        $conteneur = $this->getFakeConteneur(array('getDispatcher'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
-        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
 
 
         $dispatcher
@@ -172,12 +154,11 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param boolean $prodVersion
      * @return HtmlReponse
      */
-    private function erreurReponseManager($prodVersion)
+    private function erreurReponseManager()
     {
-        $conteneur = $this->getFakeConteneur(array('getConfig', 'getDispatcher', 'getResponseManager'), $prodVersion);
+        $conteneur = $this->getFakeConteneur(array('getDispatcher', 'getResponseManager'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher');
         $responseManager = $this->getMock('\\AlaroxFramework\\reponse\\ReponseManager', array('getHtmlResponse'));
 
@@ -199,20 +180,9 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         return $this->_framework->process();
     }
 
-    private function getFakeConteneur($tabMethodes, $prodVersion)
+    private function getFakeConteneur($tabMethodes)
     {
         $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', $tabMethodes);
-
-        $config = $this->getMock('\\AlaroxFramework\\cfg\\Config', array('isProdVersion'));
-
-        $conteneur
-            ->expects($this->atLeastOnce())
-            ->method('getConfig')
-            ->will($this->returnValue($config));
-
-        $config->expects($this->atLeastOnce())
-            ->method('isProdVersion')
-            ->will($this->returnValue($prodVersion));
 
         return $conteneur;
     }

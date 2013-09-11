@@ -55,7 +55,7 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
             '\\AlaroxFramework\\utils\\HtmlReponse',
             $htmlReponse = $this->_reponseManager->getHtmlResponse($view)
         );
-        $this->assertEquals("<html></html>", $htmlReponse->getCorpsReponse());
+        $this->assertEquals("<html></html>", $htmlReponse->getReponse());
         $this->assertEquals(200, $htmlReponse->getStatusHttp());
     }
 
@@ -75,7 +75,7 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
             '\\AlaroxFramework\\utils\\HtmlReponse',
             $htmlReponse = $this->_reponseManager->getHtmlResponse('myString')
         );
-        $this->assertEquals("myString", $htmlReponse->getCorpsReponse());
+        $this->assertEquals("myString", $htmlReponse->getReponse());
         $this->assertEquals(200, $htmlReponse->getStatusHttp());
     }
 }

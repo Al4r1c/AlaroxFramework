@@ -9,26 +9,33 @@ class HtmlReponse
     private $_statusHttp;
 
     /**
-     * @var string
+     * @var string|\Exception
      */
-    private $_corpsReponse;
+    private $_reponse;
+
+    /**
+     * @var bool
+     */
+    private $_isException;
 
     /**
      * @param int $codeHttp
-     * @param string $corps
+     * @param string|\Exception $corps
+     * @param bool $isException
      */
-    public function __construct($codeHttp = 200, $corps = '')
+    public function __construct($codeHttp = 200, $corps = '', $isException = false)
     {
         $this->setStatusHttp($codeHttp);
-        $this->setCorpsReponse($corps);
+        $this->setReponse($corps);
+        $this->setIsException($isException);
     }
 
     /**
-     * @return string
+     * @return string|\Exception
      */
-    public function getCorpsReponse()
+    public function getReponse()
     {
-        return $this->_corpsReponse;
+        return $this->_reponse;
     }
 
     /**
@@ -40,11 +47,19 @@ class HtmlReponse
     }
 
     /**
-     * @param string $corpsReponse
+     * @return boolean
      */
-    public function setCorpsReponse($corpsReponse)
+    public function isException()
     {
-        $this->_corpsReponse = $corpsReponse;
+        return $this->_isException;
+    }
+
+    /**
+     * @param string|\Exception $reponse
+     */
+    public function setReponse($reponse)
+    {
+        $this->_reponse = $reponse;
     }
 
     /**
@@ -63,5 +78,13 @@ class HtmlReponse
         }
 
         $this->_statusHttp = $statusHttp;
+    }
+
+    /**
+     * @param boolean $isException
+     */
+    public function setIsException($isException)
+    {
+        $this->_isException = $isException;
     }
 }

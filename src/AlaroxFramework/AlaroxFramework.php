@@ -47,28 +47,20 @@ class AlaroxFramework
     }
 
     /**
-     * @throws \Exception
      * @return HtmlReponse
      */
     public function process()
     {
         try {
             $reponse = $this->_conteneur->getDispatcher()->executerActionRequise();
+
             try {
                 $htmlReponse = $this->_conteneur->getResponseManager()->getHtmlResponse($reponse);
             } catch (\Exception $exception) {
-                if ($this->_conteneur->getConfig()->isProdVersion() === true) {
-                    $htmlReponse = new HtmlReponse(500);
-                } else {
-                    throw $exception;
-                }
+                $htmlReponse = new HtmlReponse(500, $exception, true);
             }
         } catch (\Exception $exception) {
-            if ($this->_conteneur->getConfig()->isProdVersion() === true) {
-                $htmlReponse = new HtmlReponse(404);
-            } else {
-                throw $exception;
-            }
+            $htmlReponse = new HtmlReponse(404, $exception, true);
         }
 
 

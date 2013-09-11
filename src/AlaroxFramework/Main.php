@@ -21,6 +21,7 @@ class Main
     }
 
     /**
+     * @throws \Exception
      * @return string
      */
     public function run()
@@ -29,6 +30,10 @@ class Main
 
         http_response_code($reponse->getStatusHttp());
 
-        return $reponse->getCorpsReponse();
+        if ($reponse->isException() === true) {
+            return $reponse->getReponse();
+        } else {
+            throw $reponse->getReponse();
+        }
     }
 }
