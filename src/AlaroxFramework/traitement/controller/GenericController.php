@@ -97,6 +97,14 @@ abstract class GenericController
     }
 
     /**
+     * @return AlaroxFile
+     */
+    protected function getAlaroxFile()
+    {
+        return $this->_alaroxFile;
+    }
+
+    /**
      * @param $filePath
      * @return File
      */

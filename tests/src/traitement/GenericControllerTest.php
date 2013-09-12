@@ -182,4 +182,16 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($sessionClient, $method->invoke($this->_genericCtrl));
     }
+
+    public function testGetAlaroxFile()
+    {
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('getAlaroxFile');
+        $method->setAccessible(true);
+
+        $this->assertInstanceOf(
+            'AlaroxFileManager\\AlaroxFile',
+            $method->invoke($this->_genericCtrl)
+        );
+    }
 }
