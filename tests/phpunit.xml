@@ -12,6 +12,7 @@
 				<file>../src/AlaroxFramework/Conteneur.php</file>
 				<file>../src/AlaroxFramework/Main.php</file>
 				<file>../src/AlaroxFramework/utils/restclient/Curl.php</file>
+				<file>../src/AlaroxFramework/utils/session/Session.php</file>
 			</exclude>
 		</whitelist>
 	</filter>

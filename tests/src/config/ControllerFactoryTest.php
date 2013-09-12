@@ -2,6 +2,7 @@
 namespace Tests\config;
 
 use AlaroxFramework\cfg\configs\ControllerFactory;
+use AlaroxFramework\utils\session\SessionClient;
 
 class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,9 +16,17 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_ctrlFactory = new ControllerFactory();
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|SessionClient
+     */
+    private function getSessionClient()
+    {
+        return $this->getMock('AlaroxFramework\utils\session\SessionClient');
+    }
+
     public function testSetCtrls()
     {
-        $this->_ctrlFactory->setListControllers(array('Controller', 'Controller2'), array());
+        $this->_ctrlFactory->setListControllers(array('Controller', 'Controller2'), $this->getSessionClient(), array());
 
         $this->assertAttributeCount(2, '_listControllers', $this->_ctrlFactory);
         $this->assertAttributeContainsOnly('closure', '_listControllers', $this->_ctrlFactory);
@@ -28,7 +37,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetCtrlsArray()
     {
-        $this->_ctrlFactory->setListControllers(9, array());
+        $this->_ctrlFactory->setListControllers(9, $this->getSessionClient(), array());
     }
 
     public function testRestClient()
@@ -50,7 +59,11 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCall()
     {
-        $this->_ctrlFactory->setListControllers(array('\\Tests\\fakecontrollers\\TestCtrl'), array('postVar' => 'value'));
+        $this->_ctrlFactory->setListControllers(
+            array('\\Tests\\fakecontrollers\\TestCtrl'),
+            $this->getSessionClient(),
+            array('postVar' => 'value')
+        );
         $this->_ctrlFactory->setRestClient($this->getMock('AlaroxFramework\utils\restclient\RestClient'));
 
         $this->assertInstanceOf(

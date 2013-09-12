@@ -6,6 +6,7 @@ use AlaroxFileManager\FileManager\File;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\restclient\RestClient;
+use AlaroxFramework\utils\session\SessionClient;
 use AlaroxFramework\utils\View;
 
 abstract class GenericController
@@ -14,6 +15,11 @@ abstract class GenericController
      * @var RestClient
      */
     private $_restClient;
+
+    /**
+     * @var SessionClient
+     */
+    private $_sessionClient;
 
     /**
      * @var array
@@ -83,6 +89,14 @@ abstract class GenericController
     }
 
     /**
+     * @return SessionClient
+     */
+    protected function getSession()
+    {
+        return $this->_sessionClient;
+    }
+
+    /**
      * @param $filePath
      * @return File
      */
@@ -97,6 +111,14 @@ abstract class GenericController
     public function setRestClient($restClient)
     {
         $this->_restClient = $restClient;
+    }
+
+    /**
+     * @param SessionClient $sessionClient
+     */
+    public function setSessionClient($sessionClient)
+    {
+        $this->_sessionClient = $sessionClient;
     }
 
     /**
@@ -159,12 +181,17 @@ abstract class GenericController
     /**
      * @param string $url
      * @param int $codeHttp
-     * @codeCoverageIgnore
+     * @param bool $exit
      */
-    protected function redirectToUrl($url, $codeHttp = 302)
+    protected function redirectToUrl($url, $codeHttp = 302, $exit = true)
     {
         header('Location: ' . $url);
         http_response_code($codeHttp);
-        die();
+
+        if ($exit === true) {
+            // @codeCoverageIgnoreStart
+            exit();
+            // @codeCoverageIgnoreEnd
+        }
     }
 }

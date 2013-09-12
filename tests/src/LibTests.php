@@ -23,6 +23,7 @@ class LibTests
         $suite->addTestSuite('\Tests\lib\ParserTest');
         $suite->addTestSuite('\Tests\lib\ParserFactoryTest');
         $suite->addTestSuite('\Tests\lib\RestClientTest');
+        $suite->addTestSuite('\Tests\lib\SessionClientTest');
         $suite->addTestSuite('\Tests\lib\ToolsTest');
         $suite->addTestSuite('\Tests\lib\UnparserTest');
         $suite->addTestSuite('\Tests\lib\UnparserFactoryTest');

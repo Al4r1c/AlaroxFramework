@@ -86,9 +86,9 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
 
         $restClient->expects($this->once())
-            ->method('executerRequete')
-            ->with('remote', $objetRequete)
-            ->will($this->returnValue($objetReponse));
+        ->method('executerRequete')
+        ->with('remote', $objetRequete)
+        ->will($this->returnValue($objetReponse));
 
         $this->_genericCtrl->setRestClient($restClient);
 
@@ -124,10 +124,14 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $method = $class->getMethod('getFile');
         $method->setAccessible(true);
 
-        $this->assertInstanceOf('AlaroxFileManager\\FileManager\\File', $method->invokeArgs($this->_genericCtrl, array('myFile.txt')));
+        $this->assertInstanceOf(
+            'AlaroxFileManager\\FileManager\\File',
+            $method->invokeArgs($this->_genericCtrl, array('myFile.txt'))
+        );
     }
 
-    public function testAddPostViewVariable() {
+    public function testAddPostViewVariable()
+    {
         $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
         $method = $class->getMethod('addBeforeGenerateViewVariables');
         $method->setAccessible(true);
@@ -138,16 +142,44 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @runInSeparateProcess
-     * @expectedException \RuntimeException
      */
-    public function testRedirectUrl() {
+    public function testRedirectUrl()
+    {
         $class = new \ReflectionClass('\\AlaroxFramework\\traitement\\controller\\GenericController');
         $method = $class->getMethod('redirectToUrl');
         $method->setAccessible(true);
         $method->invokeArgs($this->_genericCtrl, array('http://google.fr/'));
 
         $headersList = xdebug_get_headers();
-        $this->assertContains('Location: http://google.fr/', $headersList);
+        $this->assertContains('Location: http://google.fr/', $headersList, false);
         $this->assertCount(1, $headersList);
+        $this->assertEquals(302, http_response_code());
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testRedirectUrlCodeHttp()
+    {
+        $class = new \ReflectionClass('\\AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('redirectToUrl');
+        $method->setAccessible(true);
+        $method->invokeArgs($this->_genericCtrl, array('http://google.fr/', 500, false));
+
+        $this->assertEquals(500, http_response_code());
+    }
+
+    public function testSessionClient()
+    {
+        $class = new \ReflectionClass('\\AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('getSession');
+        $method->setAccessible(true);
+
+
+        $sessionClient = $this->getMock('AlaroxFramework\\utils\\session\\SessionClient');
+
+        $this->_genericCtrl->setSessionClient($sessionClient);
+
+        $this->assertSame($sessionClient, $method->invoke($this->_genericCtrl));
     }
 }

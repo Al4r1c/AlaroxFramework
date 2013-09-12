@@ -3,6 +3,7 @@ namespace AlaroxFramework\cfg\configs;
 
 use AlaroxFramework\traitement\controller\GenericController;
 use AlaroxFramework\utils\restclient\RestClient;
+use AlaroxFramework\utils\session\SessionClient;
 
 class ControllerFactory
 {
@@ -48,10 +49,11 @@ class ControllerFactory
 
     /**
      * @param array $plainListControllers
+     * @param SessionClient $sessionClient
      * @param array $postVars
      * @throws \InvalidArgumentException
      */
-    public function setListControllers($plainListControllers, $postVars)
+    public function setListControllers($plainListControllers, $sessionClient, $postVars)
     {
         if (!is_array($plainListControllers)) {
             throw new \InvalidArgumentException('Expected parameter 1 plainListControllers to be array.');
@@ -60,10 +62,11 @@ class ControllerFactory
         foreach ($plainListControllers as $unControllerTrouve) {
             $tempNamespacesSepares = explode('\\', $unControllerTrouve);
             $this->_listControllers[strtolower(end($tempNamespacesSepares))] =
-                function ($restClient, $tabVariables) use ($unControllerTrouve, $postVars) {
+                function ($restClient, $tabVariables) use ($unControllerTrouve, $sessionClient, $postVars) {
                     /** @var GenericController $controller */
                     $controller = new $unControllerTrouve();
                     $controller->setRestClient($restClient);
+                    $controller->setSessionClient($sessionClient);
                     $controller->setVariablesRequete($tabVariables);
                     $controller->setVariablesPost($postVars);
 

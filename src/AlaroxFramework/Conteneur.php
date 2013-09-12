@@ -27,6 +27,7 @@ use AlaroxFramework\utils\parser\ParserFactory;
 use AlaroxFramework\utils\restclient\Curl;
 use AlaroxFramework\utils\restclient\CurlClient;
 use AlaroxFramework\utils\restclient\RestClient;
+use AlaroxFramework\utils\session\SessionClient;
 
 class Conteneur
 {
@@ -222,7 +223,7 @@ class Conteneur
             }
         }
 
-        if(isset($unRestServer['compression'])) {
+        if (isset($unRestServer['compression'])) {
             $restServer->setCompressor($unRestServer['compression']);
         }
 
@@ -367,9 +368,33 @@ class Conteneur
             $postVars['uploadedFile'] = $filesVars;
         }
 
-        $ctrlFactory->setListControllers($controllers, $postVars);
+        $ctrlFactory->setListControllers($controllers, $this->getSessionClient(), $postVars);
 
         return $ctrlFactory;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function &getAndStartSession()
+    {
+        $session = new \AlaroxFramework\utils\session\Session();
+        $session->startSession();
+
+        return $session->getSession();
+    }
+
+    /**
+     * @return SessionClient
+     */
+    private function getSessionClient()
+    {
+        $sessionRef = & $this->getAndStartSession();
+
+        $sessionClient = new SessionClient();
+        $sessionClient->setSessionRef($sessionRef);
+
+        return $sessionClient;
     }
 
     /**
