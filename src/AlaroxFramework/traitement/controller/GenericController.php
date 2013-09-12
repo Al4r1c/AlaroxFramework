@@ -158,12 +158,13 @@ abstract class GenericController
 
     /**
      * @param string $url
-     * @throws \RuntimeException
+     * @param int $codeHttp
      * @codeCoverageIgnore
      */
-    protected function redirectToUrl($url)
+    protected function redirectToUrl($url, $codeHttp = 302)
     {
         header('Location: ' . $url);
+        http_response_code($codeHttp);
         die();
     }
 }
