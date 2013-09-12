@@ -13,7 +13,7 @@ class SessionClient
      */
     public function setSessionRef(&$sessionRef)
     {
-        $this->_sessionRef = &$sessionRef;
+        $this->_sessionRef = & $sessionRef;
     }
 
     /**
@@ -32,5 +32,15 @@ class SessionClient
     public function setSessionValue($clef, $valeur)
     {
         $this->_sessionRef[$clef] = $valeur;
+    }
+
+    /**
+     * @param string $clef
+     */
+    public function deleteValue($clef)
+    {
+        if (isset($this->_sessionRef[$clef])) {
+            unset($this->_sessionRef[$clef]);
+        }
     }
 }

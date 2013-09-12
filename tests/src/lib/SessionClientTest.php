@@ -47,4 +47,17 @@ class SessionClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('newVal', $this->_sessionClient->getSessionValue('newKey'));
     }
+
+    public function testDeleteValue()
+    {
+        $testArray = array('key1' => 'val1', 'key2' => 'val2');
+        $this->_sessionClient->setSessionRef($testArray);
+
+        $this->_sessionClient->setSessionValue('newKey', 'newVal');
+        $this->assertAttributeCount(3, '_sessionRef', $this->_sessionClient);
+
+        $this->_sessionClient->deleteValue('key1');
+        $this->assertAttributeCount(2, '_sessionRef', $this->_sessionClient);
+        $this->assertNull($this->_sessionClient->getSessionValue('key1'));
+    }
 }
