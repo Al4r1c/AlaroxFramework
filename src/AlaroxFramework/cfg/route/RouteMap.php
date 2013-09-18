@@ -18,7 +18,7 @@ class RouteMap
     /**
      * @var array
      */
-    private $_staticAliases;
+    private $_staticAliases = array();
 
     /**
      * @var array
@@ -81,21 +81,19 @@ class RouteMap
      */
     public function setStaticAliases($staticAliases)
     {
-        if (!is_array($staticAliases)) {
-            throw new \InvalidArgumentException('Expected parameter 1 staticAliases to be array.');
-        }
+        if (is_array($staticAliases)) {
+            $i = 0;
+            while ($i < count($staticAliases)) {
+                if (!startsWith($uri = rtrim(preg_replace('#(\/)\1+#', '$1', $staticAliases[$i]), '/'), '/')) {
+                    $uri = '/' . $uri;
+                }
 
-        $i = 0;
-        while ($i < count($staticAliases)) {
-            if (!startsWith($uri = rtrim(preg_replace('#(\/)\1+#', '$1', $staticAliases[$i]), '/'), '/')) {
-                $uri = '/' . $uri;
+                $staticAliases[$i] = $uri;
+                $i++;
             }
 
-            $staticAliases[$i] = $uri;
-            $i++;
+            $this->_staticAliases = $staticAliases;
         }
-
-        $this->_staticAliases = $staticAliases;
     }
 
     /**
@@ -124,37 +122,38 @@ class RouteMap
 
         $routeMap = array_change_key_case_recursive($routeMap, CASE_LOWER);
 
-        foreach ($routeMap['routemap'] as $uri => $uneRoute) {
-            if (!is_string($uri)) {
-                throw new \Exception('RouteMap parse error: no uri set or invalid uri.');
+        if (is_array($routeMap['routemap'])) {
+            foreach ($routeMap['routemap'] as $uri => $uneRoute) {
+                if (!is_string($uri)) {
+                    throw new \Exception('RouteMap parse error: no uri set or invalid uri.');
+                }
+
+                if (!isset($uneRoute['controller'])) {
+                    throw new \Exception(sprintf('RouteMap parse error: key controller is missing for uri %s.', $uri));
+                }
+
+                if (!isset($uneRoute['defaultaction']) && !isset($uneRoute['mapping'])) {
+                    throw new \Exception(sprintf(
+                        'RouteMap parse error: no action attached for uri %s: key defaultAction OR mapping must be set.',
+                        $uri
+                    ));
+                }
+
+                $route = new Route();
+                $route->setUri($uri);
+                $route->setController($uneRoute['controller']);
+
+                if (isset($uneRoute['defaultaction'])) {
+                    $route->setDefaultAction($uneRoute['defaultaction']);
+                }
+
+                if (isset($uneRoute['mapping'])) {
+                    $route->setMapping($uneRoute['mapping']);
+                }
+
+                $this->ajouterRoute($route);
             }
-
-            if (!isset($uneRoute['controller'])) {
-                throw new \Exception(sprintf('RouteMap parse error: key controller is missing for uri %s.', $uri));
-            }
-
-            if (!isset($uneRoute['defaultaction']) && !isset($uneRoute['mapping'])) {
-                throw new \Exception(sprintf(
-                    'RouteMap parse error: no action attached for uri %s: key defaultAction OR mapping must be set.',
-                    $uri
-                ));
-            }
-
-            $route = new Route();
-            $route->setUri($uri);
-            $route->setController($uneRoute['controller']);
-
-            if (isset($uneRoute['defaultaction'])) {
-                $route->setDefaultAction($uneRoute['defaultaction']);
-            }
-
-            if (isset($uneRoute['mapping'])) {
-                $route->setMapping($uneRoute['mapping']);
-            }
-
-            $this->ajouterRoute($route);
         }
-
 
         $routeControllerDefaut = new Route();
         $routeControllerDefaut->setController($routeMap['default']['controller']);

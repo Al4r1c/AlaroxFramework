@@ -52,14 +52,6 @@ class RouteMapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('/sta-tic/path/way/go'), $this->_routeMap->getStaticAliases());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testSetStaticAliasesArray()
-    {
-        $this->_routeMap->setStaticAliases('exception');
-    }
-
     public function testSetRouteDefaut()
     {
         $this->_routeMap->setRouteParDefaut($route = $this->getMock('\AlaroxFramework\cfg\route\Route'));
