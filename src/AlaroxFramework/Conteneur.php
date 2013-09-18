@@ -332,11 +332,30 @@ class Conteneur
         $ctrlFactory = new ControllerFactory();
         $ctrlFactory->setRestClient($this->_config->getRestClient());
 
-        $controllers = array();
-        $scanDir = scandir($repertoireControlleurs);
-        foreach ($scanDir as $uneEntite) {
-            if (is_file($file = $repertoireControlleurs . DIRECTORY_SEPARATOR . $uneEntite)) {
-                $php_code = file_get_contents($file);
+        $controllers = $this->scanControllerDir($repertoireControlleurs);
+
+        if (!empty($filesVars)) {
+            $postVars['uploadedFile'] = $filesVars;
+        }
+
+        $ctrlFactory->setListControllers($controllers, $this->getSessionClient(), $postVars);
+
+        return $ctrlFactory;
+    }
+
+    /**
+     * @param string $repertoireActuel
+     * @return array
+     */
+    private function scanControllerDir($repertoireActuel)
+    {
+        $arrayControllers = array();
+
+        foreach (scandir($repertoireActuel) as $uneEntite) {
+            if (is_file($entitePath = $repertoireActuel . DIRECTORY_SEPARATOR . $uneEntite) &&
+                endsWith($entitePath, '.php')
+            ) {
+                $php_code = file_get_contents($entitePath);
                 $tokens = token_get_all($php_code);
 
                 $classToken = false;
@@ -356,21 +375,17 @@ class Conteneur
                         if ($token[0] == T_CLASS) {
                             $classToken = true;
                         } elseif ($classToken && $token[0] == T_STRING) {
-                            $controllers[] = $currentNamespace . '\\' . $token[1];
+                            $arrayControllers[] = $currentNamespace . '\\' . $token[1];
                             break;
                         }
                     }
                 }
+            } elseif (is_dir($entitePath) && !startsWith($uneEntite, '.')) {
+                $arrayControllers = array_merge($arrayControllers, $this->scanControllerDir($entitePath));
             }
         }
 
-        if (!empty($filesVars)) {
-            $postVars['uploadedFile'] = $filesVars;
-        }
-
-        $ctrlFactory->setListControllers($controllers, $this->getSessionClient(), $postVars);
-
-        return $ctrlFactory;
+        return $arrayControllers;
     }
 
     /**
