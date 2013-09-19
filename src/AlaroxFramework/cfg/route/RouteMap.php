@@ -120,10 +120,12 @@ class RouteMap
         }
 
 
-        $routeMap = array_change_key_case_recursive($routeMap, CASE_LOWER);
+        $routeMapKeyCaseChanged = array_change_key_case($routeMap, CASE_LOWER);
 
-        if (is_array($routeMap['routemap'])) {
-            foreach ($routeMap['routemap'] as $uri => $uneRoute) {
+        if (is_array($routeMapKeyCaseChanged['routemap'])) {
+            foreach ($routeMapKeyCaseChanged['routemap'] as $uri => $uneRoute) {
+                $uneRoute = array_change_key_case($uneRoute, CASE_LOWER);
+
                 if (!is_string($uri)) {
                     throw new \Exception('RouteMap parse error: no uri set or invalid uri.');
                 }
@@ -156,11 +158,11 @@ class RouteMap
         }
 
         $routeControllerDefaut = new Route();
-        $routeControllerDefaut->setController($routeMap['default']['controller']);
-        $routeControllerDefaut->setDefaultAction($routeMap['default']['action']);
+        $routeControllerDefaut->setController($routeMapKeyCaseChanged['default']['controller']);
+        $routeControllerDefaut->setDefaultAction($routeMapKeyCaseChanged['default']['action']);
         $this->setRouteParDefaut($routeControllerDefaut);
 
 
-        $this->setStaticAliases($routeMap['static']);
+        $this->setStaticAliases($routeMapKeyCaseChanged['static']);
     }
 }
