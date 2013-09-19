@@ -222,7 +222,7 @@ class Dispatcher
             $tabUriSansBaseDuMapping = array_filter(explode('/', $uriSansBaseDuMapping), 'strlen');
 
             foreach ($mappingRouteTrouvee as $patternUri => $actionPourPatternUri) {
-                $patternUriWithModifier = preg_replace('#\$[a-z0-9]+\?#', '*', $patternUri);
+                $patternUriWithModifier = preg_replace('#\$[a-zA-Z0-9-_]+\?#', '*', $patternUri);
 
                 $actionTrouvee = false;
 
@@ -240,7 +240,7 @@ class Dispatcher
                                 (strcmp($unePartiePatternUri, $tabUriSansBaseDuMapping[$clef]) == 0) ||
                                 (strpos($unePartiePatternUri, '*') !== false &&
                                     preg_match(
-                                        '#^' . str_replace('*', '[a-zA-Z0-9]+', $unePartiePatternUri) . '$#',
+                                        '#^' . str_replace('*', '[a-zA-Z0-9-_]+', $unePartiePatternUri) . '$#',
                                         $tabUriSansBaseDuMapping[$clef]
                                     ) == 1)
                             ) {
@@ -251,6 +251,7 @@ class Dispatcher
                         $actionTrouvee = false;
                     }
                 }
+
 
                 if ($actionTrouvee === true) {
                     $actionAEffectuer = array($actionPourPatternUri,
@@ -277,9 +278,9 @@ class Dispatcher
         $tabPattern = explode('/', $pattern);
 
         foreach ($uriFractionneTableau as $clef => $unBoutUri) {
-            if (preg_match_all('#\$([a-zA-Z0-9]+)\?#', $tabPattern[$clef], $tabAllVariablesPattern) > 0) {
+            if (preg_match_all('#\$([a-zA-Z0-9-_]+)\?#', $tabPattern[$clef], $tabAllVariablesPattern) > 0) {
                 $patternGeneriqueCorrespondant =
-                    '#^' . preg_replace('#\$([a-zA-Z0-9]+)\?#', '([a-zA-Z0-9]+)', $tabPattern[$clef]) . '$#';
+                    '#^' . preg_replace('#\$([a-zA-Z0-9-_]+)\?#', '([a-zA-Z0-9-_]+)', $tabPattern[$clef]) . '$#';
                 if (preg_match($patternGeneriqueCorrespondant, $unBoutUri, $tabPregCorrespondances) == 1) {
                     foreach ($tabAllVariablesPattern[1] as $uneClef => $uneVar) {
                         $tabVariables[$uneVar] = $tabPregCorrespondances[$uneClef + 1];

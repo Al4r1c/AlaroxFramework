@@ -653,6 +653,52 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('myFirst ACTION', $this->_dispatcher->executerActionRequise());
     }
 
+    public function testMappingAvecCaracteresEtMajuscules()
+    {
+        $route =
+            $this->getMock(
+                '\AlaroxFramework\cfg\route\Route',
+                array('getUri', 'getController', 'getMapping')
+            );
+        $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
+
+
+        $route->expects($this->any())
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
+
+        $route->expects($this->once())
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
+
+        $route->expects($this->once())
+        ->method('getMapping')
+        ->will(
+                $this->returnValue(
+                    array(
+                        '/$someVariable?' => 'myActionFirst'
+                    )
+                )
+            );
+
+
+        $routeMap->expects($this->once())
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
+
+        $routeMap->expects($this->once())
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
+
+
+        $this->setFakeInfos(
+            '/monuri/hello-world_uep',
+            $routeMap,
+            array('someVariable' => 'hello-world_uep')
+        );
+
+        $this->assertEquals('myFirst ACTION', $this->_dispatcher->executerActionRequise());
+    }
 
     /**
      * @expectedException \Exception
