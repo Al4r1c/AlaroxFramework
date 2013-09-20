@@ -182,7 +182,7 @@ class Dispatcher
     private function dispatchUri()
     {
         foreach ($this->_routeMap->getRoutes() as $uneRoute) {
-            if (startsWith($this->_uriDemandee, ($uri = $uneRoute->getUri()))) {
+            if (startsWith(strtolower($this->_uriDemandee), strtolower($uri = $uneRoute->getUri()))) {
                 $uriSansBaseDuMapping = rtrim(substr($this->_uriDemandee, strlen($uri)), '/');
 
                 if ($uriSansBaseDuMapping == '' || startsWith($uriSansBaseDuMapping, '/')) {
@@ -226,7 +226,7 @@ class Dispatcher
 
                 $actionTrouvee = false;
 
-                if (strcmp($patternUriWithModifier, $uriSansBaseDuMapping) == 0) {
+                if (strcmp(strtolower($patternUriWithModifier), strtolower($uriSansBaseDuMapping)) == 0) {
                     $actionTrouvee = true;
                 } elseif (strpos($patternUriWithModifier, '*') !== false &&
                     count($tabPatternUri = array_filter(explode('/', $patternUriWithModifier), 'strlen')) ==

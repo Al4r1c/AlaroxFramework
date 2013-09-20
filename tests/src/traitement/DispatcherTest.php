@@ -277,6 +277,42 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('THIS IS INDEX ACTION', $this->_dispatcher->executerActionRequise());
     }
 
+    public function testRechercheUriKeyCase()
+    {
+        $route =
+            $this->getMock(
+                '\AlaroxFramework\cfg\route\Route',
+                array('getUri', 'getController', 'getDefaultAction')
+            );
+        $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
+
+
+        $route->expects($this->once())
+        ->method('getUri')
+        ->will($this->returnValue('/uridemandee'));
+
+        $route->expects($this->once())
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
+
+        $route->expects($this->once())
+        ->method('getDefaultAction')
+        ->will($this->returnValue('indexAction'));
+
+        $routeMap->expects($this->once())
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
+
+        $routeMap->expects($this->once())
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
+
+
+        $this->setFakeInfos('/URIDEMANDEE', $routeMap);
+
+        $this->assertEquals('THIS IS INDEX ACTION', $this->_dispatcher->executerActionRequise());
+    }
+
     /**
      * @expectedException \Exception
      */
@@ -394,6 +430,49 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $this->setFakeInfos('/monuri/unevariable', $routeMap);
+
+        $this->assertEquals('myFirst ACTION', $this->_dispatcher->executerActionRequise());
+    }
+
+    public function testExecuterMethodKeyCase()
+    {
+        $route =
+            $this->getMock(
+                '\AlaroxFramework\cfg\route\Route',
+                array('getUri', 'getController', 'getMapping')
+            );
+        $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases', 'getRoutes'));
+
+
+        $route->expects($this->any())
+        ->method('getUri')
+        ->will($this->returnValue('/monuri'));
+
+        $route->expects($this->once())
+        ->method('getController')
+        ->will($this->returnValue('testctrl'));
+
+        $route->expects($this->once())
+        ->method('getMapping')
+        ->will(
+                $this->returnValue(
+                    array(
+                        '/UNEvaRIAbLLe' => 'myActionFirst'
+                    )
+                )
+            );
+
+
+        $routeMap->expects($this->once())
+        ->method('getRoutes')
+        ->will($this->returnValue(array($route)));
+
+        $routeMap->expects($this->once())
+        ->method('getStaticAliases')
+        ->will($this->returnValue(array()));
+
+
+        $this->setFakeInfos('/monuri/unevariablle', $routeMap);
 
         $this->assertEquals('myFirst ACTION', $this->_dispatcher->executerActionRequise());
     }
