@@ -64,4 +64,15 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($this->_server->getUneVariableServeur('NO_NO_NO'));
     }
+
+    public function testSetServeurVariablePhpSelfDifferent()
+    {
+        $donneesServeur = self::$donneesServer;
+        $donneesServeur['PHP_SELF'] = '/index.php';
+        $donneesServeur['REQUEST_URI'] = '/ctrl/id';
+
+        $this->_server->setServeurVariables($donneesServeur);
+
+        $this->assertEquals('/ctrl/id', $this->_server->getUneVariableServeur('REQUEST_URI_NODIR'));
+    }
 }
