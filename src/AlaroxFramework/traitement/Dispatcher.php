@@ -100,7 +100,7 @@ class Dispatcher
 
         $staticAliasFound = false;
         foreach ($this->_routeMap->getStaticAliases() as $unAliasStatic) {
-            if (startsWith($this->_uriDemandee, $unAliasStatic)) {
+            if ($this->testUriMatch($this->_uriDemandee, $unAliasStatic)) {
                 $staticAliasFound = $unAliasStatic;
                 break;
             }
@@ -145,7 +145,6 @@ class Dispatcher
             if (method_exists($controlleur, 'beforeExecuteAction') === true) {
                 $controlleur->beforeExecuteAction();
             }
-
         } catch (\Exception $uneException) {
             throw new \Exception(sprintf(
                 'Can\'t load controller "%s" for uri "%s": %s.',
@@ -182,18 +181,18 @@ class Dispatcher
     private function dispatchUri()
     {
         foreach ($this->_routeMap->getRoutes() as $uneRoute) {
-            if (startsWith(strtolower($this->_uriDemandee), strtolower($uri = $uneRoute->getUri()))) {
-                $uriSansBaseDuMapping = rtrim(substr($this->_uriDemandee, strlen($uri)), '/');
-
-                if ($uriSansBaseDuMapping == '' || startsWith($uriSansBaseDuMapping, '/')) {
-                    $route = $uneRoute;
-                    break;
-                }
+            if ($this->testUriMatch(strtolower($this->_uriDemandee), strtolower($uri = $uneRoute->getUri()))) {
+                $route = $uneRoute;
+                break;
             }
         }
 
-        if (isset($route) && isset($uriSansBaseDuMapping)) {
-            if (!is_null($actionAEffectuerEtVariable = $this->recupererAction($uriSansBaseDuMapping, $route))) {
+        if (isset($route) && isset($uri)) {
+            if (!is_null(
+                $actionAEffectuerEtVariable =
+                    $this->recupererAction(rtrim(substr($this->_uriDemandee, strlen($uri)), '/'), $route)
+            )
+            ) {
                 array_unshift($actionAEffectuerEtVariable, $route->getController());
 
                 return $actionAEffectuerEtVariable;
@@ -265,6 +264,19 @@ class Dispatcher
         }
 
         return $actionAEffectuer;
+    }
+
+    private function testUriMatch($uriActuelle, $uriATester)
+    {
+        if (startsWith($uriActuelle, $uriATester)) {
+            $uriSansBaseDuMapping = rtrim(substr($this->_uriDemandee, strlen($uriATester)), '/');
+
+            if ($uriSansBaseDuMapping == '' || startsWith($uriSansBaseDuMapping, '/')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
