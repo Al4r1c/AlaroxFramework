@@ -266,6 +266,11 @@ class Dispatcher
         return $actionAEffectuer;
     }
 
+    /**
+     * @param string $uriActuelle
+     * @param string $uriATester
+     * @return bool
+     */
     private function testUriMatch($uriActuelle, $uriATester)
     {
         if (startsWith($uriActuelle, $uriATester)) {
