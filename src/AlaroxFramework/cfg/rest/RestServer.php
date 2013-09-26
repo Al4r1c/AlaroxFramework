@@ -1,8 +1,7 @@
 <?php
 namespace AlaroxFramework\cfg\rest;
 
-use AlaroxFramework\utils\compressor\AbstractCompressor;
-use AlaroxFramework\utils\Tools;
+use AlaroxFramework\utils\tools\Tools;
 
 class RestServer
 {

@@ -6,7 +6,7 @@ use AlaroxFramework\utils\compressor\Compressor;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\parser\Parser;
-use AlaroxFramework\utils\Tools;
+use AlaroxFramework\utils\tools\Tools;
 
 class CurlClient
 {

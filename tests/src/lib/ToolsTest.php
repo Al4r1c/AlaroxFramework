@@ -1,7 +1,7 @@
 <?php
 namespace Tests\lib;
 
-use AlaroxFramework\utils\Tools;
+use AlaroxFramework\utils\tools\Tools;
 
 class ToolsTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,5 +41,10 @@ class ToolsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('json', Tools::getFormatPourMime('application/json'));
         $this->assertNull(Tools::getFormatPourMime('not_exist'));
+    }
+
+    public function testGetCodeHttp() {
+        $this->assertInternalType('array', Tools::getMessageHttpCode(500));
+        $this->assertNull(Tools::getMessageHttpCode(99999));
     }
 }

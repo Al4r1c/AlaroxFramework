@@ -1,7 +1,7 @@
 <?php
 namespace AlaroxFramework\utils;
 
-use AlaroxFramework\utils\Tools;
+use AlaroxFramework\utils\tools\Tools;
 use AlaroxFramework\utils\unparser\Unparser;
 use AlaroxFramework\utils\unparser\UnparserFactory;
 

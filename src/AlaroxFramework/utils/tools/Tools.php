@@ -1,5 +1,5 @@
 <?php
-namespace AlaroxFramework\utils;
+namespace AlaroxFramework\utils\tools;
 
 class Tools
 {
@@ -14,7 +14,7 @@ class Tools
             throw new \InvalidArgumentException('Parameter 1 codeHttp must be integer.');
         }
 
-        return array_key_exists($codeHttp, include(__DIR__ . '/const/httpcode.php'));
+        return array_key_exists($codeHttp, include(__DIR__ . '/httpcode.php'));
     }
 
     /**
@@ -25,7 +25,7 @@ class Tools
     {
         return array_key_exists(
             strtolower($format),
-            array_change_key_case(include(__DIR__ . '/const/mimes.php'), CASE_LOWER)
+            array_change_key_case(include(__DIR__ . '/mimes.php'), CASE_LOWER)
         );
     }
 
@@ -35,7 +35,7 @@ class Tools
      */
     public static function isValidMime($formatMimeRecherchee)
     {
-        foreach (include(__DIR__ . '/const/mimes.php') as $formatsMime) {
+        foreach (include(__DIR__ . '/mimes.php') as $formatsMime) {
             if (in_array($formatMimeRecherchee, $formatsMime)) {
                 return true;
             }
@@ -47,12 +47,11 @@ class Tools
     /**
      * @param string $format
      * @return string|null
-     * @codeCoverageIgnore
      */
     public static function getMimePourFormat($format)
     {
         if (self::isValideFormat($format)) {
-            $tabFormats = include(__DIR__ . '/const/mimes.php');
+            $tabFormats = include(__DIR__ . '/mimes.php');
 
             return current($tabFormats[$format]);
         } else {
@@ -60,12 +59,16 @@ class Tools
         }
     }
 
+    /**
+     * @param string $formatMimeRecherchee
+     * @return mixed
+     */
     public static function getFormatPourMime($formatMimeRecherchee)
     {
         if (self::isValidMime($formatMimeRecherchee)) {
             $found = false;
 
-            foreach (include(__DIR__ . '/const/mimes.php') as $type => $formatsMime) {
+            foreach (include(__DIR__ . '/mimes.php') as $type => $formatsMime) {
                 if (in_array($formatMimeRecherchee, $formatsMime)) {
                     $found = $type;
                 }
@@ -75,5 +78,20 @@ class Tools
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param integer $statusHttp
+     * @return array
+     */
+    public static function getMessageHttpCode($statusHttp)
+    {
+        if (self::isValideHttpCode($statusHttp) === true) {
+            $listeCode = include(__DIR__ . '/httpcode.php');
+
+            return $listeCode[$statusHttp];
+        }
+
+        return null;
     }
 }

@@ -1,6 +1,8 @@
 <?php
 namespace AlaroxFramework\utils;
 
+use AlaroxFramework\utils\tools\Tools;
+
 class HtmlReponse
 {
     /**
