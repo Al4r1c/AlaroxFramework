@@ -18,29 +18,29 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
 
     public function goTestRender($tabVars = array(), $globalVars = array(), $remoteVars = array())
     {
-        $viewName = 'monTpl.twig';
+        $content = 'Some Plain Content';
 
-        $view = $this->getMock('\\AlaroxFramework\\utils\\View', array('getViewName', 'getVariables'));
-        $twigEnv = $this->getMock('\\Twig_Environment', array('loadTemplate'));
-        $twigTemplate = $this->getMockForAbstractClass('\\Twig_TemplateInterface');
+        $view = $this->getMock('\\AlaroxFramework\\utils\\view\\PlainView', array('getViewData', 'getVariables'));
+        $twigEnvFactory = $this->getMock('\\AlaroxFramework\\utils\\twig\\TwigEnvFactory', array('getTwigEnv'));
+        $twigEnv = $this->getMock('\\Twig_Environment', array('render'));
 
-        $view->expects($this->once())->method('getViewName')->will($this->returnValue($viewName));
+        $view->expects($this->once())->method('getViewData')->will($this->returnValue($content));
         $view->expects($this->once())->method('getVariables')->will(
             $this->returnValue($tabVars)
         );
 
-        $twigEnv->expects($this->once())->method('loadTemplate')->with($viewName)->will(
-            $this->returnValue($twigTemplate)
+        $twigEnvFactory->expects($this->once())->method('getTwigEnv')->with(substr(get_class($view), strrpos(get_class($view), '\\') + 1))->will(
+            $this->returnValue($twigEnv)
         );
 
-        $twigTemplate->expects($this->once())->method('render')->with($tabVars + $globalVars + $remoteVars)->will(
-            $this->returnValue('My template as string')
+        $twigEnv->expects($this->once())->method('render')->with($content, $tabVars + $globalVars + $remoteVars)->will(
+            $this->returnValue($content)
         );
 
         $this->setVars($globalVars, $remoteVars);
-        $this->_templateManager->setTwigEnv($twigEnv);
+        $this->_templateManager->setTwigEnvFactory($twigEnvFactory);
 
-        $this->assertEquals('My template as string', $this->_templateManager->render($view));
+        $this->assertEquals($content, $this->_templateManager->render($view));
     }
 
     /**
@@ -56,26 +56,29 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
             );
 
         $globalVar->expects($this->once())
-            ->method('getStaticVars')
-            ->will($this->returnValue($staticVars));
+        ->method('getStaticVars')
+        ->will($this->returnValue($staticVars));
 
         $globalVar->expects($this->once())
-            ->method('getRemoteVarsExecutees')
-            ->will($this->returnValue($remoteVars));
+        ->method('getRemoteVarsExecutees')
+        ->will($this->returnValue($remoteVars));
 
         $this->_templateManager->setGlobalVar($globalVar);
     }
+
 
     public function testInstance()
     {
         $this->assertInstanceOf('\\AlaroxFramework\\reponse\\TemplateManager', $this->_templateManager);
     }
 
-    public function testSetTwigEnv()
+    public function testSetTwigEnvFactory()
     {
-        $this->_templateManager->setTwigEnv($twigEnv = $this->getMock('\\Twig_Environment'));
+        $this->_templateManager->setTwigEnvFactory(
+            $twigEnv = $this->getMock('\\AlaroxFramework\\utils\\twig\\TwigEnvFactory')
+        );
 
-        $this->assertAttributeSame($twigEnv, '_twigEnv', $this->_templateManager);
+        $this->assertAttributeSame($twigEnv, '_twigEnvFactory', $this->_templateManager);
     }
 
     /**
@@ -83,7 +86,7 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetTwigEnvType()
     {
-        $this->_templateManager->setTwigEnv('raye');
+        $this->_templateManager->setTwigEnvFactory('raye');
     }
 
     public function testGlobalVar()
@@ -105,6 +108,37 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
         $this->goTestRender($tabVar, $globalVar, $remoteVars);
     }
 
+    public function testRenderAvecExtension()
+    {
+        $content = 'Some Plain Content';
+
+        $view = $this->getMock('\\AlaroxFramework\\utils\\view\\PlainView', array('getViewData', 'getVariables'));
+        $twigEnvFactory = $this->getMock('\\AlaroxFramework\\utils\\twig\\TwigEnvFactory', array('getTwigEnv'));
+        $twigEnv = $this->getMock('\\Twig_Environment', array('render', 'addExtension'));
+        $mockTwigExtInterface = $this->getMock('\Twig_ExtensionInterface');
+
+        $view->expects($this->once())->method('getViewData')->will($this->returnValue($content));
+        $view->expects($this->once())->method('getVariables')->will(
+            $this->returnValue(array())
+        );
+
+        $twigEnvFactory->expects($this->once())->method('getTwigEnv')->with(substr(get_class($view), strrpos(get_class($view), '\\') + 1))->will(
+            $this->returnValue($twigEnv)
+        );
+
+        $twigEnv->expects($this->once())->method('render')->with($content, array())->will(
+            $this->returnValue($content)
+        );
+
+        $twigEnv->expects($this->once())->method('addExtension')->with($mockTwigExtInterface);
+
+        $this->setVars(array(), array());
+        $this->_templateManager->setTwigEnvFactory($twigEnvFactory);
+        $this->_templateManager->addExtension($mockTwigExtInterface);
+
+        $this->assertEquals($content, $this->_templateManager->render($view));
+    }
+
     /**
      * @expectedException \Exception
      */
@@ -123,13 +157,15 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testAddExtension()
     {
-        $mockTwigEnv = $this->getMock('\Twig_Environment', array('addExtension'));
         $mockTwigExtInterface = $this->getMock('\Twig_ExtensionInterface');
 
-        $mockTwigEnv->expects($this->once())->method('addExtension')->with($mockTwigExtInterface);
+        $this->assertAttributeInternalType('array', '_listeExtension', $this->_templateManager);
+        $this->assertAttributeCount(0, '_listeExtension', $this->_templateManager);
 
-        $this->_templateManager->setTwigEnv($mockTwigEnv);
         $this->_templateManager->addExtension($mockTwigExtInterface);
+
+        $this->assertAttributeCount(1, '_listeExtension', $this->_templateManager);
+        $this->assertAttributeContains($mockTwigExtInterface, '_listeExtension', $this->_templateManager);
     }
 
     /**
@@ -138,13 +174,5 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
     public function testAddExtensionType()
     {
         $this->_templateManager->addExtension('letsbug');
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testAddExtensionTwigEnvNotSet()
-    {
-        $this->_templateManager->addExtension($this->getMock('\Twig_ExtensionInterface'));
     }
 }

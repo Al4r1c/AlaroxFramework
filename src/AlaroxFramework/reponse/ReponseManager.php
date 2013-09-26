@@ -2,7 +2,7 @@
 namespace AlaroxFramework\reponse;
 
 use AlaroxFramework\utils\HtmlReponse;
-use AlaroxFramework\utils\View;
+use AlaroxFramework\utils\view\AbstractView;
 
 class ReponseManager
 {
@@ -25,13 +25,13 @@ class ReponseManager
     }
 
     /**
-     * @param string|View $dataResponse
+     * @param string|AbstractView $dataResponse
      * @throws \Exception
      * @return HtmlReponse
      */
     public function getHtmlResponse($dataResponse)
     {
-        if ($dataResponse instanceof View) {
+        if ($dataResponse instanceof AbstractView) {
             if (is_null($this->_templateManager)) {
                 throw new \Exception('TemplateManager is not set.');
             }

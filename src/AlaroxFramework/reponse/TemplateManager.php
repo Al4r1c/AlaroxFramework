@@ -2,31 +2,37 @@
 namespace AlaroxFramework\reponse;
 
 use AlaroxFramework\cfg\globals\GlobalVars;
-use AlaroxFramework\utils\View;
+use AlaroxFramework\utils\twig\TwigEnvFactory;
+use AlaroxFramework\utils\view\AbstractView;
 
 class TemplateManager
 {
     /**
-     * @var \Twig_Environment
+     * @var TwigEnvFactory
      */
-    private $_twigEnv;
+    private $_twigEnvFactory;
 
     /**
      * @var GlobalVars
      */
-    private $_globalVar = array();
+    private $_globalVar;
 
     /**
-     * @param \Twig_Environment $twigEnv
+     * @var \Twig_ExtensionInterface[]
+     */
+    private $_listeExtension = array();
+
+    /**
+     * @param TwigEnvFactory $twigEnvFactory
      * @throws \InvalidArgumentException
      */
-    public function setTwigEnv($twigEnv)
+    public function setTwigEnvFactory($twigEnvFactory)
     {
-        if (!$twigEnv instanceof \Twig_Environment) {
-            throw new \InvalidArgumentException('Expected parameter 1 twigEnv to be instance of Twig_Environment.');
+        if (!$twigEnvFactory instanceof TwigEnvFactory) {
+            throw new \InvalidArgumentException('Expected parameter 1 twigEnvFactory to be instance of TwigEnvFactory.');
         }
 
-        $this->_twigEnv = $twigEnv;
+        $this->_twigEnvFactory = $twigEnvFactory;
     }
 
     /**
@@ -48,33 +54,29 @@ class TemplateManager
             throw new \InvalidArgumentException('Expected parameter 1 extension to be instance of Twig_ExtensionInterface.');
         }
 
-        if (is_null($this->_twigEnv)) {
-            throw new \Exception('Twig is not instantiated.');
-        }
-
-        $this->_twigEnv->addExtension($extension);
+        $this->_listeExtension[] = $extension;
     }
 
     /**
-     * @param View $view
+     * @param AbstractView $view
      * @throws \InvalidArgumentException
      * @throws \Exception
      * @return string
      */
     public function render($view)
     {
-
-        if (!$view instanceof View) {
-            throw new \InvalidArgumentException('Expected parameter 1 view to be instance of View.');
+        if (!$view instanceof AbstractView) {
+            throw new \InvalidArgumentException('Expected parameter 1 view to be instance of AbstractView.');
         }
 
-        if (is_null($this->_twigEnv)) {
-            throw new \Exception('Twig Environment is not set.');
+        $twigEnv = $this->_twigEnvFactory->getTwigEnv(substr(get_class($view), strrpos(get_class($view), '\\') + 1));
+
+        foreach ($this->_listeExtension as $uneExtention) {
+            $twigEnv->addExtension($uneExtention);
         }
 
-        $template = $this->_twigEnv->loadTemplate($view->getViewName());
-
-        return $template->render(
+        return $twigEnv->render(
+            $view->getViewData(),
             $view->getVariables() + $this->_globalVar->getStaticVars() + $this->_globalVar->getRemoteVarsExecutees()
         );
     }

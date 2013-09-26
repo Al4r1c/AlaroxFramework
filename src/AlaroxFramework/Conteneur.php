@@ -27,7 +27,11 @@ use AlaroxFramework\utils\parser\ParserFactory;
 use AlaroxFramework\utils\restclient\Curl;
 use AlaroxFramework\utils\restclient\CurlClient;
 use AlaroxFramework\utils\restclient\RestClient;
+use AlaroxFramework\utils\session\Session;
 use AlaroxFramework\utils\session\SessionClient;
+use AlaroxFramework\utils\Tools;
+use AlaroxFramework\utils\twig\TwigEnvFactory;
+use AlaroxFramework\utils\view\ViewFactory;
 
 class Conteneur
 {
@@ -133,6 +137,14 @@ class Conteneur
     }
 
     /**
+     * @return ViewFactory
+     */
+    private function getViewFactory()
+    {
+        return new ViewFactory();
+    }
+
+    /**
      * @param array $tabI18nConfig
      * @param string $repertoireLocales
      * @return Internationalization
@@ -175,7 +187,7 @@ class Conteneur
 
     /**
      * @param array $tabRestServer
-     * @return RestServer
+     * @return RestServerManager
      */
     private function getRestServerManager($tabRestServer)
     {
@@ -393,7 +405,7 @@ class Conteneur
      */
     private function &getAndStartSession()
     {
-        $session = new \AlaroxFramework\utils\session\Session();
+        $session = new Session();
         $session->startSession();
 
         return $session->getSession();
@@ -435,12 +447,13 @@ class Conteneur
         $dispatcher->setI18nActif($this->_config->getI18nConfig()->isActivated());
         $dispatcher->setRouteMap($this->_config->getRouteMap());
         $dispatcher->setControllerFactory($this->_config->getCtrlFactory());
+        $dispatcher->setViewFactory($this->getViewFactory());
 
         return $dispatcher;
     }
 
     /**
-     * @param RestServer $restServerManager
+     * @param RestServerManager $restServerManager
      * @return RestClient
      */
     private function getRestClient($restServerManager)
@@ -512,7 +525,7 @@ class Conteneur
         $templateManager = new TemplateManager();
 
         $templateManager->setGlobalVar($this->_config->getTemplateConfig()->getGlobalVariables());
-        $templateManager->setTwigEnv($this->initTwig($this->_config->getTemplateConfig()));
+        $templateManager->setTwigEnvFactory($this->getTwigFactory($this->_config->getTemplateConfig()));
 
         if ($this->_config->getI18nConfig()->isActivated() === true) {
             $arrayLanguages = array();
@@ -535,29 +548,13 @@ class Conteneur
 
     /**
      * @param TemplateConfig $templateConfig
-     * @return \Twig_Environment
+     * @return TwigEnvFactory
      */
-    private function initTwig($templateConfig)
+    private function getTwigFactory($templateConfig)
     {
-        $loader = new \Twig_Loader_Filesystem(array($templateConfig->getTemplateDirectory()));
+        $twigEnvFactory = new TwigEnvFactory();
+        $twigEnvFactory->setTemplateConfig($templateConfig);
 
-        $options = array(
-            'cache' => false,
-            'charset' => $templateConfig->getCharset(),
-            'autoescape' => 'html',
-            'strict_variables' => false,
-            'optimizations' => -1
-        );
-
-        if ($templateConfig->isCacheEnabled() === true) {
-            $options = array(
-                    'cache' => $templateConfig->getTemplateDirectory() . '/cache/',
-                    'auto_reload' => true
-                ) + $options;
-        }
-
-        $twigEnv = new \Twig_Environment($loader, $options);
-
-        return $twigEnv;
+        return $twigEnvFactory;
     }
 }

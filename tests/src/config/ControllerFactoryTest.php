@@ -26,7 +26,11 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testSetCtrls()
     {
-        $this->_ctrlFactory->setListControllers(array('Controller', 'Controller2'), $this->getSessionClient(), array());
+        $this->_ctrlFactory->setListControllers(
+            array('Controller', 'Controller2'),
+            $this->getSessionClient(),
+            array()
+        );
 
         $this->assertAttributeCount(2, '_listControllers', $this->_ctrlFactory);
         $this->assertAttributeContainsOnly('closure', '_listControllers', $this->_ctrlFactory);
@@ -65,10 +69,11 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
             array('postVar' => 'value')
         );
         $this->_ctrlFactory->setRestClient($this->getMock('AlaroxFramework\utils\restclient\RestClient'));
+        $viewFactory = $this->getMock('AlaroxFramework\utils\view\ViewFactory');
 
         $this->assertInstanceOf(
             '\\Tests\\fakecontrollers\\TestCtrl',
-            $testctrl = $this->_ctrlFactory->{'testctrl'}(array('some' => 'param'))
+            $testctrl = $this->_ctrlFactory->{'testctrl'}($viewFactory, array('some' => 'param'))
         );
 
         $class = new \ReflectionClass('\\Tests\\fakecontrollers\\TestCtrl');

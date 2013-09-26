@@ -4,7 +4,7 @@ namespace AlaroxFramework\utils\unparser;
 class UnparserFactory
 {
     /**
-     * @param $nomClasse
+     * @param string $nomClasse
      * @return AbstractUnparser
      * @throws \Exception
      */

@@ -1,12 +1,14 @@
 <?php
-namespace AlaroxFramework\utils;
+namespace AlaroxFramework\utils\view;
 
-class View
+use AlaroxFramework\utils\ObjetReponse;
+
+abstract class AbstractView
 {
     /**
      * @var string
      */
-    private $_viewName;
+    protected $_viewData;
 
     /**
      * @var array
@@ -16,10 +18,16 @@ class View
     /**
      * @return string
      */
-    public function getViewName()
+    public function getViewData()
     {
-        return $this->_viewName;
+        return $this->_viewData;
     }
+
+    /**
+     * @param $donnees
+     * @return $this
+     */
+    abstract public function renderView($donnees);
 
     /**
      * @return array
@@ -27,24 +35,6 @@ class View
     public function getVariables()
     {
         return $this->_variables;
-    }
-
-    /**
-     * @param string $viewName
-     * @throws \InvalidArgumentException
-     * @return $this
-     */
-    public function renderView($viewName)
-    {
-        $pathInfo = pathinfo($viewName);
-
-        if (!isset($pathInfo['extension']) || strcmp($pathInfo['extension'], 'twig') != 0) {
-            throw new \InvalidArgumentException('Expected twig template.');
-        }
-
-        $this->_viewName = $viewName;
-
-        return $this;
     }
 
     /**

@@ -62,12 +62,13 @@ class ControllerFactory
         foreach ($plainListControllers as $unControllerTrouve) {
             $tempNamespacesSepares = explode('\\', $unControllerTrouve);
             $this->_listControllers[strtolower(end($tempNamespacesSepares))] =
-                function ($restClient, $tabVariables) use ($unControllerTrouve, $sessionClient, $postVars) {
+                function ($restClient, $viewFactory, $tabVariables) use ($unControllerTrouve, $sessionClient, $postVars) {
                     /** @var GenericController $controller */
                     $controller = new $unControllerTrouve();
                     $controller->setRestClient($restClient);
                     $controller->setSessionClient($sessionClient);
                     $controller->setVariablesRequete($tabVariables);
+                    $controller->setViewFactory($viewFactory);
                     $controller->setVariablesPost($postVars);
 
                     return $controller;

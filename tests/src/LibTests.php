@@ -27,9 +27,13 @@ class LibTests
         $suite->addTestSuite('\Tests\lib\ToolsTest');
         $suite->addTestSuite('\Tests\lib\UnparserTest');
         $suite->addTestSuite('\Tests\lib\UnparserFactoryTest');
-        $suite->addTestSuite('\Tests\lib\ViewTest');
+        $suite->addTestSuite('\Tests\lib\view\AbstractViewTest');
+        $suite->addTestSuite('\Tests\lib\view\PlainViewTest');
+        $suite->addTestSuite('\Tests\lib\view\TemplateViewTest');
+        $suite->addTestSuite('\Tests\lib\view\ViewFactoryTest');
         $suite->addTestSuite('\Tests\lib\compressor\CompressorTest');
         $suite->addTestSuite('\Tests\lib\compressor\CompressorFactoryTest');
+        $suite->addTestSuite('\Tests\lib\TwigEnvFactoryTest');
 
 
         return $suite;

@@ -28,7 +28,7 @@ class TestCtrl extends GenericController
 
     public function sendRequest()
     {
-        $view = $this->generateView('templatetest.twig');
+        $view = $this->generateTemplateView('templatetest.twig');
 
         $resultRequete = $this->executeRequest(
             'myServer',

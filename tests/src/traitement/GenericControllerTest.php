@@ -62,17 +62,48 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($method->invokeArgs($this->_genericCtrl, array('keyNotFound')));
     }
 
-    public function testGenerateView()
+    public function goTestGenerateView($type, $contenuEntree, $contenuSortie)
     {
+        $view =
+            $this->getMock(
+                'AlaroxFramework\\utils\\view\\' . ucfirst($type) . 'View',
+                array('renderView', 'getViewData')
+            );
+        $viewFactory = $this->getMock('AlaroxFramework\\utils\\view\\ViewFactory', array('getView'));
+
+
+        $view->expects($this->once())->method('renderView')->with($contenuEntree);
+        $view->expects($this->once())->method('getViewData')->will($this->returnValue($contenuSortie));
+
+        $viewFactory->expects($this->once())
+        ->method('getView')
+        ->with($type)
+        ->will($this->returnValue($view));
+
+
         $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
-        $method = $class->getMethod('generateView');
+        $method = $class->getMethod('generate' . ucfirst($type) . 'View');
         $method->setAccessible(true);
 
+        $methodSetViewFactory = $class->getMethod('setViewFactory');
+        $methodSetViewFactory->invokeArgs($this->_genericCtrl, array($viewFactory));
+
         $this->assertInstanceOf(
-            'AlaroxFramework\\utils\\View',
-            $view = $method->invokeArgs($this->_genericCtrl, array('template.twig'))
+            'AlaroxFramework\\utils\\view\\' . ucfirst($type) . 'View',
+            $viewTest = $method->invokeArgs($this->_genericCtrl, array($contenuEntree))
         );
-        $this->assertEquals('template.twig', $view->getViewName());
+
+        $this->assertEquals($contenuSortie, $viewTest->getViewData());
+    }
+
+    public function testGeneratePlainView()
+    {
+        $this->goTestGenerateView('plain', 'Some Content', 'Some Content');
+    }
+
+    public function testGenerateTemplateView()
+    {
+        $this->goTestGenerateView('template', 'template.twig', 'TEMPLATE CONTENT');
     }
 
     public function testExecuteRequest()
@@ -137,7 +168,7 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
         $method->invokeArgs($this->_genericCtrl, array('var', 'value'));
 
-        $this->testGenerateView();
+        $this->testGeneratePlainView();
     }
 
     /**

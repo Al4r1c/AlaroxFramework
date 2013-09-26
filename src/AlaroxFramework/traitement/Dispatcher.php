@@ -4,7 +4,8 @@ namespace AlaroxFramework\traitement;
 use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\cfg\route\Route;
 use AlaroxFramework\cfg\route\RouteMap;
-use AlaroxFramework\utils\View;
+use AlaroxFramework\utils\view\AbstractView;
+use AlaroxFramework\utils\view\ViewFactory;
 
 class Dispatcher
 {
@@ -22,6 +23,11 @@ class Dispatcher
      * @var ControllerFactory
      */
     private $_controllerFactory;
+
+    /**
+     * @var ViewFactory
+     */
+    private $_viewFactory;
 
     /**
      * @var RouteMap
@@ -68,6 +74,19 @@ class Dispatcher
     }
 
     /**
+     * @param ViewFactory $viewFactory
+     * @throws \InvalidArgumentException
+     */
+    public function setViewFactory($viewFactory)
+    {
+        if (!$viewFactory instanceof ViewFactory) {
+            throw new \InvalidArgumentException('Expected parameter 1 viewFactory to be ViewFactory.');
+        }
+
+        $this->_viewFactory = $viewFactory;
+    }
+
+    /**
      * @param RouteMap $routeMap
      * @throws \InvalidArgumentException
      */
@@ -81,7 +100,7 @@ class Dispatcher
     }
 
     /**
-     * @return string|View
+     * @return string|AbstractView
      * @throws \Exception
      */
     public function executerActionRequise()
@@ -110,7 +129,7 @@ class Dispatcher
             $uriSansBaseDuMapping = trim(substr($this->_uriDemandee, strlen($staticAliasFound)), '/');
 
             if (!empty($uriSansBaseDuMapping)) {
-                $view = new View();
+                $view = $this->_viewFactory->getView('template');
                 $view->renderView($uriSansBaseDuMapping . '.twig');
 
                 return $view;
@@ -123,7 +142,7 @@ class Dispatcher
     }
 
     /**
-     * @return string|View
+     * @return string|AbstractView
      * @throws \Exception
      */
     private function dispatchAvecControlleur()
@@ -140,7 +159,7 @@ class Dispatcher
 
         try {
             $controlleur =
-                $this->_controllerFactory->{$nomClasseController}($tabVariablesRequete);
+                $this->_controllerFactory->{$nomClasseController}($this->_viewFactory, $tabVariablesRequete);
 
             if (method_exists($controlleur, 'beforeExecuteAction') === true) {
                 $controlleur->beforeExecuteAction();

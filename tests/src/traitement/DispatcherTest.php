@@ -22,15 +22,18 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      * @param string $uri
      * @param RouteMap $routeMap
      * @param array $tabVariablesAttendus
+     * @param string $ctrlName
      * @param bool $i18n
      */
-    private function setFakeInfos($uri, $routeMap, $tabVariablesAttendus = array(), $ctrlName = 'testctrl', $i18n = false)
+    private function setFakeInfos($uri, $routeMap, $tabVariablesAttendus = array(), $ctrlName = 'testctrl',
+        $i18n = false)
     {
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory', array('__call'));
+        $viewFactory = $this->getMock('\AlaroxFramework\utils\view\ViewFactory');
 
-        if($ctrlName == 'testctrl') {
+        if ($ctrlName == 'testctrl') {
             $ctrl = new TestCtrl();
-        } elseif($ctrlName == 'testctrlbeforeaction') {
+        } elseif ($ctrlName == 'testctrlbeforeaction') {
             $ctrl = new  TestCtrlBeforeAction();
         }
 
@@ -41,14 +44,14 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
                 $this->callback(
                     function ($o) use ($tabVariablesAttendus) {
                         foreach ($tabVariablesAttendus as $clefVariableAttendues => $uneVariableAttendue) {
-                            if (!array_key_exists($clefVariableAttendues, $o[0])) {
+                            if (!array_key_exists($clefVariableAttendues, $o[1])) {
                                 return false;
-                            } elseif ($o[0][$clefVariableAttendues] != $uneVariableAttendue) {
+                            } elseif ($o[1][$clefVariableAttendues] != $uneVariableAttendue) {
                                 return false;
                             }
                         }
 
-                        return count($o) == 1 && is_array($o[0]);
+                        return count($o) == 2 && is_array($o[1]);
                     }
                 )
             )
@@ -58,6 +61,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->_dispatcher->setRouteMap($routeMap);
         $this->_dispatcher->setControllerFactory($ctrlFactory);
         $this->_dispatcher->setI18nActif($i18n);
+        $this->_dispatcher->setViewFactory($viewFactory);
     }
 
     /**
@@ -67,11 +71,13 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     private function setFakeInfosForException($uri, $routeMap)
     {
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory');
+        $viewFactory = $this->getMock('\AlaroxFramework\utils\view\ViewFactory');
 
         $this->_dispatcher->setUriDemandee($uri);
         $this->_dispatcher->setRouteMap($routeMap);
         $this->_dispatcher->setControllerFactory($ctrlFactory);
         $this->_dispatcher->setI18nActif(false);
+        $this->_dispatcher->setViewFactory($viewFactory);
     }
 
     /**
@@ -168,6 +174,23 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->_dispatcher->setI18nActif('exception');
     }
 
+    public function testSetViewFactory()
+    {
+        $viewFactory = $this->getMock('\AlaroxFramework\utils\view\ViewFactory');
+
+        $this->_dispatcher->setViewFactory($viewFactory);
+
+        $this->assertAttributeSame($viewFactory, '_viewFactory', $this->_dispatcher);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetViewFactoryInstance()
+    {
+        $this->_dispatcher->setViewFactory('bugbug');
+    }
+
     /**
      * @expectedException \Exception
      */
@@ -188,6 +211,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testControllerFactoryException()
     {
+        $viewFactory = $this->getMock('\AlaroxFramework\utils\view\ViewFactory');
+
         $ctrlFactory = $this->getMock('\AlaroxFramework\cfg\configs\ControllerFactory', array('__call'));
         $ctrlFactory->expects($this->once())
         ->method('__call')
@@ -197,6 +222,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $this->_dispatcher->setRouteMap($this->getDefaultRouteMap());
         $this->_dispatcher->setControllerFactory($ctrlFactory);
         $this->_dispatcher->setI18nActif(false);
+        $this->_dispatcher->setViewFactory($viewFactory);
 
         $this->_dispatcher->executerActionRequise();
     }
@@ -823,6 +849,14 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     public function testStatic()
     {
         $routeMap = $this->getMock('\AlaroxFramework\cfg\route\RouteMap', array('getStaticAliases'));
+        $viewFactory = $this->getMock('\AlaroxFramework\utils\view\ViewFactory', array('getView'));
+        $templateView = $this->getMock('\AlaroxFramework\utils\view\TemplateView', array('renderView', 'getViewData'));
+
+        $viewFactory->expects($this->once())->method('getView')->with('template')->will(
+            $this->returnValue($templateView)
+        );
+        $templateView->expects($this->once())->method('renderView')->with('nothing/file.twig');
+        $templateView->expects($this->once())->method('getViewData')->will($this->returnValue('nothing/file.twig'));
 
 
         $routeMap->expects($this->once())
@@ -831,9 +865,13 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
 
         $this->setFakeInfosForException('/pageStatique/nothing/file', $routeMap);
+        $this->_dispatcher->setViewFactory($viewFactory);
 
-        $this->assertInstanceOf('AlaroxFramework\\utils\\View', $view = $this->_dispatcher->executerActionRequise());
-        $this->assertEquals('nothing/file.twig', $view->getViewName());
+        $this->assertInstanceOf(
+            'AlaroxFramework\\utils\\view\\TemplateView',
+            $view = $this->_dispatcher->executerActionRequise()
+        );
+        $this->assertEquals('nothing/file.twig', $view->getViewData());
     }
 
     /**

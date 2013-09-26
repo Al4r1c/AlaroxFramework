@@ -7,7 +7,10 @@ use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\restclient\RestClient;
 use AlaroxFramework\utils\session\SessionClient;
-use AlaroxFramework\utils\View;
+use AlaroxFramework\utils\view\AbstractView;
+use AlaroxFramework\utils\view\PlainView;
+use AlaroxFramework\utils\view\TemplateView;
+use AlaroxFramework\utils\view\ViewFactory;
 
 abstract class GenericController
 {
@@ -20,6 +23,11 @@ abstract class GenericController
      * @var SessionClient
      */
     private $_sessionClient;
+
+    /**
+     * @var ViewFactory
+     */
+    private $_viewFactory;
 
     /**
      * @var array
@@ -130,6 +138,14 @@ abstract class GenericController
     }
 
     /**
+     * @param ViewFactory $viewFactory
+     */
+    public function setViewFactory($viewFactory)
+    {
+        $this->_viewFactory = $viewFactory;
+    }
+
+    /**
      * @param array $tabVariables
      * @throws \InvalidArgumentException
      */
@@ -161,13 +177,32 @@ abstract class GenericController
 
     /**
      * @param string $templateName
-     * @return View
+     * @return PlainView
      */
-    protected function generateView($templateName)
+    protected function generatePlainView($templateName)
     {
-        $view = new View();
+        return $this->generateTemplate($templateName, 'plain');
+    }
 
-        $view->renderView($templateName);
+    /**
+     * @param string $templateName
+     * @return TemplateView
+     */
+    protected function generateTemplateView($templateName)
+    {
+        return $this->generateTemplate($templateName, 'template');
+    }
+
+    /**
+     * @param string $renderContent
+     * @param string $viewType
+     * @return AbstractView
+     */
+    private function generateTemplate($renderContent, $viewType)
+    {
+        $view = $this->_viewFactory->getView($viewType);
+
+        $view->renderView($renderContent);
 
         foreach ($this->_beforeGenerateView as $key => $uneVariable) {
             $view->with($key, $uneVariable);

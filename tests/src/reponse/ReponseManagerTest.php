@@ -39,7 +39,7 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetHtmlResponseWithView()
     {
-        $view = $this->getMock('\\AlaroxFramework\\utils\\View');
+        $view = $this->getMockForAbstractClass('\\AlaroxFramework\\utils\\view\\AbstractView');
         $templateManager = $this->getMock('\\AlaroxFramework\\reponse\\TemplateManager', array('render'));
 
         $templateManager
@@ -64,7 +64,7 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHtmlResponseWithViewNeedTemplateManager()
     {
-        $view = $this->getMock('\\AlaroxFramework\\utils\\View');
+        $view = $this->getMockForAbstractClass('\\AlaroxFramework\\utils\\view\\AbstractView');
 
         $this->_reponseManager->getHtmlResponse($view);
     }
