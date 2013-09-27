@@ -41,7 +41,7 @@ abstract class AbstractView
      * @param string $key
      * @param mixed $value
      * @throws \InvalidArgumentException
-     * @return $this
+     * @return AbstractView
      */
     public function with($key, $value)
     {
@@ -61,7 +61,7 @@ abstract class AbstractView
     /**
      * @param array $mapVar
      * @throws \InvalidArgumentException
-     * @return $this
+     * @return AbstractView
      */
     public function withMap($mapVar)
     {
@@ -80,7 +80,7 @@ abstract class AbstractView
      * @param ObjetReponse $objetReponse
      * @param string $clef
      * @throws \InvalidArgumentException
-     * @return $this
+     * @return AbstractView
      */
     public function withResponseObject($objetReponse, $clef = 'responseObject')
     {
