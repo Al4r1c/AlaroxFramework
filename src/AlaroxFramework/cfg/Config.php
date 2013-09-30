@@ -55,8 +55,6 @@ class Config
         'TemplateConfig',
         'InternationalizationConfig',
         'InternationalizationConfig.Enabled',
-        'InternationalizationConfig.Default_language',
-        'InternationalizationConfig.Available',
         'TemplateConfig.Cache',
         'TemplateConfig.Charset',
         'TemplateConfig.Variables',
