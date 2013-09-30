@@ -96,4 +96,13 @@ class TemplateConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->_templateConfig->setGlobalVariables('exception');
     }
+
+    public function testNotFoundTemplate()
+    {
+        $errorView = $this->getMock('\\AlaroxFramework\\view\\PlainView');
+
+        $this->_templateConfig->setNotFoundTemplate($errorView);
+
+        $this->assertSame($errorView, $this->_templateConfig->getNotFoundTemplate());
+    }
 }

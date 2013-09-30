@@ -2,6 +2,7 @@
 namespace AlaroxFramework\cfg\configs;
 
 use AlaroxFramework\cfg\globals\GlobalVars;
+use AlaroxFramework\utils\view\PlainView;
 
 class TemplateConfig
 {
@@ -24,6 +25,11 @@ class TemplateConfig
      * @var string
      */
     private $_templateDirectory;
+
+    /**
+     * @var PlainView
+     */
+    private $_notFoundTemplate;
 
     /**
      * @return boolean
@@ -55,6 +61,14 @@ class TemplateConfig
     public function getGlobalVariables()
     {
         return $this->_globalVariables;
+    }
+
+    /**
+     * @return PlainView
+     */
+    public function getNotFoundTemplate()
+    {
+        return $this->_notFoundTemplate;
     }
 
     /**
@@ -115,5 +129,13 @@ class TemplateConfig
         }
 
         $this->_templateDirectory = $repertoireTemplates;
+    }
+
+    /**
+     * @param PlainView $errors
+     */
+    public function setNotFoundTemplate($errors)
+    {
+        $this->_notFoundTemplate = $errors;
     }
 }

@@ -29,7 +29,7 @@ use AlaroxFramework\utils\restclient\CurlClient;
 use AlaroxFramework\utils\restclient\RestClient;
 use AlaroxFramework\utils\session\Session;
 use AlaroxFramework\utils\session\SessionClient;
-use AlaroxFramework\utils\Tools;
+use AlaroxFramework\utils\tools\Tools;
 use AlaroxFramework\utils\twig\TwigEnvFactory;
 use AlaroxFramework\utils\view\ViewFactory;
 
@@ -132,6 +132,23 @@ class Conteneur
             $this->getGlobalVars($tabTemplateConfig['variables'])
         );
         $templateConfig->setTemplateDirectory($repertoireTemplates);
+
+
+        $viewFactory = $this->getViewFactory();
+
+        if (isset($tabTemplateConfig['notfoundpage']) && is_array($tabTemplateConfig['notfoundpage'])) {
+            $notFoundView = $viewFactory->getView($tabTemplateConfig['notfoundpage']['type']);
+            $notFoundView->renderView($tabTemplateConfig['notfoundpage']['value']);
+        } else {
+            $notFoundView = $viewFactory->getView('plain');
+            $notFoundView->renderView(
+                '<h1>HTTP 404 ' . Tools::getMessageHttpCode(404)[0] . '</h1><h2>' .
+                Tools::getMessageHttpCode(404)[1] .
+                '</h2><h3>{{ errorMessage }}</h3>'
+            );
+        }
+
+        $templateConfig->setNotFoundTemplate($notFoundView);
 
         return $templateConfig;
     }
@@ -291,7 +308,7 @@ class Conteneur
     {
         $remoteVars = new RemoteVars();
 
-        $remoteVars->setRestClient($this->_config->getRestClient());
+        $remoteVars->setRestClient($this->getConfig()->getRestClient());
 
         if (!empty($arrayRemote)) {
             if (!is_array($arrayRemote)) {
@@ -342,7 +359,7 @@ class Conteneur
     private function getControllerFactory($repertoireControlleurs, $postVars, $filesVars)
     {
         $ctrlFactory = new ControllerFactory();
-        $ctrlFactory->setRestClient($this->_config->getRestClient());
+        $ctrlFactory->setRestClient($this->getConfig()->getRestClient());
 
         $controllers = $this->scanControllerDir($repertoireControlleurs);
 
@@ -443,10 +460,10 @@ class Conteneur
     {
         $dispatcher = new Dispatcher();
 
-        $dispatcher->setUriDemandee($this->_config->getServer()->getUneVariableServeur('REQUEST_URI_NODIR'));
-        $dispatcher->setI18nActif($this->_config->getI18nConfig()->isActivated());
-        $dispatcher->setRouteMap($this->_config->getRouteMap());
-        $dispatcher->setControllerFactory($this->_config->getCtrlFactory());
+        $dispatcher->setUriDemandee($this->getConfig()->getServer()->getUneVariableServeur('REQUEST_URI_NODIR'));
+        $dispatcher->setI18nActif($this->getConfig()->getI18nConfig()->isActivated());
+        $dispatcher->setRouteMap($this->getConfig()->getRouteMap());
+        $dispatcher->setControllerFactory($this->getConfig()->getCtrlFactory());
         $dispatcher->setViewFactory($this->getViewFactory());
 
         return $dispatcher;
@@ -513,6 +530,7 @@ class Conteneur
         $responseManager = new ReponseManager();
 
         $responseManager->setTemplateManager($this->getTemplateManager());
+        $responseManager->setNotFoundTemplate($this->getConfig()->getTemplateConfig()->getNotFoundTemplate());
 
         return $responseManager;
     }
@@ -524,20 +542,20 @@ class Conteneur
     {
         $templateManager = new TemplateManager();
 
-        $templateManager->setGlobalVar($this->_config->getTemplateConfig()->getGlobalVariables());
-        $templateManager->setTwigEnvFactory($this->getTwigFactory($this->_config->getTemplateConfig()));
+        $templateManager->setGlobalVar($this->getConfig()->getTemplateConfig()->getGlobalVariables());
+        $templateManager->setTwigEnvFactory($this->getTwigFactory($this->getConfig()->getTemplateConfig()));
 
-        if ($this->_config->getI18nConfig()->isActivated() === true) {
+        if ($this->getConfig()->getI18nConfig()->isActivated() === true) {
             $arrayLanguages = array();
 
-            foreach ($this->_config->getI18nConfig()->getLanguesDispo() as $uneLangueDispo) {
+            foreach ($this->getConfig()->getI18nConfig()->getLanguesDispo() as $uneLangueDispo) {
                 $arrayLanguages[$uneLangueDispo->getIdentifiant()] = $uneLangueDispo->getNomFichier();
             }
 
             $templateManager->addExtension(
                 new \Twig_I18nExtension_Extension_I18n(
-                    $this->_config->getI18nConfig()->getLangueDefaut()->getAlias(),
-                    $this->_config->getI18nConfig()->getDossierLocales(),
+                    $this->getConfig()->getI18nConfig()->getLangueDefaut()->getAlias(),
+                    $this->getConfig()->getI18nConfig()->getDossierLocales(),
                     $arrayLanguages
                 )
             );

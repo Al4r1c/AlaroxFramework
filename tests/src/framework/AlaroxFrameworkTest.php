@@ -2,7 +2,7 @@
 namespace Tests\Framework;
 
 use AlaroxFramework\AlaroxFramework;
-use AlaroxFramework\utils\HtmlReponse;
+use AlaroxFramework\traitement\RouteNotFoundException;
 
 class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 {
@@ -62,9 +62,9 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 
         $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('createConfiguration'));
         $conteneur->expects($this->once())
-            ->method('createConfiguration')
-            ->with($arrayCfg)
-            ->will($this->returnValue($this->getMock('\\AlaroxFramework\\cfg\\Config')));
+        ->method('createConfiguration')
+        ->with($arrayCfg)
+        ->will($this->returnValue($this->getMock('\\AlaroxFramework\\cfg\\Config')));
 
         $this->_framework->setConteneur($conteneur);
 
@@ -98,12 +98,12 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         );
 
         $conteneur->expects($this->once())
-            ->method('getDispatcher')
-            ->will($this->returnValue($dispatcher));
+        ->method('getDispatcher')
+        ->will($this->returnValue($dispatcher));
 
         $conteneur->expects($this->once())
-            ->method('getResponseManager')
-            ->will($this->returnValue($reponseManager));
+        ->method('getResponseManager')
+        ->will($this->returnValue($reponseManager));
 
 
         $this->_framework->setConteneur($conteneur);
@@ -114,70 +114,103 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(200, $htmlReponse->getStatusHttp());
     }
 
-    public function testErreurWebsiteProdDispatcher()
+    public function testErreurDispatcherRouteException()
     {
-        $this->assertInstanceOf('\\AlaroxFramework\\utils\\HtmlReponse', $htmlReponse = $this->erreurDispatcher(true));
-        $this->assertEquals(404, $htmlReponse->getStatusHttp());
-    }
-
-    public function testErreurWebsiteProdResponseManager()
-    {
-        $this->assertInstanceOf(
-            '\\AlaroxFramework\\utils\\HtmlReponse',
-            $htmlReponse = $this->erreurReponseManager(true)
-        );
-        $this->assertEquals(500, $htmlReponse->getStatusHttp());
-    }
-
-    /**
-     * @return HtmlReponse
-     */
-    private function erreurDispatcher()
-    {
-        $conteneur = $this->getFakeConteneur(array('getDispatcher'));
+        $conteneur = $this->getFakeConteneur(array('getDispatcher', 'getResponseManager'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
+        $responseManager = $this->getMock('\\AlaroxFramework\\response\\ResponseManager', array('getNotFoundTemplate'));
+        $htmlResponseError = $this->getMock('\\AlaroxFramework\\utils\\HtmlResponse', array('getStatusHttp'));
 
 
         $dispatcher
-            ->expects($this->once())
-            ->method('executerActionRequise')
-            ->will($this->throwException(new \Exception()));
+        ->expects($this->once())
+        ->method('executerActionRequise')
+        ->will($this->throwException(new RouteNotFoundException()));
 
         $conteneur->expects($this->once())
-            ->method('getDispatcher')
-            ->will($this->returnValue($dispatcher));
+        ->method('getDispatcher')
+        ->will($this->returnValue($dispatcher));
+
+        $conteneur->expects($this->once())
+        ->method('getResponseManager')
+        ->will($this->returnValue($responseManager));
+
+        $responseManager->expects($this->once())
+        ->method('getNotFoundTemplate')
+        ->will($this->returnValue($htmlResponseError));
+
+        $htmlResponseError->expects($this->once())
+        ->method('getStatusHttp')
+        ->will($this->returnValue(404));
 
 
         $this->_framework->setConteneur($conteneur);
 
-        return $this->_framework->process();
+        $htmlReponse = $this->_framework->process();
+
+        $this->assertEquals(404, $htmlReponse->getStatusHttp());
     }
 
-    /**
-     * @return HtmlReponse
-     */
-    private function erreurReponseManager()
+    public function testErreurDispatcherFatalException()
+    {
+        $conteneur = $this->getFakeConteneur(array('getDispatcher', 'getResponseManager'));
+        $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
+        $responseManager = $this->getMock('\\AlaroxFramework\\response\\ResponseManager', array('getNotFoundTemplate'));
+
+
+        $dispatcher
+        ->expects($this->once())
+        ->method('executerActionRequise')
+        ->will($this->throwException(new RouteNotFoundException));
+
+        $conteneur->expects($this->once())
+        ->method('getDispatcher')
+        ->will($this->returnValue($dispatcher));
+
+        $conteneur->expects($this->once())
+        ->method('getResponseManager')
+        ->will($this->returnValue($responseManager));
+
+        $responseManager->expects($this->once())
+        ->method('getNotFoundTemplate')
+        ->will($this->throwException(new \Exception()));
+
+
+        $this->_framework->setConteneur($conteneur);
+
+        $htmlReponse = $this->_framework->process();
+
+        $this->assertEquals(500, $htmlReponse->getStatusHttp());
+    }
+
+    public function testErreurWebsiteProdResponseManager()
     {
         $conteneur = $this->getFakeConteneur(array('getDispatcher', 'getResponseManager'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher');
         $responseManager = $this->getMock('\\AlaroxFramework\\reponse\\ReponseManager', array('getHtmlResponse'));
 
         $responseManager
-            ->expects($this->once())
-            ->method('getHtmlResponse')
-            ->will($this->throwException(new \Exception()));
+        ->expects($this->once())
+        ->method('getHtmlResponse')
+        ->will($this->throwException(new \Exception()));
 
         $conteneur->expects($this->once())
-            ->method('getDispatcher')
-            ->will($this->returnValue($dispatcher));
+        ->method('getDispatcher')
+        ->will($this->returnValue($dispatcher));
 
         $conteneur->expects($this->once())
-            ->method('getResponseManager')
-            ->will($this->returnValue($responseManager));
+        ->method('getResponseManager')
+        ->will($this->returnValue($responseManager));
 
         $this->_framework->setConteneur($conteneur);
 
-        return $this->_framework->process();
+        $htmlReponse = $this->_framework->process();
+
+        $this->assertInstanceOf(
+            '\\AlaroxFramework\\utils\\HtmlReponse',
+            $htmlReponse
+        );
+        $this->assertEquals(500, $htmlReponse->getStatusHttp());
     }
 
     private function getFakeConteneur($tabMethodes)

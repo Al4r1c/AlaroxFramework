@@ -43,10 +43,10 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
         $templateManager = $this->getMock('\\AlaroxFramework\\reponse\\TemplateManager', array('render'));
 
         $templateManager
-            ->expects($this->once())
-            ->method('render')
-            ->with($view)
-            ->will($this->returnValue("<html></html>"));
+        ->expects($this->once())
+        ->method('render')
+        ->with($view)
+        ->will($this->returnValue("<html></html>"));
 
 
         $this->_reponseManager->setTemplateManager($templateManager);
@@ -77,5 +77,29 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals("myString", $htmlReponse->getReponse());
         $this->assertEquals(200, $htmlReponse->getStatusHttp());
+    }
+
+    public function testNotFoundTemplate()
+    {
+        $errorView = $this->getMock('\\AlaroxFramework\\view\\PlainView', array('withMap'));
+        $templateManager = $this->getMock('\\AlaroxFramework\\reponse\\TemplateManager');
+
+        $errorView->expects($this->once())
+        ->method('withMap')
+        ->with(
+                array(
+                    'errorCode' => 404,
+                    'errorMessage' => 'some Error'
+                )
+            );
+
+        $templateManager->expects($this->once())
+        ->method('render')
+        ->will($this->returnValue('some Error'));
+
+        $this->_reponseManager->setNotFoundTemplate($errorView);
+        $this->_reponseManager->setTemplateManager($templateManager);
+
+        $this->assertEquals('some Error', $this->_reponseManager->getNotFoundTemplate('some Error')->getReponse());
     }
 }

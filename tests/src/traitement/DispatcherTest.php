@@ -120,7 +120,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \InvalidArgumentException
      */
     public function testSetUriFausse()
     {
@@ -228,7 +228,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \AlaroxFramework\traitement\RouteNotFoundException
      */
     public function testExecuterUriVideRouteNonTrouvee()
     {
@@ -238,7 +238,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \AlaroxFramework\traitement\RouteNotFoundException
      */
     public function testExecuterActionMaisActionMethodePrivee()
     {
@@ -248,7 +248,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \AlaroxFramework\traitement\RouteNotFoundException
      */
     public function testExecuterUriNonVideMaisRouteNonTrouvee()
     {
@@ -340,7 +340,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \AlaroxFramework\traitement\RouteNotFoundException
      */
     public function testExecuterUriNonVideUriSansBaseVideMaisActionDefautNonSet()
     {
@@ -588,7 +588,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \AlaroxFramework\traitement\RouteNotFoundException
      */
     public function testExecuterUriNonVideUriSansBaseNonVideMappingStatiqueGeneriqueNonTrouve()
     {
@@ -628,7 +628,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \AlaroxFramework\traitement\RouteNotFoundException
      */
     public function testExecuterUriNonVideUriSansBaseNonVideMappingTooMuchArg()
     {
@@ -806,7 +806,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \AlaroxFramework\traitement\RouteNotFoundException
      */
     public function testExecuterUriNonVideUriSansBaseNonVideMaisACtionNonTrouvee()
     {
@@ -875,7 +875,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \AlaroxFramework\traitement\RouteNotFoundException
      */
     public function testStaticUriVide()
     {
