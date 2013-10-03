@@ -118,9 +118,9 @@ class Dispatcher
         }
 
         $staticAliasFound = false;
-        foreach ($this->_routeMap->getStaticAliases() as $unAliasStatic) {
-            if ($this->testUriMatch($this->_uriDemandee, $unAliasStatic)) {
-                $staticAliasFound = $unAliasStatic;
+        foreach (($listeStaticAliases = $this->_routeMap->getStaticAliases()) as $uriStatic => $unAliasStatic) {
+            if ($this->testUriMatch($this->_uriDemandee, $uriStatic)) {
+                $staticAliasFound = $uriStatic;
                 break;
             }
         }
@@ -130,7 +130,7 @@ class Dispatcher
 
             if (!empty($uriSansBaseDuMapping)) {
                 $view = $this->_viewFactory->getView('template');
-                $view->renderView($uriSansBaseDuMapping . '.twig');
+                $view->renderView($listeStaticAliases[$staticAliasFound] . '/' . $uriSansBaseDuMapping . '.twig');
 
                 return $view;
             } else {

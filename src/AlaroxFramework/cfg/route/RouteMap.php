@@ -82,17 +82,9 @@ class RouteMap
     public function setStaticAliases($staticAliases)
     {
         if (is_array($staticAliases)) {
-            $i = 0;
-            while ($i < count($staticAliases)) {
-                if (!startsWith($uri = rtrim(preg_replace('#(\/)\1+#', '$1', $staticAliases[$i]), '/'), '/')) {
-                    $uri = '/' . $uri;
-                }
-
-                $staticAliases[$i] = $uri;
-                $i++;
+            foreach ($staticAliases as $uriStatic => $folderStatic) {
+                $this->_staticAliases[rtrim(preg_replace('#(\/)\1+#', '$1', $uriStatic), '/')] = $folderStatic;
             }
-
-            $this->_staticAliases = $staticAliases;
         }
     }
 

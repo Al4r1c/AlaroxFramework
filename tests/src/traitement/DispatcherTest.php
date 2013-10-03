@@ -855,13 +855,13 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $viewFactory->expects($this->once())->method('getView')->with('template')->will(
             $this->returnValue($templateView)
         );
-        $templateView->expects($this->once())->method('renderView')->with('nothing/file.twig');
-        $templateView->expects($this->once())->method('getViewData')->will($this->returnValue('nothing/file.twig'));
+        $templateView->expects($this->once())->method('renderView')->with('monDossierStatic/nothing/file.twig');
+        $templateView->expects($this->once())->method('getViewData')->will($this->returnValue('monDossierStatic/nothing/file.twig'));
 
 
         $routeMap->expects($this->once())
         ->method('getStaticAliases')
-        ->will($this->returnValue(array('/pageStatique')));
+        ->will($this->returnValue(array('/pageStatique' => 'monDossierStatic')));
 
 
         $this->setFakeInfosForException('/pageStatique/nothing/file', $routeMap);
@@ -871,7 +871,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
             'AlaroxFramework\\utils\\view\\TemplateView',
             $view = $this->_dispatcher->executerActionRequise()
         );
-        $this->assertEquals('nothing/file.twig', $view->getViewData());
+        $this->assertEquals('monDossierStatic/nothing/file.twig', $view->getViewData());
     }
 
     /**
@@ -884,7 +884,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 
         $routeMap->expects($this->once())
         ->method('getStaticAliases')
-        ->will($this->returnValue(array('/pageStatique')));
+        ->will($this->returnValue(array('/pageStatique' => 'folder')));
 
 
         $this->setFakeInfosForException('/pageStatique', $routeMap);
