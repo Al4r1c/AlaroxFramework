@@ -32,10 +32,10 @@
 	],
 	"require": {
 		"php": ">=5.4.0",
-		"alarox/AlaroxClassLoader": "v1.0",
-		"alarox/AlaroxFileManager": "v0.4",
+		"alarox/AlaroxClassLoader": "v1.01",
+		"alarox/AlaroxFileManager": "v0.42",
 		"twig/twigi18n": "v1.1",
-		"twig/twig": "v1.13.1",
+		"twig/twig": "v1.14.0",
 		"mikey179/vfsStream": "v1.2.0"
 	},
 	"autoload": {
