@@ -15,6 +15,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         'SERVER_ADDR' => '127.0.0.1',
         'SERVER_PORT' => '80',
         'REMOTE_ADDR' => '127.0.0.1',
+        'QUERY_STRING' => '',
         'DOCUMENT_ROOT' => 'C:\www\nice',
         'REQUEST_URI' => '/nice/ctrl/id',
         'PHP_SELF' => '/nice/index.php'
@@ -74,5 +75,17 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->_server->setServeurVariables($donneesServeur);
 
         $this->assertEquals('/ctrl/id', $this->_server->getUneVariableServeur('REQUEST_URI_NODIR'));
+    }
+
+    public function testSetServeurVariableQueryStringt()
+    {
+        $donneesServeur = self::$donneesServer;
+        $donneesServeur['PHP_SELF'] = '/index.php';
+        $donneesServeur['REQUEST_URI'] = '/someuri?id=1';
+        $donneesServeur['QUERY_STRING'] = 'id=1';
+
+        $this->_server->setServeurVariables($donneesServeur);
+
+        $this->assertEquals('/someuri', $this->_server->getUneVariableServeur('REQUEST_URI_NODIR'));
     }
 }

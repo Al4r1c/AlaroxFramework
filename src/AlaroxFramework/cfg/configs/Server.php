@@ -51,7 +51,7 @@ class Server
         $this->_serveurVariables = $serverVar;
         $this->_serveurVariables['REQUEST_URI_NODIR'] =
             substr(
-                $serverVar['REQUEST_URI'],
+                str_replace('?' . $serverVar['QUERY_STRING'], '', $serverVar['REQUEST_URI']),
                 strlen(pathinfo($serverVar['PHP_SELF'])['dirname']) -
                 intval(endsWith(DIRECTORY_SEPARATOR, pathinfo($serverVar['PHP_SELF'])['dirname']))
             );
