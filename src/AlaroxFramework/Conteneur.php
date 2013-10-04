@@ -110,7 +110,7 @@ class Conteneur
         $this->_config->setServer($this->getServer());
 
         $this->_config->setCtrlFactory(
-            $this->getControllerFactory($arrayConfiguration['controllersPath'], $_POST, $_FILES)
+            $this->getControllerFactory($arrayConfiguration['controllersPath'], $_POST + $_GET, $_FILES)
         );
 
         $this->_config->setRouteMap($this->getRoute($arrayConfiguration['routeFile']));
@@ -352,11 +352,11 @@ class Conteneur
 
     /**
      * @param string $repertoireControlleurs
-     * @param array $postVars
+     * @param array $queryVars
      * @param array $filesVars
      * @return ControllerFactory
      */
-    private function getControllerFactory($repertoireControlleurs, $postVars, $filesVars)
+    private function getControllerFactory($repertoireControlleurs, $queryVars, $filesVars)
     {
         $ctrlFactory = new ControllerFactory();
         $ctrlFactory->setRestClient($this->getConfig()->getRestClient());
@@ -364,10 +364,10 @@ class Conteneur
         $controllers = $this->scanControllerDir($repertoireControlleurs);
 
         if (!empty($filesVars)) {
-            $postVars['uploadedFile'] = $filesVars;
+            $queryVars['uploadedFile'] = $filesVars;
         }
 
-        $ctrlFactory->setListControllers($controllers, $this->getSessionClient(), $postVars);
+        $ctrlFactory->setListControllers($controllers, $this->getSessionClient(), $queryVars);
 
         return $ctrlFactory;
     }

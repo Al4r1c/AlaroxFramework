@@ -32,7 +32,7 @@ class TestCtrl extends GenericController
 
         $resultRequete = $this->executeRequest(
             'myServer',
-            new ObjetRequete('/produit', 'GET', array('_id' => $this->getUneVariableRequete('id')))
+            new ObjetRequete('/produit', 'GET', array('_id' => $this->getUneVariableUri('id')))
         );
 
         return $view->withResponseObject($resultRequete);

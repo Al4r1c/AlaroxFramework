@@ -33,10 +33,10 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testTabVariables()
     {
-        $this->_genericCtrl->setVariablesRequete(array('var1' => 'val1'));
+        $this->_genericCtrl->setVariablesUri(array('var1' => 'val1'));
 
         $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
-        $method = $class->getMethod('getVariablesRequete');
+        $method = $class->getMethod('getVariablesUri');
         $method->setAccessible(true);
 
         $this->assertEquals(array('var1' => 'val1'), $method->invoke($this->_genericCtrl));
@@ -47,15 +47,15 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testTabVariablesArray()
     {
-        $this->_genericCtrl->setVariablesRequete('exception');
+        $this->_genericCtrl->setVariablesUri('exception');
     }
 
     public function testGetUneVariable()
     {
-        $this->_genericCtrl->setVariablesRequete(array('paramKey' => 'maVar'));
+        $this->_genericCtrl->setVariablesUri(array('paramKey' => 'maVar'));
 
         $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
-        $method = $class->getMethod('getUneVariableRequete');
+        $method = $class->getMethod('getUneVariableUri');
         $method->setAccessible(true);
 
         $this->assertEquals('maVar', $method->invokeArgs($this->_genericCtrl, array('paramKey')));
@@ -128,10 +128,10 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testVariablesPost()
     {
-        $this->_genericCtrl->setVariablesPost(array('lets' => 'go'));
+        $this->_genericCtrl->setVariablesRequete(array('lets' => 'go'));
 
         $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
-        $method = $class->getMethod('getVariablesPost');
+        $method = $class->getMethod('getVariablesRequete');
         $method->setAccessible(true);
 
         $this->assertEquals(array('lets' => 'go'), $method->invoke($this->_genericCtrl));
@@ -139,10 +139,10 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetUneVariablePost()
     {
-        $this->_genericCtrl->setVariablesPost(array('aaa' => 'bbb'));
+        $this->_genericCtrl->setVariablesRequete(array('aaa' => 'bbb'));
 
         $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
-        $method = $class->getMethod('getUneVariablePost');
+        $method = $class->getMethod('getUneVariableRequete');
         $method->setAccessible(true);
 
         $this->assertEquals('bbb', $method->invokeArgs($this->_genericCtrl, array('aaa')));

@@ -77,9 +77,9 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         );
 
         $class = new \ReflectionClass('\\Tests\\fakecontrollers\\TestCtrl');
-        $methodVar = $class->getMethod('getVariablesRequete');
+        $methodVar = $class->getMethod('getVariablesUri');
         $methodVar->setAccessible(true);
-        $methodPost = $class->getMethod('getVariablesPost');
+        $methodPost = $class->getMethod('getVariablesRequete');
         $methodPost->setAccessible(true);
 
         $this->assertEquals(array('some' => 'param'), $methodVar->invoke($testctrl));

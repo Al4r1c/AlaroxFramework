@@ -32,12 +32,12 @@ abstract class GenericController
     /**
      * @var array
      */
-    private $_variablesRequete;
+    private $_variablesUri;
 
     /**
      * @var array
      */
-    private $_variablesPost;
+    private $_variablesRequete;
 
     /**
      * @var array
@@ -57,6 +57,27 @@ abstract class GenericController
     /**
      * @return array
      */
+    protected function getVariablesUri()
+    {
+        return $this->_variablesUri;
+    }
+
+    /**
+     * @param string $clef
+     * @return string|null
+     */
+    protected function getUneVariableUri($clef)
+    {
+        if (array_key_exists($clef, $this->_variablesUri)) {
+            return $this->_variablesUri[$clef];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @return array
+     */
     protected function getVariablesRequete()
     {
         return $this->_variablesRequete;
@@ -70,27 +91,6 @@ abstract class GenericController
     {
         if (array_key_exists($clef, $this->_variablesRequete)) {
             return $this->_variablesRequete[$clef];
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @return array
-     */
-    protected function getVariablesPost()
-    {
-        return $this->_variablesPost;
-    }
-
-    /**
-     * @param string $clef
-     * @return string|null
-     */
-    protected function getUneVariablePost($clef)
-    {
-        if (array_key_exists($clef, $this->_variablesPost)) {
-            return $this->_variablesPost[$clef];
         } else {
             return null;
         }
@@ -149,21 +149,21 @@ abstract class GenericController
      * @param array $tabVariables
      * @throws \InvalidArgumentException
      */
-    public function setVariablesRequete($tabVariables)
+    public function setVariablesUri($tabVariables)
     {
         if (!is_array($tabVariables)) {
             throw new \InvalidArgumentException('Expected parameter 1 tabVariables to be array.');
         }
 
-        $this->_variablesRequete = $tabVariables;
+        $this->_variablesUri = $tabVariables;
     }
 
     /**
-     * @param array $tabPostVars
+     * @param array $tabQueryVars
      */
-    public function setVariablesPost($tabPostVars)
+    public function setVariablesRequete($tabQueryVars)
     {
-        $this->_variablesPost = $tabPostVars;
+        $this->_variablesRequete = $tabQueryVars;
     }
 
     /**
