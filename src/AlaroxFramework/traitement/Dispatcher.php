@@ -101,7 +101,7 @@ class Dispatcher
 
     /**
      * @return string|AbstractView
-     * @throws RouteNotFoundException
+     * @throws NotFoundException
      */
     public function executerActionRequise()
     {
@@ -134,7 +134,7 @@ class Dispatcher
 
                 return $view;
             } else {
-                throw new RouteNotFoundException(sprintf(
+                throw new NotFoundException(sprintf(
                     'Static template not found for uri %s.',
                     $uriSansBaseDuMapping
                 ));
@@ -146,7 +146,7 @@ class Dispatcher
 
     /**
      * @return string|AbstractView
-     * @throws RouteNotFoundException
+     * @throws NotFoundException
      */
     private function dispatchAvecControlleur()
     {
@@ -168,7 +168,7 @@ class Dispatcher
                 $controlleur->beforeExecuteAction();
             }
         } catch (\Exception $uneException) {
-            throw new RouteNotFoundException(sprintf(
+            throw new NotFoundException(sprintf(
                 'Can\'t load controller "%s" for uri "%s": %s.',
                 $nomClasseController,
                 $this->_uriDemandee,
@@ -181,14 +181,14 @@ class Dispatcher
             if (is_callable(array($controlleur, $actionAEffectuer))) {
                 return $controlleur->{$actionAEffectuer}();
             } else {
-                throw new RouteNotFoundException(sprintf(
+                throw new NotFoundException(sprintf(
                     'Action "%s" not reachable in controller "%s".',
                     $actionAEffectuer,
                     $nomClasseController
                 ));
             }
         } else {
-            throw new RouteNotFoundException(sprintf(
+            throw new NotFoundException(sprintf(
                 'Action "%s" not found in controller "%s".',
                 $actionAEffectuer,
                 $nomClasseController
@@ -198,7 +198,7 @@ class Dispatcher
 
     /**
      * @return array
-     * @throws RouteNotFoundException
+     * @throws NotFoundException
      */
     private function dispatchUri()
     {
@@ -219,10 +219,10 @@ class Dispatcher
 
                 return $actionAEffectuerEtVariable;
             } else {
-                throw new RouteNotFoundException(sprintf('No action found for uri "%s".', $this->_uriDemandee));
+                throw new NotFoundException(sprintf('No action found for uri "%s".', $this->_uriDemandee));
             }
         } else {
-            throw new RouteNotFoundException(sprintf('No route mapped for uri "%s".', $this->_uriDemandee));
+            throw new NotFoundException(sprintf('No route mapped for uri "%s".', $this->_uriDemandee));
         }
     }
 

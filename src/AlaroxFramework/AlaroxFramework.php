@@ -2,7 +2,7 @@
 namespace AlaroxFramework;
 
 use AlaroxFramework\cfg\Config;
-use AlaroxFramework\traitement\RouteNotFoundException;
+use AlaroxFramework\traitement\NotFoundException;
 use AlaroxFramework\utils\HtmlReponse;
 
 class AlaroxFramework
@@ -60,7 +60,7 @@ class AlaroxFramework
             } catch (\Exception $exception) {
                 $htmlReponse = $this->htmlResponseError($exception);
             }
-        } catch (RouteNotFoundException $exception) {
+        } catch (NotFoundException $exception) {
             try {
                 $htmlReponse = $this->_conteneur->getResponseManager()->getNotFoundTemplate($exception->getMessage());
             } catch (\Exception $exception) {

@@ -2,7 +2,7 @@
 namespace Tests\Framework;
 
 use AlaroxFramework\AlaroxFramework;
-use AlaroxFramework\traitement\RouteNotFoundException;
+use AlaroxFramework\traitement\NotFoundException;
 
 class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
 {
@@ -125,7 +125,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $dispatcher
         ->expects($this->once())
         ->method('executerActionRequise')
-        ->will($this->throwException(new RouteNotFoundException()));
+        ->will($this->throwException(new NotFoundException()));
 
         $conteneur->expects($this->once())
         ->method('getDispatcher')
@@ -161,7 +161,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         $dispatcher
         ->expects($this->once())
         ->method('executerActionRequise')
-        ->will($this->throwException(new RouteNotFoundException));
+        ->will($this->throwException(new NotFoundException));
 
         $conteneur->expects($this->once())
         ->method('getDispatcher')

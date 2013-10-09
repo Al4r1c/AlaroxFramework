@@ -3,6 +3,7 @@ namespace AlaroxFramework\traitement\controller;
 
 use AlaroxFileManager\AlaroxFile;
 use AlaroxFileManager\FileManager\File;
+use AlaroxFramework\traitement\NotFoundException;
 use AlaroxFramework\utils\ObjetReponse;
 use AlaroxFramework\utils\ObjetRequete;
 use AlaroxFramework\utils\restclient\RestClient;
@@ -236,5 +237,13 @@ abstract class GenericController
             exit();
             // @codeCoverageIgnoreEnd
         }
+    }
+
+    /**
+     * @throws NotFoundException
+     */
+    protected function send404()
+    {
+        throw new NotFoundException();
     }
 }

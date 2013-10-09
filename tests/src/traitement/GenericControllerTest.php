@@ -225,4 +225,16 @@ class GenericControllerTest extends \PHPUnit_Framework_TestCase
             $method->invoke($this->_genericCtrl)
         );
     }
+
+    /**
+     * @expectedException \AlaroxFramework\traitement\NotFoundException
+     */
+    public function test404()
+    {
+        $class = new \ReflectionClass('AlaroxFramework\\traitement\\controller\\GenericController');
+        $method = $class->getMethod('send404');
+        $method->setAccessible(true);
+
+        $method->invoke($this->_genericCtrl);
+    }
 }
