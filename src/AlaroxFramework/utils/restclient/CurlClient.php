@@ -132,15 +132,12 @@ class CurlClient
                 $this->_curl->ajouterOption(CURLOPT_POST, true);
                 break;
             case 'PUT':
-                $fichierTempEcriture = tmpFile();
-                $donneesAEnvoyer = $this->buildPostBody($objetRequete->getBody(), $restServer->getFormatEnvoi());
-
-                fwrite($fichierTempEcriture, $this->compressData($donneesAEnvoyer, $restServer->getCompressor()));
-                rewind($fichierTempEcriture);
-
-                $this->_curl->ajouterOption(CURLOPT_INFILE, $fichierTempEcriture);
-                $this->_curl->ajouterOption(CURLOPT_INFILESIZE, strlen($donneesAEnvoyer));
-                $this->_curl->ajouterOption(CURLOPT_PUT, true);
+                $this->_curl->ajouterOption(CURLOPT_RETURNTRANSFER, true);
+                $this->_curl->ajouterOption(CURLOPT_CUSTOMREQUEST, 'PUT');
+                $this->_curl->ajouterOption(
+                    CURLOPT_POSTFIELDS,
+                    $this->compressData($donneesAEnvoyer, $restServer->getCompressor())
+                );
                 break;
             case 'DELETE':
                 $this->_curl->ajouterOption(CURLOPT_CUSTOMREQUEST, 'DELETE');
@@ -167,10 +164,6 @@ class CurlClient
 
         if (($pos = strpos($contentType = $reponseInfo['content_type'], ';')) !== false) {
             $contentType = substr($reponseInfo['content_type'], 0, $pos);
-        }
-
-        if (isset($fichierTempEcriture)) {
-            fclose($fichierTempEcriture);
         }
 
         return new ObjetReponse($reponseInfo['http_code'], $responseCurl, $contentType);
