@@ -26,6 +26,7 @@ use AlaroxFramework\utils\parser\Parser;
 use AlaroxFramework\utils\parser\ParserFactory;
 use AlaroxFramework\utils\restclient\Curl;
 use AlaroxFramework\utils\restclient\CurlClient;
+use AlaroxFramework\utils\restclient\ParallelCurl;
 use AlaroxFramework\utils\restclient\RestClient;
 use AlaroxFramework\utils\session\Session;
 use AlaroxFramework\utils\session\SessionClient;
@@ -494,6 +495,7 @@ class Conteneur
         $curlClient->setParser($this->getParser());
         $curlClient->setCompressor($this->getCompressor());
         $curlClient->setTime(time());
+        $curlClient->setParallelCurl($this->getParallelCurl());
 
         return $curlClient;
     }
@@ -520,6 +522,14 @@ class Conteneur
         $compressor->setCompressorFactory(new CompressorFactory());
 
         return $compressor;
+    }
+
+    /**
+     * @return ParallelCurl
+     */
+    private function getParallelCurl()
+    {
+        return new ParallelCurl(10);
     }
 
     /**

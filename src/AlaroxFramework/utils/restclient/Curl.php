@@ -13,6 +13,14 @@ class Curl
      */
     private $_headersOptions = array();
 
+    /**
+     * @return resource
+     */
+    public function getCurl()
+    {
+        return $this->_curl;
+    }
+
     public function initialize()
     {
         $this->_curl = curl_init();
@@ -49,15 +57,11 @@ class Curl
         }
     }
 
-    public function executer()
+    public function prepare()
     {
         $this->ajouterUnHeader('Expect', ' ');
 
         $this->ajouterOption(CURLOPT_HTTPHEADER, $this->_headersOptions);
-
-        $resultat = curl_exec($this->_curl);
-
-        return array($resultat, curl_getinfo($this->_curl));
     }
 
     public function __destruct()

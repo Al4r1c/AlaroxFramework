@@ -31,6 +31,11 @@ class CurlClient
     private $_time;
 
     /**
+     * @var ParallelCurl
+     */
+    private $_parallelCurl;
+
+    /**
      * @param Curl $curl
      * @throws \InvalidArgumentException
      */
@@ -81,6 +86,19 @@ class CurlClient
         }
 
         $this->_time = $timestamp;
+    }
+
+    /**
+     * @param ParallelCurl $parallelCurl
+     * @throws \InvalidArgumentException
+     */
+    public function setParallelCurl($parallelCurl)
+    {
+        if (!$parallelCurl instanceof ParallelCurl) {
+            throw new \InvalidArgumentException('Expected parameter 1 parallelCurl to be instance of ParalleleCurl.');
+        }
+
+        $this->_parallelCurl = $parallelCurl;
     }
 
     /**
@@ -210,7 +228,9 @@ class CurlClient
                 'Date' => $date)
         );
 
-        return $this->_curl->executer();
+        $this->_curl->prepare();
+
+        return $this->_parallelCurl->executerCurl($this->_curl);
     }
 
     /**
