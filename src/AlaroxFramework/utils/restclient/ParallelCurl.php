@@ -1,8 +1,8 @@
 <?php
-namespace AlaroxFramework\utils\restclient;
-
-    // Original code by Pete Warden <pete@petewarden.com>
+// Original code by Pete Warden <pete@petewarden.com>
 //http://petewarden.typepad.com for more
+
+namespace AlaroxFramework\utils\restclient;
 
 class ParallelCurl
 {
@@ -58,13 +58,20 @@ class ParallelCurl
             $this->waitForOutstandingRequestsToDropBelow($this->maxRequests);
         }
 
+
         curl_multi_add_handle($this->multiHandle, $curlHandle);
 
         $ch_array_key = (int)$curlHandle;
 
         $this->outstandingRequests[$ch_array_key] = true;
 
-        return $this->checkForCompletedRequests();
+
+        do {
+            $result = $this->checkForCompletedRequests('ko');
+            usleep(1);
+        } while ($result == null);
+
+        return $result;
     }
 
     public function finishAllRequests()
@@ -75,9 +82,18 @@ class ParallelCurl
     private function checkForCompletedRequests()
     {
         do {
-            curl_multi_exec($this->multiHandle, $running);
-            curl_multi_select($this->multiHandle);
-        } while ($running > 0);
+            $mrc = curl_multi_exec($this->multiHandle, $active);
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+        while ($active && $mrc == CURLM_OK) {
+            if (curl_multi_select($this->multiHandle) != -1) {
+                do {
+                    $mrc = curl_multi_exec($this->multiHandle, $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            } else {
+                return null;
+            }
+        }
 
         while ($info = curl_multi_info_read($this->multiHandle)) {
             $curlHandle = $info['handle'];
@@ -105,6 +121,7 @@ class ParallelCurl
     {
         while (1) {
             $this->checkForCompletedRequests();
+
             if (count($this->outstandingRequests) < $max) {
                 break;
             }
