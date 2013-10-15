@@ -42,7 +42,10 @@ class AlaroxFramework
             }
         }
 
-        $configurationArray = $configurationArray + array('localesPath' => '');
+        $configurationArray = $configurationArray + array(
+                'localesPath' => '',
+                'twigExtending' => array()
+            );
 
         $this->_conteneur->createConfiguration($configurationArray);
     }

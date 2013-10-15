@@ -105,4 +105,13 @@ class TemplateConfigTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($errorView, $this->_templateConfig->getNotFoundTemplate());
     }
+
+    public function testTwigExtensionList()
+    {
+        $extList = array();
+
+        $this->_templateConfig->setTwigExtensionsList($extList);
+
+        $this->assertSame($extList, $this->_templateConfig->getTwigExtensionsList());
+    }
 }

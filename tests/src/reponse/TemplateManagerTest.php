@@ -29,9 +29,11 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
             $this->returnValue($tabVars)
         );
 
-        $twigEnvFactory->expects($this->once())->method('getTwigEnv')->with(substr(get_class($view), strrpos(get_class($view), '\\') + 1))->will(
-            $this->returnValue($twigEnv)
-        );
+        $twigEnvFactory->expects($this->once())->method('getTwigEnv')->with(
+            substr(get_class($view), strrpos(get_class($view), '\\') + 1)
+        )->will(
+                $this->returnValue($twigEnv)
+            );
 
         $twigEnv->expects($this->once())->method('render')->with($content, $tabVars + $globalVars + $remoteVars)->will(
             $this->returnValue($content)
@@ -122,9 +124,11 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
             $this->returnValue(array())
         );
 
-        $twigEnvFactory->expects($this->once())->method('getTwigEnv')->with(substr(get_class($view), strrpos(get_class($view), '\\') + 1))->will(
-            $this->returnValue($twigEnv)
-        );
+        $twigEnvFactory->expects($this->once())->method('getTwigEnv')->with(
+            substr(get_class($view), strrpos(get_class($view), '\\') + 1)
+        )->will(
+                $this->returnValue($twigEnv)
+            );
 
         $twigEnv->expects($this->once())->method('render')->with($content, array())->will(
             $this->returnValue($content)
@@ -174,5 +178,91 @@ class TemplateManagerTest extends \PHPUnit_Framework_TestCase
     public function testAddExtensionType()
     {
         $this->_templateManager->addExtension('letsbug');
+    }
+
+    public function testAddFilter()
+    {
+        $mockTwigFilter = $this->getMockBuilder('\Twig_SimpleFilter')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+
+        $this->assertAttributeInternalType('array', '_listeFilters', $this->_templateManager);
+        $this->assertAttributeCount(0, '_listeFilters', $this->_templateManager);
+
+        $this->_templateManager->addFilter($mockTwigFilter);
+
+        $this->assertAttributeCount(1, '_listeFilters', $this->_templateManager);
+        $this->assertAttributeContains($mockTwigFilter, '_listeFilters', $this->_templateManager);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddFilterType()
+    {
+        $this->_templateManager->addFilter(50);
+    }
+
+    public function testAddFunction()
+    {
+        $mockTwigFunction = $this->getMockBuilder('\Twig_SimpleFunction')
+                            ->disableOriginalConstructor()
+                            ->getMock();
+
+        $this->assertAttributeInternalType('array', '_listeFunctions', $this->_templateManager);
+        $this->assertAttributeCount(0, '_listeFunctions', $this->_templateManager);
+
+        $this->_templateManager->addFunction($mockTwigFunction);
+
+        $this->assertAttributeCount(1, '_listeFunctions', $this->_templateManager);
+        $this->assertAttributeContains($mockTwigFunction, '_listeFunctions', $this->_templateManager);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddFunctionType()
+    {
+        $this->_templateManager->addFunction(array());
+    }
+
+    public function testRenderAvecFilterFunction()
+    {
+        $content = 'Some Plain Content';
+
+        $view = $this->getMock('\\AlaroxFramework\\utils\\view\\PlainView', array('getViewData', 'getVariables'));
+        $twigEnvFactory = $this->getMock('\\AlaroxFramework\\utils\\twig\\TwigEnvFactory', array('getTwigEnv'));
+        $twigEnv = $this->getMock('\\Twig_Environment', array('render', 'addFilter', 'addFunction'));
+        $mockFilter = $this->getMockBuilder('\Twig_SimpleFilter')
+                      ->disableOriginalConstructor()
+                      ->getMock();
+        $mockFunction = $this->getMockBuilder('\Twig_SimpleFunction')
+                        ->disableOriginalConstructor()
+                        ->getMock();
+
+        $view->expects($this->once())->method('getViewData')->will($this->returnValue($content));
+        $view->expects($this->once())->method('getVariables')->will(
+            $this->returnValue(array())
+        );
+
+        $twigEnvFactory->expects($this->once())->method('getTwigEnv')->with(
+            substr(get_class($view), strrpos(get_class($view), '\\') + 1)
+        )->will(
+                $this->returnValue($twigEnv)
+            );
+
+        $twigEnv->expects($this->once())->method('render')->with($content, array())->will(
+            $this->returnValue($content)
+        );
+
+        $twigEnv->expects($this->once())->method('addFilter')->with($mockFilter);
+        $twigEnv->expects($this->once())->method('addFunction')->with($mockFunction);
+
+        $this->setVars(array(), array());
+        $this->_templateManager->setTwigEnvFactory($twigEnvFactory);
+        $this->_templateManager->addFilter($mockFilter);
+        $this->_templateManager->addFunction($mockFunction);
+
+        $this->assertEquals($content, $this->_templateManager->render($view));
     }
 }

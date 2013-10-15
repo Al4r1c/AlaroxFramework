@@ -23,6 +23,16 @@ class TemplateManager
     private $_listeExtension = array();
 
     /**
+     * @var \Twig_SimpleFilter[]
+     */
+    private $_listeFilters = array();
+
+    /**
+     * @var \Twig_SimpleFunction[]
+     */
+    private $_listeFunctions = array();
+
+    /**
      * @param TwigEnvFactory $twigEnvFactory
      * @throws \InvalidArgumentException
      */
@@ -58,6 +68,34 @@ class TemplateManager
     }
 
     /**
+     * @param \Twig_SimpleFilter $filtre
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public function addFilter($filtre)
+    {
+        if (!$filtre instanceof \Twig_SimpleFilter) {
+            throw new \InvalidArgumentException('Expected parameter 1 extension to be instance of Twig_SimpleFilter.');
+        }
+
+        $this->_listeFilters[] = $filtre;
+    }
+
+    /**
+     * @param \Twig_SimpleFunction $fonction
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
+    public function addFunction($fonction)
+    {
+        if (!$fonction instanceof \Twig_SimpleFunction) {
+            throw new \InvalidArgumentException('Expected parameter 1 extension to be instance of Twig_SimpleFunction.');
+        }
+
+        $this->_listeFunctions[] = $fonction;
+    }
+
+    /**
      * @param AbstractView $view
      * @throws \InvalidArgumentException
      * @throws \Exception
@@ -73,6 +111,14 @@ class TemplateManager
 
         foreach ($this->_listeExtension as $uneExtention) {
             $twigEnv->addExtension($uneExtention);
+        }
+
+        foreach ($this->_listeFilters as $unFiltre) {
+            $twigEnv->addFilter($unFiltre);
+        }
+
+        foreach ($this->_listeFunctions as $uneFonction) {
+            $twigEnv->addFunction($uneFonction);
         }
 
         return $twigEnv->render(

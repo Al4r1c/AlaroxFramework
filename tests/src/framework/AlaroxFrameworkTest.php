@@ -57,7 +57,8 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
             'routeFile' => '/path/to/routemap',
             'controllersPath' => '/path/to/controllers',
             'templatesPath' => '/path/to/templates/',
-            'localesPath' => '/path/to/locale/'
+            'localesPath' => '/path/to/locale/',
+            'twigExtending' => array()
         );
 
         $conteneur = $this->getMock('\\AlaroxFramework\\Conteneur', array('createConfiguration'));

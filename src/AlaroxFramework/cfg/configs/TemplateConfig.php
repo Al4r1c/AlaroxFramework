@@ -27,6 +27,11 @@ class TemplateConfig
     private $_templateDirectory;
 
     /**
+     * @var array
+     */
+    private $_twigExtensionsList;
+
+    /**
      * @var PlainView
      */
     private $_notFoundTemplate;
@@ -69,6 +74,14 @@ class TemplateConfig
     public function getNotFoundTemplate()
     {
         return $this->_notFoundTemplate;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTwigExtensionsList()
+    {
+        return $this->_twigExtensionsList;
     }
 
     /**
@@ -137,5 +150,13 @@ class TemplateConfig
     public function setNotFoundTemplate($errors)
     {
         $this->_notFoundTemplate = $errors;
+    }
+
+    /**
+     * @param array $twigExtensionsList
+     */
+    public function setTwigExtensionsList($twigExtensionsList)
+    {
+        $this->_twigExtensionsList = $twigExtensionsList;
     }
 }

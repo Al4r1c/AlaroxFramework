@@ -97,7 +97,8 @@ class Conteneur
         $this->_config->setTemplateConfig(
             $this->getTemplateConfig(
                 $tabCfg['templateconfig'],
-                $arrayConfiguration['templatesPath']
+                $arrayConfiguration['templatesPath'],
+                $arrayConfiguration['twigExtending']
             )
         );
 
@@ -120,9 +121,10 @@ class Conteneur
     /**
      * @param array $tabTemplateConfig
      * @param string $repertoireTemplates
+     * @param array $twigExtensions
      * @return TemplateConfig
      */
-    private function getTemplateConfig($tabTemplateConfig, $repertoireTemplates)
+    private function getTemplateConfig($tabTemplateConfig, $repertoireTemplates, $twigExtensions)
     {
         $tabTemplateConfig = array_change_key_case($tabTemplateConfig, CASE_LOWER);
 
@@ -133,6 +135,7 @@ class Conteneur
             $this->getGlobalVars($tabTemplateConfig['variables'])
         );
         $templateConfig->setTemplateDirectory($repertoireTemplates);
+        $templateConfig->setTwigExtensionsList($twigExtensions);
 
 
         $viewFactory = $this->getViewFactory();
@@ -569,6 +572,22 @@ class Conteneur
                     $arrayLanguages
                 )
             );
+        }
+
+        foreach ($this->getConfig()->getTemplateConfig()->getTwigExtensionsList() as $uneExtension) {
+            switch (get_class($uneExtension)) {
+                case 'Twig_SimpleFunction':
+                    $templateManager->addFunction($uneExtension);
+                    break;
+                case 'Twig_SimpleFilter':
+                    $templateManager->addFilter($uneExtension);
+                    break;
+                default:
+                    if ($uneExtension instanceof \Twig_ExtensionInterface) {
+                        $templateManager->addExtension($uneExtension);
+                    }
+                    break;
+            }
         }
 
         return $templateManager;
