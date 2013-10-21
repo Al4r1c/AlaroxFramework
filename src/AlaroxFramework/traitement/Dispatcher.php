@@ -160,40 +160,7 @@ class Dispatcher
             list($nomClasseController, $actionAEffectuer, $tabVariablesRequete) = $this->dispatchUri();
         }
 
-        try {
-            $controlleur =
-                $this->_controllerFactory->{$nomClasseController}($this->_viewFactory, $tabVariablesRequete);
-
-            if (method_exists($controlleur, 'beforeExecuteAction') === true) {
-                $controlleur->beforeExecuteAction();
-            }
-        } catch (\Exception $uneException) {
-            throw new NotFoundException(sprintf(
-                'Can\'t load controller "%s" for uri "%s": %s.',
-                $nomClasseController,
-                $this->_uriDemandee,
-                $uneException->getMessage()
-            ));
-        }
-
-
-        if (method_exists($controlleur, $actionAEffectuer)) {
-            if (is_callable(array($controlleur, $actionAEffectuer))) {
-                return $controlleur->{$actionAEffectuer}();
-            } else {
-                throw new NotFoundException(sprintf(
-                    'Action "%s" not reachable in controller "%s".',
-                    $actionAEffectuer,
-                    $nomClasseController
-                ));
-            }
-        } else {
-            throw new NotFoundException(sprintf(
-                'Action "%s" not found in controller "%s".',
-                $actionAEffectuer,
-                $nomClasseController
-            ));
-        }
+        return $this->executerControlleur($nomClasseController, $actionAEffectuer, $tabVariablesRequete);
     }
 
     /**
@@ -329,5 +296,50 @@ class Dispatcher
         }
 
         return $tabVariables;
+    }
+
+    /**
+     * @param string $nomClasseController
+     * @param string $actionAEffectuer
+     * @param array $tabVariablesRequete
+     * @return mixed
+     * @throws NotFoundException
+     */
+    private function executerControleur($nomClasseController, $actionAEffectuer, $tabVariablesRequete)
+    {
+        try {
+            $controlleur =
+                $this->_controllerFactory->{$nomClasseController}($this->_viewFactory, $tabVariablesRequete);
+
+            if (method_exists($controlleur, 'beforeExecuteAction') === true) {
+                $controlleur->beforeExecuteAction();
+            }
+        } catch (\Exception $uneException) {
+            throw new NotFoundException(sprintf(
+                'Can\'t load controller "%s" for uri "%s": %s.',
+                $nomClasseController,
+                $this->_uriDemandee,
+                $uneException->getMessage()
+            ));
+        }
+
+
+        if (method_exists($controlleur, $actionAEffectuer)) {
+            if (is_callable(array($controlleur, $actionAEffectuer))) {
+                return $controlleur->{$actionAEffectuer}();
+            } else {
+                throw new NotFoundException(sprintf(
+                    'Action "%s" not reachable in controller "%s".',
+                    $actionAEffectuer,
+                    $nomClasseController
+                ));
+            }
+        } else {
+            throw new NotFoundException(sprintf(
+                'Action "%s" not found in controller "%s".',
+                $actionAEffectuer,
+                $nomClasseController
+            ));
+        }
     }
 }
