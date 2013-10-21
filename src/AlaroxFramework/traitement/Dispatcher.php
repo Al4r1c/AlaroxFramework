@@ -160,7 +160,7 @@ class Dispatcher
             list($nomClasseController, $actionAEffectuer, $tabVariablesRequete) = $this->dispatchUri();
         }
 
-        return $this->executerControlleur($nomClasseController, $actionAEffectuer, $tabVariablesRequete);
+        return $this->executerControleur($nomClasseController, $actionAEffectuer, $tabVariablesRequete);
     }
 
     /**
