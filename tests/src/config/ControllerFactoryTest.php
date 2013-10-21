@@ -3,6 +3,7 @@ namespace Tests\config;
 
 use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\utils\session\SessionClient;
+use AlaroxFramework\utils\view\ViewFactory;
 
 class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,12 +25,21 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         return $this->getMock('AlaroxFramework\utils\session\SessionClient');
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|ViewFactory
+     */
+    private function getViewFactory()
+    {
+        return $this->getMock('AlaroxFramework\utils\view\ViewFactory');
+    }
+
     public function testSetCtrls()
     {
         $this->_ctrlFactory->setListControllers(
             array('Controller', 'Controller2'),
             $this->getSessionClient(),
-            array()
+            array(),
+            $this->getViewFactory()
         );
 
         $this->assertAttributeCount(2, '_listControllers', $this->_ctrlFactory);
@@ -41,7 +51,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetCtrlsArray()
     {
-        $this->_ctrlFactory->setListControllers(9, $this->getSessionClient(), array());
+        $this->_ctrlFactory->setListControllers(9, $this->getSessionClient(), array(), $this->getViewFactory());
     }
 
     public function testRestClient()
@@ -66,14 +76,15 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_ctrlFactory->setListControllers(
             array('\\Tests\\fakecontrollers\\TestCtrl'),
             $this->getSessionClient(),
-            array('postVar' => 'value')
+            array('postVar' => 'value'),
+            $this->getViewFactory()
         );
         $this->_ctrlFactory->setRestClient($this->getMock('AlaroxFramework\utils\restclient\RestClient'));
         $viewFactory = $this->getMock('AlaroxFramework\utils\view\ViewFactory');
 
         $this->assertInstanceOf(
             '\\Tests\\fakecontrollers\\TestCtrl',
-            $testctrl = $this->_ctrlFactory->{'testctrl'}($viewFactory, array('some' => 'param'))
+            $testctrl = $this->_ctrlFactory->{'testctrl'}(array('some' => 'param'))
         );
 
         $class = new \ReflectionClass('\\Tests\\fakecontrollers\\TestCtrl');

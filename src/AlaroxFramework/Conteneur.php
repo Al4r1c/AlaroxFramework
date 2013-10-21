@@ -18,6 +18,7 @@ use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\exceptions\ErreurHandler;
 use AlaroxFramework\reponse\ReponseManager;
 use AlaroxFramework\reponse\TemplateManager;
+use AlaroxFramework\traitement\ControllerExecutor;
 use AlaroxFramework\traitement\Dispatcher;
 use AlaroxFramework\utils\compressor\Compressor;
 use AlaroxFramework\utils\compressor\CompressorFactory;
@@ -32,6 +33,7 @@ use AlaroxFramework\utils\session\Session;
 use AlaroxFramework\utils\session\SessionClient;
 use AlaroxFramework\utils\tools\Tools;
 use AlaroxFramework\utils\twig\TwigEnvFactory;
+use AlaroxFramework\utils\view\AbstractView;
 use AlaroxFramework\utils\view\ViewFactory;
 
 class Conteneur
@@ -94,6 +96,10 @@ class Conteneur
 
         $this->_config->setRestClient($this->getRestClient($this->getRestServerManager($tabCfg['restserver'])));
 
+        $this->_config->setCtrlFactory(
+            $this->getControllerFactory($arrayConfiguration['controllersPath'], $_POST + $_GET, $_FILES)
+        );
+
         $this->_config->setTemplateConfig(
             $this->getTemplateConfig(
                 $tabCfg['templateconfig'],
@@ -110,10 +116,6 @@ class Conteneur
         );
 
         $this->_config->setServer($this->getServer());
-
-        $this->_config->setCtrlFactory(
-            $this->getControllerFactory($arrayConfiguration['controllersPath'], $_POST + $_GET, $_FILES)
-        );
 
         $this->_config->setRouteMap($this->getRoute($arrayConfiguration['routeFile']));
     }
@@ -141,18 +143,46 @@ class Conteneur
         $viewFactory = $this->getViewFactory();
 
         if (isset($tabTemplateConfig['notfoundpage']) && is_array($tabTemplateConfig['notfoundpage'])) {
-            $notFoundView = $viewFactory->getView($tabTemplateConfig['notfoundpage']['type']);
-            $notFoundView->renderView($tabTemplateConfig['notfoundpage']['value']);
+            if ($tabTemplateConfig['notfoundpage']['type'] == 'ctrl') {
+                $notFoundSettings = explode(':', $tabTemplateConfig['notfoundpage']['value']);
+
+                $notFoundCallable = function () use ($notFoundSettings, $viewFactory) {
+                    $responseError = $this->getControllerExecutor()->executerControleur(
+                        $notFoundSettings[0],
+                        $notFoundSettings[1]
+                    );
+
+                    if ($responseError instanceof AbstractView) {
+                        return $responseError;
+                    } else {
+                        $notFoundView = $viewFactory->getView('plain');
+                        $notFoundView->renderView($responseError);
+
+                        return $notFoundView;
+                    }
+                };
+            } else {
+                $notFoundCallable = function () use ($viewFactory, $tabTemplateConfig) {
+                    $notFoundView = $viewFactory->getView($tabTemplateConfig['notfoundpage']['type']);
+                    $notFoundView->renderView($tabTemplateConfig['notfoundpage']['value']);
+
+                    return $notFoundView;
+                };
+            }
         } else {
-            $notFoundView = $viewFactory->getView('plain');
-            $notFoundView->renderView(
-                '<h1>HTTP 404 ' . Tools::getMessageHttpCode(404)[0] . '</h1><h2>' .
-                Tools::getMessageHttpCode(404)[1] .
-                '</h2><h3>{{ errorMessage }}</h3>'
-            );
+            $notFoundCallable = function () use ($viewFactory) {
+                $notFoundView = $viewFactory->getView('plain');
+                $notFoundView->renderView(
+                    '<h1>HTTP 404 ' . Tools::getMessageHttpCode(404)[0] . '</h1><h2>' .
+                    Tools::getMessageHttpCode(404)[1] .
+                    '</h2><h3>{{ errorMessage }}</h3>'
+                );
+
+                return $notFoundView;
+            };
         }
 
-        $templateConfig->setNotFoundTemplate($notFoundView);
+        $templateConfig->setNotFoundCallable($notFoundCallable);
 
         return $templateConfig;
     }
@@ -371,7 +401,7 @@ class Conteneur
             $queryVars['uploadedFile'] = $filesVars;
         }
 
-        $ctrlFactory->setListControllers($controllers, $this->getSessionClient(), $queryVars);
+        $ctrlFactory->setListControllers($controllers, $this->getSessionClient(), $queryVars, $this->getViewFactory());
 
         return $ctrlFactory;
     }
@@ -467,10 +497,18 @@ class Conteneur
         $dispatcher->setUriDemandee($this->getConfig()->getServer()->getUneVariableServeur('REQUEST_URI_NODIR'));
         $dispatcher->setI18nActif($this->getConfig()->getI18nConfig()->isActivated());
         $dispatcher->setRouteMap($this->getConfig()->getRouteMap());
-        $dispatcher->setControllerFactory($this->getConfig()->getCtrlFactory());
+        $dispatcher->setControllerExecutor($this->getControllerExecutor());
         $dispatcher->setViewFactory($this->getViewFactory());
 
         return $dispatcher;
+    }
+
+    private function getControllerExecutor()
+    {
+        $controllerExecutor = new ControllerExecutor();
+        $controllerExecutor->setControllerFactory($this->getConfig()->getCtrlFactory());
+
+        return $controllerExecutor;
     }
 
     /**
@@ -543,7 +581,7 @@ class Conteneur
         $responseManager = new ReponseManager();
 
         $responseManager->setTemplateManager($this->getTemplateManager());
-        $responseManager->setNotFoundTemplate($this->getConfig()->getTemplateConfig()->getNotFoundTemplate());
+        $responseManager->setNotFoundClosure($this->getConfig()->getTemplateConfig()->getNotFoundClosure());
 
         return $responseManager;
     }

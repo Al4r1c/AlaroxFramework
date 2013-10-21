@@ -65,7 +65,7 @@ class AlaroxFramework
             }
         } catch (NotFoundException $exception) {
             try {
-                $htmlReponse = $this->_conteneur->getResponseManager()->getNotFoundTemplate($exception->getMessage());
+                $htmlReponse = $this->_conteneur->getResponseManager()->getNotFoundClosure($exception->getMessage());
             } catch (\Exception $exception) {
                 $htmlReponse = $this->htmlResponseError($exception);
             }

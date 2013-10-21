@@ -4,6 +4,7 @@ namespace AlaroxFramework\cfg\configs;
 use AlaroxFramework\traitement\controller\GenericController;
 use AlaroxFramework\utils\restclient\RestClient;
 use AlaroxFramework\utils\session\SessionClient;
+use AlaroxFramework\utils\view\ViewFactory;
 
 class ControllerFactory
 {
@@ -26,8 +27,6 @@ class ControllerFactory
     public function __call($nomControleur, $arguments)
     {
         if (array_key_exists($nomControleur = strtolower($nomControleur), $this->_listControllers)) {
-            array_unshift($arguments, $this->_restClient);
-
             return call_user_func_array($this->_listControllers[$nomControleur], $arguments);
         }
 
@@ -51,9 +50,10 @@ class ControllerFactory
      * @param array $plainListControllers
      * @param SessionClient $sessionClient
      * @param array $queryVars
+     * @param ViewFactory $viewFactory
      * @throws \InvalidArgumentException
      */
-    public function setListControllers($plainListControllers, $sessionClient, $queryVars)
+    public function setListControllers($plainListControllers, $sessionClient, $queryVars, $viewFactory)
     {
         if (!is_array($plainListControllers)) {
             throw new \InvalidArgumentException('Expected parameter 1 plainListControllers to be array.');
@@ -62,10 +62,10 @@ class ControllerFactory
         foreach ($plainListControllers as $unControllerTrouve) {
             $tempNamespacesSepares = explode('\\', $unControllerTrouve);
             $this->_listControllers[strtolower(end($tempNamespacesSepares))] =
-                function ($restClient, $viewFactory, $tabVariables) use ($unControllerTrouve, $sessionClient, $queryVars) {
+                function ($tabVariables) use ($unControllerTrouve, $sessionClient, $queryVars, $viewFactory) {
                     /** @var GenericController $controller */
                     $controller = new $unControllerTrouve();
-                    $controller->setRestClient($restClient);
+                    $controller->setRestClient($this->_restClient);
                     $controller->setSessionClient($sessionClient);
                     $controller->setVariablesUri($tabVariables);
                     $controller->setViewFactory($viewFactory);

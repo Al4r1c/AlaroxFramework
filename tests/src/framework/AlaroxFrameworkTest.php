@@ -119,7 +119,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
     {
         $conteneur = $this->getFakeConteneur(array('getDispatcher', 'getResponseManager'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
-        $responseManager = $this->getMock('\\AlaroxFramework\\response\\ResponseManager', array('getNotFoundTemplate'));
+        $responseManager = $this->getMock('\\AlaroxFramework\\response\\ResponseManager', array('getNotFoundClosure'));
         $htmlResponseError = $this->getMock('\\AlaroxFramework\\utils\\HtmlResponse', array('getStatusHttp'));
 
 
@@ -137,7 +137,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         ->will($this->returnValue($responseManager));
 
         $responseManager->expects($this->once())
-        ->method('getNotFoundTemplate')
+        ->method('getNotFoundClosure')
         ->will($this->returnValue($htmlResponseError));
 
         $htmlResponseError->expects($this->once())
@@ -156,7 +156,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
     {
         $conteneur = $this->getFakeConteneur(array('getDispatcher', 'getResponseManager'));
         $dispatcher = $this->getMock('\\AlaroxFramework\\traitement\\Dispatcher', array('executerActionRequise'));
-        $responseManager = $this->getMock('\\AlaroxFramework\\response\\ResponseManager', array('getNotFoundTemplate'));
+        $responseManager = $this->getMock('\\AlaroxFramework\\response\\ResponseManager', array('getNotFoundClosure'));
 
 
         $dispatcher
@@ -173,7 +173,7 @@ class AlaroxFrameworkTest extends \PHPUnit_Framework_TestCase
         ->will($this->returnValue($responseManager));
 
         $responseManager->expects($this->once())
-        ->method('getNotFoundTemplate')
+        ->method('getNotFoundClosure')
         ->will($this->throwException(new \Exception()));
 
 

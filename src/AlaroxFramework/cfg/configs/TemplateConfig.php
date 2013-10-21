@@ -2,7 +2,6 @@
 namespace AlaroxFramework\cfg\configs;
 
 use AlaroxFramework\cfg\globals\GlobalVars;
-use AlaroxFramework\utils\view\PlainView;
 
 class TemplateConfig
 {
@@ -32,9 +31,9 @@ class TemplateConfig
     private $_twigExtensionsList;
 
     /**
-     * @var PlainView
+     * @var \Closure
      */
-    private $_notFoundTemplate;
+    private $_notFoundClosure;
 
     /**
      * @return boolean
@@ -69,11 +68,11 @@ class TemplateConfig
     }
 
     /**
-     * @return PlainView
+     * @return \Closure
      */
-    public function getNotFoundTemplate()
+    public function getNotFoundClosure()
     {
-        return $this->_notFoundTemplate;
+        return $this->_notFoundClosure;
     }
 
     /**
@@ -145,11 +144,16 @@ class TemplateConfig
     }
 
     /**
-     * @param PlainView $errors
+     * @param \Closure $errors
+     * @throws \InvalidArgumentException
      */
-    public function setNotFoundTemplate($errors)
+    public function setNotFoundCallable($errors)
     {
-        $this->_notFoundTemplate = $errors;
+        if (!is_callable($errors)) {
+            throw new \InvalidArgumentException('Expected parameter 1 errors to be callable.');
+        }
+
+        $this->_notFoundClosure = $errors;
     }
 
     /**

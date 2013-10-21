@@ -97,13 +97,22 @@ class TemplateConfigTest extends \PHPUnit_Framework_TestCase
         $this->_templateConfig->setGlobalVariables('exception');
     }
 
-    public function testNotFoundTemplate()
+    public function testNotFoundCallable()
     {
-        $errorView = $this->getMock('\\AlaroxFramework\\view\\PlainView');
+        $errorClosure = function () {
+        };
 
-        $this->_templateConfig->setNotFoundTemplate($errorView);
+        $this->_templateConfig->setNotFoundCallable($errorClosure);
 
-        $this->assertSame($errorView, $this->_templateConfig->getNotFoundTemplate());
+        $this->assertSame($errorClosure, $this->_templateConfig->getNotFoundClosure());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testNotFoundCallableTypeCallable()
+    {
+        $this->_templateConfig->setNotFoundCallable('exception');
     }
 
     public function testTwigExtensionList()

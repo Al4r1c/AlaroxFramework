@@ -1,7 +1,6 @@
 <?php
 namespace AlaroxFramework\traitement;
 
-use AlaroxFramework\cfg\configs\ControllerFactory;
 use AlaroxFramework\cfg\route\Route;
 use AlaroxFramework\cfg\route\RouteMap;
 use AlaroxFramework\utils\view\AbstractView;
@@ -20,11 +19,6 @@ class Dispatcher
     private $_i18nActif;
 
     /**
-     * @var ControllerFactory
-     */
-    private $_controllerFactory;
-
-    /**
      * @var ViewFactory
      */
     private $_viewFactory;
@@ -33,6 +27,11 @@ class Dispatcher
      * @var RouteMap
      */
     private $_routeMap;
+
+    /**
+     * @var ControllerExecutor
+     */
+    private $_controllerExecutor;
 
     /**
      * @param string $uriDemandee
@@ -61,19 +60,6 @@ class Dispatcher
     }
 
     /**
-     * @param ControllerFactory $controllerFactory
-     * @throws \InvalidArgumentException
-     */
-    public function setControllerFactory($controllerFactory)
-    {
-        if (!$controllerFactory instanceof ControllerFactory) {
-            throw new \InvalidArgumentException('Expected parameter 1 controllerFactory to be ControllerFactory.');
-        }
-
-        $this->_controllerFactory = $controllerFactory;
-    }
-
-    /**
      * @param ViewFactory $viewFactory
      * @throws \InvalidArgumentException
      */
@@ -97,6 +83,15 @@ class Dispatcher
         }
 
         $this->_routeMap = $routeMap;
+    }
+
+    public function setControllerExecutor($controllerExecutor)
+    {
+        if (!$controllerExecutor instanceof ControllerExecutor) {
+            throw new \InvalidArgumentException('Expected parameter 1 controllerExecutor to be ControllerExecutor.');
+        }
+
+        $this->_controllerExecutor = $controllerExecutor;
     }
 
     /**
@@ -160,7 +155,11 @@ class Dispatcher
             list($nomClasseController, $actionAEffectuer, $tabVariablesRequete) = $this->dispatchUri();
         }
 
-        return $this->executerControleur($nomClasseController, $actionAEffectuer, $tabVariablesRequete);
+        return $this->_controllerExecutor->executerControleur(
+            $nomClasseController,
+            $actionAEffectuer,
+            $tabVariablesRequete
+        );
     }
 
     /**
@@ -296,50 +295,5 @@ class Dispatcher
         }
 
         return $tabVariables;
-    }
-
-    /**
-     * @param string $nomClasseController
-     * @param string $actionAEffectuer
-     * @param array $tabVariablesRequete
-     * @return mixed
-     * @throws NotFoundException
-     */
-    private function executerControleur($nomClasseController, $actionAEffectuer, $tabVariablesRequete)
-    {
-        try {
-            $controlleur =
-                $this->_controllerFactory->{$nomClasseController}($this->_viewFactory, $tabVariablesRequete);
-
-            if (method_exists($controlleur, 'beforeExecuteAction') === true) {
-                $controlleur->beforeExecuteAction();
-            }
-        } catch (\Exception $uneException) {
-            throw new NotFoundException(sprintf(
-                'Can\'t load controller "%s" for uri "%s": %s.',
-                $nomClasseController,
-                $this->_uriDemandee,
-                $uneException->getMessage()
-            ));
-        }
-
-
-        if (method_exists($controlleur, $actionAEffectuer)) {
-            if (is_callable(array($controlleur, $actionAEffectuer))) {
-                return $controlleur->{$actionAEffectuer}();
-            } else {
-                throw new NotFoundException(sprintf(
-                    'Action "%s" not reachable in controller "%s".',
-                    $actionAEffectuer,
-                    $nomClasseController
-                ));
-            }
-        } else {
-            throw new NotFoundException(sprintf(
-                'Action "%s" not found in controller "%s".',
-                $actionAEffectuer,
-                $nomClasseController
-            ));
-        }
     }
 }

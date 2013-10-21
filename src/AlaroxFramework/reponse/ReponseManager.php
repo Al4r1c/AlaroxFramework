@@ -3,7 +3,6 @@ namespace AlaroxFramework\reponse;
 
 use AlaroxFramework\utils\HtmlReponse;
 use AlaroxFramework\utils\view\AbstractView;
-use AlaroxFramework\utils\view\PlainView;
 
 class ReponseManager
 {
@@ -13,9 +12,9 @@ class ReponseManager
     private $_templateManager;
 
     /**
-     * @var PlainView
+     * @var \Closure
      */
-    private $_notFoundTemplate;
+    private $_notFoundClosure;
 
     /**
      * @param TemplateManager $templateManager
@@ -31,11 +30,11 @@ class ReponseManager
     }
 
     /**
-     * @param PlainView $notFoundTemplate
+     * @param \Closure $notFoundClosure
      */
-    public function setNotFoundTemplate($notFoundTemplate)
+    public function setNotFoundClosure($notFoundClosure)
     {
-        $this->_notFoundTemplate = $notFoundTemplate;
+        $this->_notFoundClosure = $notFoundClosure;
     }
 
     /**
@@ -60,10 +59,12 @@ class ReponseManager
      * @param string $messageErreur
      * @return HtmlReponse
      */
-    public function getNotFoundTemplate($messageErreur)
+    public function getNotFoundClosure($messageErreur)
     {
+        $notFoundTemplate = call_user_func($this->_notFoundClosure);
+
         return new HtmlReponse(404, $this->_templateManager->render(
-            $this->_notFoundTemplate->withMap(
+            $notFoundTemplate->withMap(
                 array(
                     'errorCode' => 404,
                     'errorMessage' => $messageErreur

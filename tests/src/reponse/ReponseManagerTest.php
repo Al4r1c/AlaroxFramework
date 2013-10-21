@@ -84,6 +84,10 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
         $errorView = $this->getMock('\\AlaroxFramework\\view\\PlainView', array('withMap'));
         $templateManager = $this->getMock('\\AlaroxFramework\\reponse\\TemplateManager');
 
+        $errorViewCallable = function () use ($errorView) {
+            return $errorView;
+        };
+
         $errorView->expects($this->once())
         ->method('withMap')
         ->with(
@@ -97,9 +101,9 @@ class ReponseManagerTest extends \PHPUnit_Framework_TestCase
         ->method('render')
         ->will($this->returnValue('some Error'));
 
-        $this->_reponseManager->setNotFoundTemplate($errorView);
+        $this->_reponseManager->setNotFoundClosure($errorViewCallable);
         $this->_reponseManager->setTemplateManager($templateManager);
 
-        $this->assertEquals('some Error', $this->_reponseManager->getNotFoundTemplate('some Error')->getReponse());
+        $this->assertEquals('some Error', $this->_reponseManager->getNotFoundClosure('some Error')->getReponse());
     }
 }
