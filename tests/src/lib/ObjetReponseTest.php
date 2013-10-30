@@ -42,6 +42,12 @@ class ObjetReponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('OK', $this->_objetReponse->getDonneesReponse());
     }
 
+    public function testSetContenuNull()
+    {
+        $this->_objetReponse->setDonneesReponse(null);
+        $this->assertNull($this->_objetReponse->getDonneesReponse());
+    }
+
     /**
      * @expectedException     \InvalidArgumentException
      */

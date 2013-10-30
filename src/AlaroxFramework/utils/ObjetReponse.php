@@ -77,7 +77,7 @@ class ObjetReponse
      */
     public function setDonneesReponse($donneesReponse)
     {
-        if (!is_string($donneesReponse)) {
+        if (!is_string($donneesReponse) && !is_null($donneesReponse)) {
             throw new \InvalidArgumentException('Expected string as data.');
         }
 
